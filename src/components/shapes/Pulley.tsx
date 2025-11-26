@@ -8,6 +8,7 @@ interface PulleyProps {
     onSelect: () => void;
     onDragEnd: (pos: { x: number; y: number }) => void;
     snapToGrid: (pos: { x: number; y: number }) => { x: number; y: number };
+    onPointClick?: (pointId: string, e: any) => void;
 }
 
 const Pulley: React.FC<PulleyProps> = ({
@@ -16,6 +17,7 @@ const Pulley: React.FC<PulleyProps> = ({
     onSelect,
     onDragEnd,
     snapToGrid,
+    onPointClick,
 }) => {
     const radius = pulley.diameter / 2;
     const sheaveSpacing = radius * 2 + 15; // Space between sheaves
@@ -57,6 +59,18 @@ const Pulley: React.FC<PulleyProps> = ({
                     fill="#ff6b6b"
                     stroke="#fff"
                     strokeWidth={2}
+                    onClick={(e) => {
+                        if (onPointClick) {
+                            e.cancelBubble = true;
+                            onPointClick(`${pulley.id}-anchor`, e);
+                        }
+                    }}
+                    onTap={(e) => {
+                        if (onPointClick) {
+                            e.cancelBubble = true;
+                            onPointClick(`${pulley.id}-anchor`, e);
+                        }
+                    }}
                 />
                 <Text
                     x={-15}
@@ -75,6 +89,12 @@ const Pulley: React.FC<PulleyProps> = ({
                     fill="#339af0"
                     stroke="#fff"
                     strokeWidth={2}
+                    onClick={(e) => {
+                        if (onPointClick) {
+                            e.cancelBubble = true;
+                            onPointClick(`${pulley.id}-sheave-${index}-in`, e);
+                        }
+                    }}
                 />
                 <Arrow
                     points={[-radius - 20, 0, -radius - 8, 0]}
@@ -101,6 +121,12 @@ const Pulley: React.FC<PulleyProps> = ({
                     fill="#ffd43b"
                     stroke="#fff"
                     strokeWidth={2}
+                    onClick={(e) => {
+                        if (onPointClick) {
+                            e.cancelBubble = true;
+                            onPointClick(`${pulley.id}-sheave-${index}-out`, e);
+                        }
+                    }}
                 />
                 <Arrow
                     points={[radius + 8, 0, radius + 20, 0]}
@@ -157,6 +183,12 @@ const Pulley: React.FC<PulleyProps> = ({
                     fill="rgba(100, 150, 255, 0.2)"
                     stroke="#4a90e2"
                     strokeWidth={2}
+                    onClick={(e) => {
+                        if (onPointClick) {
+                            e.cancelBubble = true;
+                            onPointClick(`${pulley.id}-becket`, e);
+                        }
+                    }}
                 />
                 <Text
                     x={-20}

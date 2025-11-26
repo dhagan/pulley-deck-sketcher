@@ -13,9 +13,10 @@ interface CanvasProps {
     setSystem: React.Dispatch<React.SetStateAction<SystemState>>;
     toolMode: 'select' | 'rope';
     onComponentClick: (id: string) => void;
+    onPointClick?: (pointId: string, e: any) => void;
 }
 
-const Canvas: React.FC<CanvasProps> = ({ system, setSystem, toolMode, onComponentClick }) => {
+const Canvas: React.FC<CanvasProps> = ({ system, setSystem, toolMode, onComponentClick, onPointClick }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
@@ -114,6 +115,7 @@ const Canvas: React.FC<CanvasProps> = ({ system, setSystem, toolMode, onComponen
                                 onSelect={() => handleSelect(pulley.id)}
                                 onDragEnd={(pos) => handleDragEnd(pulley.id, pos)}
                                 snapToGrid={snapToGrid}
+                                onPointClick={onPointClick}
                             />
                         ))}
 

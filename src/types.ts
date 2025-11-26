@@ -38,7 +38,9 @@ export interface RopeComponent {
     id: string;
     type: ComponentType.ROPE;
     startId: string;
+    startPoint?: string; // e.g., 'anchor', 'becket', 'sheave-0-in'
     endId: string;
+    endPoint?: string;
     routeThrough: string[];
     tension?: number;
 }

@@ -79,23 +79,65 @@ const App: React.FC = () => {
         setRopeStart(null);
     };
 
-    const handleComponentClick = (id: string) => {
+    const handlePointClick = (pointId: string) => {
         if (toolMode === 'rope') {
             if (!ropeStart) {
-                setRopeStart(id);
+                setRopeStart(pointId);
             } else {
+                // Parse start and end IDs to get component IDs
+                // Format: componentId-suffix (e.g., pulley-1-sheave-0-in)
+                // We need to extract the base component ID for the rope definition
+                // But for now, let's store the full point ID in startPoint/endPoint
+
+                const getComponentId = (fullId: string) => {
+                    // Simple heuristic: take the first two parts as ID if it starts with pulley/anchor
+                    // This might need refinement based on ID generation strategy
+                    const parts = fullId.split('-');
+                    return `${parts[0]}-${parts[1]}`;
+                };
+
+                const startCompId = getComponentId(ropeStart);
+                const endCompId = getComponentId(pointId);
+
                 // Create rope
                 const rope: RopeComponent = {
                     id: `rope-${Date.now()}`,
                     type: ComponentType.ROPE,
-                    startId: ropeStart,
-                    endId: id,
+                    startId: startCompId,
+                    startPoint: ropeStart,
+                    endId: endCompId,
+                    endPoint: pointId,
                     routeThrough: [],
                 };
                 setSystem(prev => ({ ...prev, components: [...prev.components, rope] }));
                 setRopeStart(null);
                 setToolMode('select');
             }
+        }
+    };
+
+    const handleComponentClick = (id: string) => {
+        // Fallback for components without specific points (like simple anchors/cleats for now)
+        // or if clicking the body instead of a point
+        if (toolMode === 'rope') {
+            if (!ropeStart) {
+                setRopeStart(id);
+            } else {
+                const rope: RopeComponent = {
+                    id: `rope-${Date.now()}`,
+                    type: ComponentType.ROPE,
+                    startId: ropeStart,
+                    startPoint: 'center', // Default
+                    endId: id,
+                    endPoint: 'center', // Default
+                    routeThrough: [],
+                };
+                setSystem(prev => ({ ...prev, components: [...prev.components, rope] }));
+                setRopeStart(null);
+                setToolMode('select');
+            }
+        } else {
+            setSystem(prev => ({ ...prev, selectedId: id }));
         }
     };
 
@@ -142,6 +184,7 @@ const App: React.FC = () => {
                     setSystem={setSystem}
                     toolMode={toolMode}
                     onComponentClick={handleComponentClick}
+                    onPointClick={handlePointClick}
                 />
                 <PropertiesPanel system={system} setSystem={setSystem} />
             </div>
