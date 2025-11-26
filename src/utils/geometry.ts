@@ -3,7 +3,6 @@
  */
 export function calculateTangentPoints(
     lineStart: { x: number; y: number },
-    lineEnd: { x: number; y: number },
     circleCenter: { x: number; y: number },
     circleRadius: number
 ): { entry: { x: number; y: number }; exit: { x: number; y: number } } | null {
@@ -43,11 +42,9 @@ export function calculateRopePath(
 
     for (let i = 0; i < pulleys.length; i++) {
         const pulley = pulleys[i];
-        const nextPoint = i < pulleys.length - 1 ? pulleys[i + 1].position : end;
 
         const tangents = calculateTangentPoints(
             currentPoint,
-            nextPoint,
             pulley.position,
             pulley.diameter / 2
         );

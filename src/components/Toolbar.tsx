@@ -1,69 +1,89 @@
 import React from 'react';
-import { ComponentType } from '../types';
+import { SystemState } from '../types';
+import { scenarios } from '../utils/scenarios';
 
 interface ToolbarProps {
-    onAddComponent: (type: ComponentType) => void;
+    onAddPulley: () => void;
+    onAddAnchor: () => void;
+    onAddCleat: () => void;
+    onAddPerson: () => void;
+    onAddRope: () => void;
     onSave: () => void;
-    onLoad: () => void;
-    onExport: () => void;
+    onLoad: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onLoadScenario: (system: SystemState) => void;
+    onExportSVG: () => void;
     toolMode: 'select' | 'rope';
     ropeStart: string | null;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onAddComponent, onSave, onLoad, onExport, toolMode, ropeStart }) => {
+const Toolbar: React.FC<ToolbarProps> = ({
+    onAddPulley,
+    onAddAnchor,
+    onAddCleat,
+    onAddPerson,
+    onAddRope,
+    onSave,
+    onLoad,
+    onLoadScenario,
+    onExportSVG,
+    toolMode,
+    ropeStart,
+}) => {
     return (
         <div className="toolbar">
-            <button
-                className="toolbar-button"
-                onClick={() => onAddComponent(ComponentType.ANCHOR)}
-                title="Add Anchor Point"
-            >
-                🔗 Anchor
-            </button>
-            <button
-                className="toolbar-button"
-                onClick={() => onAddComponent(ComponentType.PULLEY)}
-                title="Add Pulley"
-            >
-                ⚙️ Pulley
-            </button>
-            <button
-                className="toolbar-button"
-                onClick={() => onAddComponent(ComponentType.CLEAT)}
-                title="Add Cleat"
-            >
-                🪝 Cleat
-            </button>
-            <button
-                className="toolbar-button"
-                onClick={() => onAddComponent(ComponentType.PERSON)}
-                title="Add Person"
-            >
-                🧍 Person
-            </button>
-            <button
-                className={`toolbar-button ${toolMode === 'rope' ? 'active' : ''}`}
-                onClick={() => onAddComponent(ComponentType.ROPE)}
-                title="Add Rope (click start, then end)"
-            >
-                〰️ Rope {ropeStart && '(1/2)'}
-            </button>
-            <div style={{ flex: 1 }} />
-            <button className="toolbar-button" onClick={onSave} title="Save System">
-                💾 Save
-            </button>
-            <button className="toolbar-button" onClick={onLoad} title="Load System">
-                📂 Load
-            </button>
-            <button className="toolbar-button" onClick={onExport} title="Export Drawing">
-                📄 Export SVG
-            </button>
-            <button className="toolbar-button" title="Analyze System">
-                📊 Analyze
-            </button>
-            <button className="toolbar-button" title="Animate">
-                ▶️ Animate
-            </button>
+            <div className="toolbar-group" style={{ display: 'flex', gap: '8px' }}>
+                <button className="toolbar-button" onClick={onAddPulley} title="Add Pulley">⚙️ Pulley</button>
+                <button className="toolbar-button" onClick={onAddAnchor} title="Add Anchor">⚓ Anchor</button>
+                <button className="toolbar-button" onClick={onAddCleat} title="Add Cleat">🪝 Cleat</button>
+                <button className="toolbar-button" onClick={onAddPerson} title="Add Person">👤 Person</button>
+                <button
+                    className={`toolbar-button ${toolMode === 'rope' ? 'active' : ''}`}
+                    onClick={onAddRope}
+                    title="Add Rope (Click start component, then end component)"
+                >
+                    🪢 Rope {ropeStart ? '(Select End)' : ''}
+                </button>
+            </div>
+
+            <div className="toolbar-separator" style={{ width: '1px', height: '24px', background: '#3d3d3d', margin: '0 8px' }}></div>
+
+            <div className="toolbar-group" style={{ display: 'flex', gap: '8px' }}>
+                <select
+                    className="toolbar-select"
+                    onChange={(e) => {
+                        const scenario = scenarios.find(s => s.name === e.target.value);
+                        if (scenario) {
+                            onLoadScenario(scenario.system);
+                            e.target.value = ""; // Reset selection
+                        }
+                    }}
+                    style={{
+                        background: '#3d3d3d',
+                        border: '1px solid #4d4d4d',
+                        borderRadius: '4px',
+                        padding: '8px',
+                        color: '#fff',
+                        cursor: 'pointer'
+                    }}
+                >
+                    <option value="">📂 Load Scenario...</option>
+                    {scenarios.map(s => (
+                        <option key={s.name} value={s.name}>{s.name}</option>
+                    ))}
+                </select>
+
+                <button className="toolbar-button" onClick={onSave} title="Save to JSON">💾 Save</button>
+                <label className="toolbar-button" style={{ cursor: 'pointer' }} title="Load from JSON">
+                    📂 Load File
+                    <input
+                        type="file"
+                        accept=".json"
+                        onChange={onLoad}
+                        style={{ display: 'none' }}
+                    />
+                </label>
+                <button className="toolbar-button" onClick={onExportSVG} title="Export as SVG">📤 Export SVG</button>
+            </div>
         </div>
     );
 };

@@ -19,56 +19,64 @@ const App: React.FC = () => {
     const [toolMode, setToolMode] = useState<ToolMode>('select');
     const [ropeStart, setRopeStart] = useState<string | null>(null);
 
-    const addComponent = (type: ComponentType) => {
-        if (type === ComponentType.ROPE) {
-            setToolMode('rope');
-            setRopeStart(null);
-            return;
-        }
+    const createComponentId = (type: string) => `${type}-${Date.now()}`;
+    const defaultPosition = { x: 400, y: 300 };
 
-        const id = `${type}-${Date.now()}`;
-        const position = { x: 400, y: 300 };
+    const handleAddPulley = () => {
+        const id = createComponentId('pulley');
+        const pulley: PulleyComponent = {
+            id,
+            type: ComponentType.PULLEY,
+            position: defaultPosition,
+            diameter: 60,
+            sheaves: 1,
+            hasBecket: false,
+            rotation: 0,
+            attachmentPoints: {
+                top: { x: defaultPosition.x, y: defaultPosition.y - 40 },
+                bottom: { x: defaultPosition.x, y: defaultPosition.y + 40 },
+            },
+        };
+        setSystem(prev => ({ ...prev, components: [...prev.components, pulley] }));
+    };
 
-        if (type === ComponentType.PULLEY) {
-            const pulley: PulleyComponent = {
-                id,
-                type: ComponentType.PULLEY,
-                position,
-                diameter: 60,
-                sheaves: 1,
-                hasBecket: false,
-                attachmentPoints: {
-                    top: { x: position.x, y: position.y - 40 },
-                    bottom: { x: position.x, y: position.y + 40 },
-                },
-            };
-            setSystem(prev => ({ ...prev, components: [...prev.components, pulley] }));
-        } else if (type === ComponentType.ANCHOR) {
-            const anchor: AnchorComponent = {
-                id,
-                type: ComponentType.ANCHOR,
-                position,
-                label: `A${system.components.filter(c => c.type === ComponentType.ANCHOR).length + 1}`,
-            };
-            setSystem(prev => ({ ...prev, components: [...prev.components, anchor] }));
-        } else if (type === ComponentType.CLEAT) {
-            const cleat: CleatComponent = {
-                id,
-                type: ComponentType.CLEAT,
-                position,
-                label: `Cleat ${system.components.filter(c => c.type === ComponentType.CLEAT).length + 1}`,
-            };
-            setSystem(prev => ({ ...prev, components: [...prev.components, cleat] }));
-        } else if (type === ComponentType.PERSON) {
-            const person: PersonComponent = {
-                id,
-                type: ComponentType.PERSON,
-                position,
-                label: 'Person',
-                pulling: false,
-            };
-            setSystem(prev => ({ ...prev, components: [...prev.components, person] }));
-        }
+    const handleAddAnchor = () => {
+        const id = createComponentId('anchor');
+        const anchor: AnchorComponent = {
+            id,
+            type: ComponentType.ANCHOR,
+            position: defaultPosition,
+            label: `A${system.components.filter(c => c.type === ComponentType.ANCHOR).length + 1}`,
+        };
+        setSystem(prev => ({ ...prev, components: [...prev.components, anchor] }));
+    };
+
+    const handleAddCleat = () => {
+        const id = createComponentId('cleat');
+        const cleat: CleatComponent = {
+            id,
+            type: ComponentType.CLEAT,
+            position: defaultPosition,
+            label: `Cleat ${system.components.filter(c => c.type === ComponentType.CLEAT).length + 1}`,
+        };
+        setSystem(prev => ({ ...prev, components: [...prev.components, cleat] }));
+    };
+
+    const handleAddPerson = () => {
+        const id = createComponentId('person');
+        const person: PersonComponent = {
+            id,
+            type: ComponentType.PERSON,
+            position: defaultPosition,
+            label: 'Person',
+            pulling: false,
+        };
+        setSystem(prev => ({ ...prev, components: [...prev.components, person] }));
+    };
+
+    const handleAddRope = () => {
+        setToolMode('rope');
+        setRopeStart(null);
     };
 
     const handleComponentClick = (id: string) => {
@@ -95,20 +103,18 @@ const App: React.FC = () => {
         saveSystem(system);
     };
 
-    const handleLoad = async () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = async (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) {
-                const loaded = await loadSystem(file);
-                if (loaded) {
-                    setSystem(loaded);
-                }
+    const handleLoad = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const loaded = await loadSystem(file);
+            if (loaded) {
+                setSystem(loaded);
             }
-        };
-        input.click();
+        }
+    };
+
+    const handleLoadScenario = (newSystem: SystemState) => {
+        setSystem(newSystem);
     };
 
     const handleExport = () => {
@@ -118,10 +124,15 @@ const App: React.FC = () => {
     return (
         <div className="app">
             <Toolbar
-                onAddComponent={addComponent}
+                onAddPulley={handleAddPulley}
+                onAddAnchor={handleAddAnchor}
+                onAddCleat={handleAddCleat}
+                onAddPerson={handleAddPerson}
+                onAddRope={handleAddRope}
                 onSave={handleSave}
                 onLoad={handleLoad}
-                onExport={handleExport}
+                onLoadScenario={handleLoadScenario}
+                onExportSVG={handleExport}
                 toolMode={toolMode}
                 ropeStart={ropeStart}
             />

@@ -19,6 +19,7 @@ export interface PulleyComponent {
     diameter: number;
     sheaves: 1 | 2 | 3;
     hasBecket: boolean;
+    rotation: number; // Rotation in degrees
     attachmentPoints: {
         top: Point;
         bottom: Point;

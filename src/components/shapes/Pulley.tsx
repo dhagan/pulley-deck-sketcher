@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Group, Text, Line, Arrow } from 'react-konva';
+import { Circle, Group, Text, Arrow } from 'react-konva';
 import { PulleyComponent as PulleyType } from '../../types';
 
 interface PulleyProps {
@@ -67,19 +67,19 @@ const Pulley: React.FC<PulleyProps> = ({
                     fontFamily="monospace"
                 />
 
-                {/* 2. Input Rope Point (left) - GREEN with arrow */}
+                {/* 2. Input Rope Point (left) - BLUE with arrow */}
                 <Circle
                     x={-radius - 8}
                     y={0}
                     radius={5}
-                    fill="#51cf66"
+                    fill="#339af0"
                     stroke="#fff"
                     strokeWidth={2}
                 />
                 <Arrow
                     points={[-radius - 20, 0, -radius - 8, 0]}
-                    stroke="#51cf66"
-                    fill="#51cf66"
+                    stroke="#339af0"
+                    fill="#339af0"
                     strokeWidth={2}
                     pointerLength={6}
                     pointerWidth={6}
@@ -89,11 +89,11 @@ const Pulley: React.FC<PulleyProps> = ({
                     y={-8}
                     text="In"
                     fontSize={9}
-                    fill="#51cf66"
+                    fill="#339af0"
                     fontFamily="monospace"
                 />
 
-                {/* 3. Output Rope Point (right) - YELLOW with arrow */}
+                {/* 3. Output Rope Point (right) - GOLD with arrow */}
                 <Circle
                     x={radius + 8}
                     y={0}
@@ -154,8 +154,8 @@ const Pulley: React.FC<PulleyProps> = ({
             <Group x={becketX} y={0}>
                 <Circle
                     radius={6}
-                    fill="#ffd43b"
-                    stroke="#fff"
+                    fill="rgba(100, 150, 255, 0.2)"
+                    stroke="#4a90e2"
                     strokeWidth={2}
                 />
                 <Text
@@ -163,7 +163,7 @@ const Pulley: React.FC<PulleyProps> = ({
                     y={10}
                     text="Becket"
                     fontSize={9}
-                    fill="#ffd43b"
+                    fill="#4a90e2"
                     fontFamily="monospace"
                 />
             </Group>
@@ -174,6 +174,7 @@ const Pulley: React.FC<PulleyProps> = ({
         <Group
             x={pulley.position.x}
             y={pulley.position.y}
+            rotation={pulley.rotation || 0}
             draggable
             onClick={onSelect}
             onTap={onSelect}

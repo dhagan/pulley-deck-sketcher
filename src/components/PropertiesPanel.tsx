@@ -1,5 +1,5 @@
 import React from 'react';
-import { SystemState, PulleyComponent, AnchorComponent, CleatComponent, PersonComponent, ComponentType, Component } from '../types';
+import { SystemState, PulleyComponent, ComponentType, Component } from '../types';
 
 interface PropertiesPanelProps {
     system: SystemState;
@@ -55,6 +55,16 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
                     type="checkbox"
                     checked={pulley.hasBecket}
                     onChange={(e) => updateComponent({ hasBecket: e.target.checked })}
+                />
+            </div>
+            <div className="property-row">
+                <span className="property-label">Rotation (°):</span>
+                <input
+                    type="number"
+                    value={pulley.rotation || 0}
+                    onChange={(e) => updateComponent({ rotation: parseInt(e.target.value) || 0 })}
+                    min="0"
+                    max="360"
                 />
             </div>
         </>
