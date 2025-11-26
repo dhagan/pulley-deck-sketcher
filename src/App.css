@@ -1,0 +1,100 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background: #1e1e1e;
+    color: #fff;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.canvas-container {
+    flex: 1;
+    position: relative;
+    background: #2d2d2d;
+}
+
+.properties-panel {
+    width: 300px;
+    background: #252525;
+    border-left: 1px solid #3d3d3d;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #252525;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.toolbar-button {
+    padding: 8px 16px;
+    background: #3d3d3d;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.toolbar-button:hover {
+    background: #4d4d4d;
+}
+
+.toolbar-button.active {
+    background: #0d7377;
+}
+
+.property-group {
+    margin-bottom: 20px;
+}
+
+.property-group h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #aaa;
+    text-transform: uppercase;
+}
+
+.property-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.property-label {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.property-value {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 500;
+}
+
+input[type="number"],
+input[type="text"] {
+    background: #3d3d3d;
+    border: 1px solid #4d4d4d;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: #fff;
+    font-size: 13px;
+    width: 100px;
+}
+
+input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
