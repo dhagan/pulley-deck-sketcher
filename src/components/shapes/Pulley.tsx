@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Group, Text } from 'react-konva';
+import { Circle, Group, Text, Line, Arrow } from 'react-konva';
 import { PulleyComponent as PulleyType } from '../../types';
 
 interface PulleyProps {
@@ -18,7 +18,119 @@ const Pulley: React.FC<PulleyProps> = ({
     snapToGrid,
 }) => {
     const radius = pulley.diameter / 2;
-    const sheaveSpacing = 8; // pixels between sheaves
+    const sheaveSpacing = radius * 2 + 15; // Space between sheaves
+
+    const renderSheave = (index: number, xOffset: number) => {
+        const sheaveId = `${pulley.id}-sheave-${index}`;
+
+        return (
+            <Group key={sheaveId} x={xOffset} y={0}>
+                {/* Main sheave circle */}
+                <Circle
+                    radius={radius}
+                    fill="rgba(100, 150, 255, 0.2)"
+                    stroke="#4a90e2"
+                    strokeWidth={2}
+                />
+
+                {/* Inner circle for depth */}
+                <Circle
+                    radius={radius * 0.7}
+                    stroke="#4a90e2"
+                    strokeWidth={1}
+                    opacity={0.5}
+                />
+
+                {/* Center axle */}
+                <Circle
+                    radius={3}
+                    fill="#666"
+                />
+
+                {/* Connection Points */}
+
+                {/* 1. Anchor Point (top) - RED */}
+                <Circle
+                    x={0}
+                    y={-radius - 8}
+                    radius={5}
+                    fill="#ff6b6b"
+                    stroke="#fff"
+                    strokeWidth={2}
+                />
+                <Text
+                    x={-15}
+                    y={-radius - 25}
+                    text="Anchor"
+                    fontSize={9}
+                    fill="#ff6b6b"
+                    fontFamily="monospace"
+                />
+
+                {/* 2. Input Rope Point (left) - GREEN with arrow */}
+                <Circle
+                    x={-radius - 8}
+                    y={0}
+                    radius={5}
+                    fill="#51cf66"
+                    stroke="#fff"
+                    strokeWidth={2}
+                />
+                <Arrow
+                    points={[-radius - 20, 0, -radius - 8, 0]}
+                    stroke="#51cf66"
+                    fill="#51cf66"
+                    strokeWidth={2}
+                    pointerLength={6}
+                    pointerWidth={6}
+                />
+                <Text
+                    x={-radius - 45}
+                    y={-8}
+                    text="In"
+                    fontSize={9}
+                    fill="#51cf66"
+                    fontFamily="monospace"
+                />
+
+                {/* 3. Output Rope Point (right) - YELLOW with arrow */}
+                <Circle
+                    x={radius + 8}
+                    y={0}
+                    radius={5}
+                    fill="#ffd43b"
+                    stroke="#fff"
+                    strokeWidth={2}
+                />
+                <Arrow
+                    points={[radius + 8, 0, radius + 20, 0]}
+                    stroke="#ffd43b"
+                    fill="#ffd43b"
+                    strokeWidth={2}
+                    pointerLength={6}
+                    pointerWidth={6}
+                />
+                <Text
+                    x={radius + 25}
+                    y={-8}
+                    text="Out"
+                    fontSize={9}
+                    fill="#ffd43b"
+                    fontFamily="monospace"
+                />
+
+                {/* Sheave number label */}
+                <Text
+                    x={-8}
+                    y={radius + 15}
+                    text={`#${index + 1}`}
+                    fontSize={10}
+                    fill="#aaa"
+                    fontFamily="monospace"
+                />
+            </Group>
+        );
+    };
 
     const renderSheaves = () => {
         const sheaves = [];
@@ -27,91 +139,34 @@ const Pulley: React.FC<PulleyProps> = ({
 
         for (let i = 0; i < pulley.sheaves; i++) {
             const x = startX + i * sheaveSpacing;
-            sheaves.push(
-                <Circle
-                    key={`sheave-${i}`}
-                    x={x}
-                    y={0}
-                    radius={radius}
-                    fill="rgba(100, 150, 255, 0.2)"
-                    stroke="#4a90e2"
-                    strokeWidth={2}
-                />
-            );
-
-            // Inner circle for depth
-            sheaves.push(
-                <Circle
-                    key={`inner-${i}`}
-                    x={x}
-                    y={0}
-                    radius={radius * 0.7}
-                    stroke="#4a90e2"
-                    strokeWidth={1}
-                    opacity={0.5}
-                />
-            );
+            sheaves.push(renderSheave(i, x));
         }
         return sheaves;
     };
 
-    const renderAttachmentPoints = () => {
-        const points = [];
+    const renderBecket = () => {
+        if (!pulley.hasBecket) return null;
 
-        // Top attachment
-        points.push(
-            <Circle
-                key="top"
-                x={0}
-                y={-radius - 10}
-                radius={4}
-                fill="#ff6b6b"
-                stroke="#fff"
-                strokeWidth={1}
-            />
-        );
+        const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
+        const becketX = totalWidth / 2 + radius + 20;
 
-        // Bottom attachment
-        points.push(
-            <Circle
-                key="bottom"
-                x={0}
-                y={radius + 10}
-                radius={4}
-                fill="#51cf66"
-                stroke="#fff"
-                strokeWidth={1}
-            />
-        );
-
-        // Becket (if present)
-        if (pulley.hasBecket) {
-            points.push(
+        return (
+            <Group x={becketX} y={0}>
                 <Circle
-                    key="becket"
-                    x={radius + 10}
-                    y={0}
-                    radius={4}
+                    radius={6}
                     fill="#ffd43b"
                     stroke="#fff"
-                    strokeWidth={1}
+                    strokeWidth={2}
                 />
-            );
-        }
-
-        return points;
-    };
-
-    const renderLabel = () => {
-        return (
-            <Text
-                x={-30}
-                y={radius + 25}
-                text={`${pulley.diameter}mm ${pulley.sheaves}x`}
-                fontSize={12}
-                fill="#aaa"
-                fontFamily="monospace"
-            />
+                <Text
+                    x={-20}
+                    y={10}
+                    text="Becket"
+                    fontSize={9}
+                    fill="#ffd43b"
+                    fontFamily="monospace"
+                />
+            </Group>
         );
     };
 
@@ -127,33 +182,32 @@ const Pulley: React.FC<PulleyProps> = ({
                 onDragEnd(pos);
             }}
         >
-            {/* Sheaves */}
+            {/* Render all sheaves */}
             {renderSheaves()}
 
-            {/* Attachment points */}
-            {renderAttachmentPoints()}
+            {/* Render becket if present */}
+            {renderBecket()}
 
             {/* Selection indicator */}
             {isSelected && (
                 <Circle
                     x={0}
                     y={0}
-                    radius={radius + 10}
+                    radius={radius * pulley.sheaves + 30}
                     stroke="#00d9ff"
                     strokeWidth={2}
                     dash={[5, 5]}
                 />
             )}
 
-            {/* Label */}
-            {renderLabel()}
-
-            {/* Center axle */}
-            <Circle
-                x={0}
-                y={0}
-                radius={3}
-                fill="#666"
+            {/* Overall label */}
+            <Text
+                x={-40}
+                y={radius + 35}
+                text={`${pulley.diameter}mm ${pulley.sheaves}x Pulley`}
+                fontSize={12}
+                fill="#aaa"
+                fontFamily="monospace"
             />
         </Group>
     );
