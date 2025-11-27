@@ -60,12 +60,12 @@ const Toolbar: React.FC<ToolbarProps> = ({
     return (
         <div className="toolbar">
             <div className="toolbar-group" style={{ display: 'flex', gap: '8px' }}>
+                <button className="toolbar-button" onClick={onAddPulley} title="Add Single Block">◉ Block</button>
                 <select 
                     className="toolbar-select" 
                     onChange={(e) => {
                         const value = e.target.value;
-                        if (value === 'single') onAddPulley();
-                        else if (value === 'double') onAddDoubleBlock();
+                        if (value === 'double') onAddDoubleBlock();
                         else if (value === 'triple') onAddTripleBlock();
                         e.target.value = '';
                     }}
@@ -79,8 +79,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                         cursor: 'pointer'
                     }}
                 >
-                    <option value="" disabled>+ Add Block...</option>
-                    <option value="single">◉ Single Block</option>
+                    <option value="" disabled>More Blocks...</option>
                     <option value="double">◎ Double Block</option>
                     <option value="triple">⊚ Triple Block</option>
                 </select>
