@@ -121,46 +121,33 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
     let path: Array<{ x: number; y: number }> = [];
 
     if (rope.routeThrough && rope.routeThrough.length > 0) {
-        // Use the geometry utility to calculate proper rope path through pulleys
-        // Use the geometry utility to calculate proper rope path through pulleys
-        const pulleyData = rope.routeThrough
-            .map(item => {
-                const pulleyId = typeof item === 'string' ? item : item.id;
-                const sheaveIndex = typeof item === 'string' ? 0 : item.sheaveIndex;
-
-                const pulley = components.find(c => c.id === pulleyId);
-                if (pulley && pulley.type === 'pulley') {
-                    const p = pulley as PulleyComponent;
-
-                    // Calculate offset based on sheave index
-                    // Logic matches getPointCoordinates
-                    const radius = p.diameter / 2;
-                    const sheaveSpacing = radius * 2 + 15;
-                    const totalWidth = (p.sheaves - 1) * sheaveSpacing;
-                    const startX = -totalWidth / 2;
-                    const sheaveX = startX + sheaveIndex * sheaveSpacing;
-
-                    // Apply rotation
-                    const rotationRad = (p.rotation || 0) * (Math.PI / 180);
-                    // Local offset is (sheaveX, 0) relative to pulley center
-                    // Note: In getPointCoordinates, localY was 0 for sheaves.
-                    const rotatedX = sheaveX * Math.cos(rotationRad);
-                    const rotatedY = sheaveX * Math.sin(rotationRad);
-
-                    return {
-                        position: {
-                            x: p.position.x + rotatedX,
-                            y: p.position.y + rotatedY
-                        },
-                        diameter: p.diameter
-                    };
+        // Build path through all intermediate points
+        path = [startPos];
+        
+        for (const point of rope.routeThrough) {
+            if (typeof point === 'string') {
+                // Parse the point ID to find the component and get coordinates
+                // Format: "pulley-1-sheave-0-in" or "pulley-1-anchor"
+                const parts = point.split('-');
+                const componentId = parts.slice(0, 2).join('-'); // e.g., "pulley-1"
+                const component = components.find(c => c.id === componentId);
+                
+                if (component) {
+                    const coords = getPointCoordinates(component, point);
+                    path.push(coords);
                 }
-                return null;
-            })
-            .filter((p): p is { position: { x: number; y: number }; diameter: number } => p !== null);
-
-        // Use calculateRopePath
-        path = calculateRopePath(startPos, pulleyData, endPos);
+            } else {
+                // Legacy format with id and sheaveIndex
+                const pulley = components.find(c => c.id === point.id);
+                if (pulley) {
+                    const pointId = `${point.id}-sheave-${point.sheaveIndex}-in`;
+                    const coords = getPointCoordinates(pulley, pointId);
+                    path.push(coords);
+                }
+            }
+        }
+        
+        path.push(endPos);
     } else {
         // Simple straight line
         path = [startPos, endPos];
