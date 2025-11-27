@@ -28,7 +28,6 @@ const Spring: React.FC<SpringProps> = ({ spring, components, isSelected, onSelec
 
     const dx = endPos.x - startPos.x;
     const dy = endPos.y - startPos.y;
-    const length = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx);
 
     const coils = 8;

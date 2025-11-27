@@ -154,11 +154,6 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
             sheaves: topSheaves,
             hasBecket: startAtTop,
             rotation: 0,
-            attachmentPoints: {
-                top: { x: stageX, y: topY - 20 },
-                bottom: { x: stageX, y: topY + 20 },
-                becket: startAtTop ? { x: stageX + 30, y: topY } : undefined,
-            },
         });
 
         // Bottom Pulley (Moving)
@@ -258,14 +253,26 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
             label: 'Main Load',
         });
 
-        // Add Spring
+        // Add Spring - now uses start/end points like rope
+        const springId = `spring-${componentId++}`;
+        const loadAnchorId = `anchor-${componentId++}`;
+        
         components.push({
-            id: `spring-${componentId++}`,
+            id: loadAnchorId,
+            type: ComponentType.ANCHOR,
+            position: { x: 400, y: loadY },
+            label: 'Load Point'
+        });
+        
+        components.push({
+            id: springId,
             type: ComponentType.SPRING,
-            position: { x: 400, y: pulleyBottomY },
-            stiffness: 100,
+            startId: bottomPulleyId,
+            startPoint: `${bottomPulleyId}-anchor`,
+            endId: loadAnchorId,
+            endPoint: loadAnchorId,
+            stiffness: 1.0,
             restLength: loadY - pulleyBottomY,
-            currentLength: loadY - pulleyBottomY,
             label: 'Load Spring'
         });
     }
