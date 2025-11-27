@@ -14,13 +14,23 @@ export interface ValidationResult {
 export const validateSystem = (system: SystemState): ValidationResult => {
     const errors: string[] = [];
     const warnings: string[] = [];
-    const ropes = system.components.filter((c): c is RopeComponent => c.type === ComponentType.ROPE);
+    const allRopes = system.components.filter((c): c is RopeComponent => c.type === ComponentType.ROPE);
+    
+    // Separate working ropes (chains) from anchor/suspension ropes
+    const anchorRopes = allRopes.filter(r => 
+        r.startPoint?.includes('anchor') || 
+        r.endPoint?.includes('anchor') ||
+        r.startPoint?.includes('spring') ||
+        r.endPoint?.includes('spring')
+    );
+    
+    const workingRopes = allRopes.filter(r => !anchorRopes.includes(r));
     
     let validRopes = 0;
     let invalidRopes = 0;
 
-    // Validate each rope
-    ropes.forEach((rope, index) => {
+    // Validate working ropes only (chains)
+    workingRopes.forEach((rope, index) => {
         const ropeErrors = validateRope(rope, system.components, index + 1);
         if (ropeErrors.length > 0) {
             errors.push(...ropeErrors);
@@ -35,11 +45,11 @@ export const validateSystem = (system: SystemState): ValidationResult => {
     warnings.push(...disconnectedWarnings);
 
     // Check for multiple ropes from same start point
-    const duplicateWarnings = checkDuplicateStarts(ropes);
+    const duplicateWarnings = checkDuplicateStarts(workingRopes);
     warnings.push(...duplicateWarnings);
 
     // Check rope continuity (segments connecting properly)
-    const continuityWarnings = checkRopeContinuity(ropes);
+    const continuityWarnings = checkRopeContinuity(workingRopes);
     warnings.push(...continuityWarnings);
 
     return {
@@ -47,7 +57,7 @@ export const validateSystem = (system: SystemState): ValidationResult => {
         errors,
         warnings,
         stats: {
-            totalRopes: ropes.length,
+            totalRopes: workingRopes.length,
             validRopes,
             invalidRopes,
         }

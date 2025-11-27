@@ -83,8 +83,8 @@ describe('Validation System', () => {
             
             expect(result.valid).toBe(true);
             expect(result.errors).toHaveLength(0);
-            expect(result.stats.totalRopes).toBe(3);
-            expect(result.stats.validRopes).toBe(3);
+            expect(result.stats.totalRopes).toBe(1); // Only rope-2 (becket->person) is working rope
+            expect(result.stats.validRopes).toBe(1);
             expect(result.stats.invalidRopes).toBe(0);
         });
     });
@@ -343,8 +343,8 @@ describe('Validation System', () => {
 
             const result = validateSystem(system);
             
-            expect(result.stats.totalRopes).toBe(2);
-            expect(result.stats.validRopes).toBe(1);
+            expect(result.stats.totalRopes).toBe(1); // Only rope-2 counted (rope-1 is anchor rope)
+            expect(result.stats.validRopes).toBe(0);
             expect(result.stats.invalidRopes).toBe(1);
         });
     });
