@@ -36,14 +36,22 @@
     {
       "id": "spring-1",
       "type": "spring",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-anchor",
+      "endId": "anchor-2",
+      "endPoint": "anchor-2",
+      "label": "Load",
+      "stiffness": 1.0,
+      "restLength": 100
+    },
+    {
+      "id": "anchor-2",
+      "type": "anchor",
       "position": {
         "x": 400,
         "y": 520
       },
-      "label": "Load",
-      "stiffness": 1.0,
-      "restLength": 60,
-      "currentLength": 60
+      "label": "Load Point"
     },
     {
       "id": "person-1",

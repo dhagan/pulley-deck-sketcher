@@ -6,7 +6,7 @@ import PropertiesPanel from './components/PropertiesPanel';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import './App.css';
 
-type ToolMode = 'select' | 'rope' | 'measure';
+type ToolMode = 'select' | 'rope' | 'spring' | 'measure';
 
 const App: React.FC = () => {
     const [system, setSystem] = useState<SystemState>({
@@ -112,16 +112,9 @@ const App: React.FC = () => {
     };
 
     const handleAddSpring = () => {
-        const id = createComponentId('spring');
-        const spring: SpringComponent = {
-            id,
-            type: ComponentType.SPRING,
-            position: defaultPosition,
-            label: `Load ${system.components.filter(c => c.type === ComponentType.SPRING).length + 1}`,
-            stiffness: 1.0, // N/mm
-            restLength: 60, // mm
-        };
-        setSystem(prev => ({ ...prev, components: [...prev.components, spring] }));
+        // Springs need to be created like ropes - set tool mode
+        setToolMode('spring');
+        setRopeStart(null); // Reuse rope drawing infrastructure
     };
 
     const handleAddRope = () => {

@@ -59,11 +59,13 @@ export interface PersonComponent {
 export interface SpringComponent {
     id: string;
     type: ComponentType.SPRING;
-    position: Point;
+    startId: string; // Component ID where spring starts
+    startPoint: string; // Specific point on start component
+    endId: string; // Component ID where spring ends
+    endPoint: string; // Specific point on end component
     label?: string;
     stiffness?: number; // Spring constant k (N/mm)
     restLength?: number; // Unloaded length in mm
-    currentLength?: number; // Current length when loaded in mm
 }
 
 export type Component = PulleyComponent | AnchorComponent | RopeComponent | CleatComponent | PersonComponent | SpringComponent;
