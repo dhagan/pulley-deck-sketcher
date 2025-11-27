@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line, Group, Text, Circle } from 'react-konva';
 import { RopeComponent as RopeType, Component, PulleyComponent } from '../../types';
-import { calculateRopePath, calculatePathLength } from '../../utils/geometry';
+import { calculatePathLength } from '../../utils/geometry';
 
 interface RopeProps {
     rope: RopeType;
@@ -86,17 +86,9 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
     const startPos = getPointCoordinates(startComp, rope.startPoint);
     const endPos = getPointCoordinates(endComp, rope.endPoint);
 
-    // Get pulleys in route
-    const pulleys = rope.routeThrough
-        .map(id => components.find(c => c.id === id))
-        .filter((c): c is PulleyComponent => c?.type === 'pulley');
-
-    // Calculate path
-    const path = calculateRopePath(
-        startPos,
-        pulleys,
-        endPos
-    );
+    // For now, just draw a straight line between the points
+    // TODO: Handle intermediate pulleys in routeThrough
+    const path = [startPos, endPos];
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);
