@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Stage, Layer, Line, Group, Circle, Text } from 'react-konva';
+import { Stage, Layer, Line, Group, Circle, Text, Arc } from 'react-konva';
 import { SystemState, ComponentType, PulleyComponent, AnchorComponent, RopeComponent, CleatComponent, PersonComponent, SpringComponent } from '../types';
 import { snapToGrid as snapToGridUtil } from '../utils/geometry';
+import { getPulleyWraps } from '../utils/ropeChains';
 import Pulley from './shapes/Pulley';
 import Anchor from './shapes/Anchor';
 import Rope from './shapes/Rope';
@@ -222,16 +223,53 @@ const Canvas: React.FC<CanvasProps> = ({
                 <Layer>
                     {system.components
                         .filter((c): c is RopeComponent => c.type === ComponentType.ROPE)
-                        .map(rope => (
-                            <Rope
-                                key={rope.id}
-                                rope={rope}
-                                components={system.components}
-                                isSelected={rope.id === system.selectedId}
-                                onSelect={() => handleSelect(rope.id)}
-                                showArrows={system.showRopeArrows}
-                            />
-                        ))}
+                        .map(rope => {
+                            // Check if this rope is part of selected chain
+                            const isInSelectedChain = system.selectedChainId && 
+                                system.chains?.find(c => c.id === system.selectedChainId)?.ropeIds.includes(rope.id);
+                            
+                            return (
+                                <Rope
+                                    key={rope.id}
+                                    rope={rope}
+                                    components={system.components}
+                                    isSelected={rope.id === system.selectedId || !!isInSelectedChain}
+                                    onSelect={() => handleSelect(rope.id)}
+                                    showArrows={system.showRopeArrows}
+                                />
+                            );
+                        })}
+
+                    {/* Render rope chain wraps around pulleys */}
+                    {system.selectedChainId && system.chains && (() => {
+                        const selectedChain = system.chains.find(c => c.id === system.selectedChainId);
+                        if (!selectedChain) return null;
+
+                        const wraps = getPulleyWraps(selectedChain, system.components);
+                        return wraps.map((wrap, idx) => {
+                            const pulley = system.components.find(c => c.id === wrap.pulleyId) as PulleyComponent | undefined;
+                            if (!pulley) return null;
+
+                            const radius = pulley.diameter / 2;
+                            const { x, y } = pulley.position;
+
+                            // Render arc from IN (left, PI) to OUT (right, 2*PI) going around bottom
+                            return (
+                                <Arc
+                                    key={`wrap-${idx}`}
+                                    x={x}
+                                    y={y}
+                                    innerRadius={radius - 2}
+                                    outerRadius={radius + 2}
+                                    angle={180} // 180 degrees from PI to 2*PI
+                                    rotation={180} // Start at PI (left side)
+                                    fill="#00d9ff"
+                                    opacity={0.6}
+                                    listening={false}
+                                />
+                            );
+                        });
+                    })()}
 
                     {system.components
                         .filter((c): c is PulleyComponent => c.type === ComponentType.PULLEY)

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComponent, PersonComponent, RopeComponent, SpringComponent } from './types';
 import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
+import { detectRopeChains, findChainForRope } from './utils/ropeChains';
 import './App.css';
 
 type ToolMode = 'select' | 'rope' | 'measure';
@@ -12,10 +13,18 @@ const App: React.FC = () => {
     const [system, setSystem] = useState<SystemState>({
         components: [],
         selectedId: null,
+        selectedChainId: null,
+        chains: [],
         gridSize: 20,
         snapToGrid: true,
         showRopeArrows: true,
     });
+
+    // Auto-detect rope chains whenever components change
+    useEffect(() => {
+        const chains = detectRopeChains(system.components);
+        setSystem(prev => ({ ...prev, chains }));
+    }, [system.components]);
 
     const [toolMode, setToolMode] = useState<ToolMode>('select');
     const [ropeStart, setRopeStart] = useState<string | null>(null);

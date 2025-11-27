@@ -73,9 +73,18 @@ export interface SpringComponent {
 
 export type Component = PulleyComponent | AnchorComponent | RopeComponent | CleatComponent | PersonComponent | SpringComponent;
 
+export interface RopeChain {
+    id: string;
+    ropeIds: string[]; // Ordered list of rope segment IDs that form the chain
+    startPoint: string; // Where the chain starts (e.g., becket)
+    endPoint: string; // Where the chain ends (e.g., person)
+}
+
 export interface SystemState {
     components: Component[];
     selectedId: string | null;
+    selectedChainId?: string | null; // ID of selected rope chain
+    chains?: RopeChain[]; // Detected or manually created rope chains
     gridSize: number;
     snapToGrid: boolean;
     showRopeArrows?: boolean;
