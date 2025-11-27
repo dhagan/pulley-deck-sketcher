@@ -12,6 +12,11 @@ interface SpringProps {
 }
 
 const Spring: React.FC<SpringProps> = ({ spring, isSelected, onSelect, onDragEnd, snapToGrid, onPointClick }) => {
+    if (!spring.position || isNaN(spring.position.x) || isNaN(spring.position.y)) {
+        console.error('Invalid spring position:', spring.position);
+        return null;
+    }
+
     const coils = 8;
     const coilWidth = 12;
     const length = spring.currentLength || spring.restLength;
