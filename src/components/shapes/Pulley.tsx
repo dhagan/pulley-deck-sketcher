@@ -180,6 +180,49 @@ const Pulley: React.FC<PulleyProps> = ({
                     offsetY={-5}
                 />
 
+                {/* 4. Becket Point (bottom) - ORANGE - part of sheave when hasBecket */}
+                {pulley.hasBecket && (
+                    <>
+                        <Circle
+                            x={0}
+                            y={radius + 8}
+                            radius={hoveredPoint === `${pulley.id}-becket` ? 7 : 6}
+                            fill="#ff8c00"
+                            stroke={hoveredPoint === `${pulley.id}-becket` ? "#00d9ff" : "#fff"}
+                            strokeWidth={hoveredPoint === `${pulley.id}-becket` ? 3 : 2}
+                            onClick={(e) => {
+                                e.cancelBubble = true;
+                                if (onSelect) onSelect();
+                                if (onPointClick) onPointClick(`${pulley.id}-becket`, e);
+                            }}
+                            onTap={(e) => {
+                                e.cancelBubble = true;
+                                if (onPointClick) onPointClick(`${pulley.id}-becket`, e);
+                            }}
+                            onMouseEnter={() => {
+                                setHoveredPoint(`${pulley.id}-becket`);
+                                onPointHover && onPointHover(`${pulley.id}-becket`);
+                            }}
+                            onMouseLeave={() => {
+                                setHoveredPoint(null);
+                                onPointHover && onPointHover(null);
+                            }}
+                        />
+                        <Text
+                            x={-15}
+                            y={radius + 15}
+                            text="Becket"
+                            fontSize={7}
+                            fill="#ff8c00"
+                            fontFamily="monospace"
+                            fontStyle="bold"
+                            rotation={-(pulley.rotation || 0)}
+                            offsetX={-15}
+                            offsetY={radius + 15}
+                        />
+                    </>
+                )}
+
                 {/* Sheave number label */}
                 <Text
                     x={-8}
