@@ -299,6 +299,80 @@ const Canvas: React.FC<CanvasProps> = ({
                             />
                         ))}
 
+                    {/* Automatic measurements between components */}
+                    {(() => {
+                        const pulleys = system.components.filter(c => c.type === ComponentType.PULLEY);
+                        const people = system.components.filter(c => c.type === ComponentType.PERSON);
+                        const measurements = [];
+
+                        // Measure between pulleys (only first pair)
+                        if (pulleys.length >= 2) {
+                            const p1 = pulleys[0].position;
+                            const p2 = pulleys[1].position;
+                            measurements.push({ start: p1, end: p2, label: 'Pulley-Pulley' });
+                        }
+
+                        // Measure from last pulley to first person
+                        if (pulleys.length > 0 && people.length > 0) {
+                            const lastPulley = pulleys[pulleys.length - 1].position;
+                            const person = people[0].position;
+                            measurements.push({ start: lastPulley, end: person, label: 'Pulley-Person' });
+                        }
+
+                        return measurements.map((m, idx) => {
+                            const dx = m.end.x - m.start.x;
+                            const dy = m.end.y - m.start.y;
+                            const len = Math.sqrt(dx * dx + dy * dy);
+                            if (len < 1) return null;
+
+                            const ux = dx / len;
+                            const uy = dy / len;
+                            const px = -uy;
+                            const py = ux;
+
+                            const offset = 40 / stageScale;
+                            const extLen = 20 / stageScale;
+                            const gap = 5 / stageScale;
+
+                            const ext1Start = { x: m.start.x + px * gap, y: m.start.y + py * gap };
+                            const ext1End = { x: m.start.x + px * (offset + extLen), y: m.start.y + py * (offset + extLen) };
+                            const ext2Start = { x: m.end.x + px * gap, y: m.end.y + py * gap };
+                            const ext2End = { x: m.end.x + px * (offset + extLen), y: m.end.y + py * (offset + extLen) };
+
+                            const dimStart = { x: m.start.x + px * offset, y: m.start.y + py * offset };
+                            const dimEnd = { x: m.end.x + px * offset, y: m.end.y + py * offset };
+
+                            const arrowSize = 10 / stageScale;
+                            const arrow1_1 = { x: dimStart.x + (ux * arrowSize + px * arrowSize * 0.5), y: dimStart.y + (uy * arrowSize + py * arrowSize * 0.5) };
+                            const arrow1_2 = { x: dimStart.x + (ux * arrowSize - px * arrowSize * 0.5), y: dimStart.y + (uy * arrowSize - py * arrowSize * 0.5) };
+                            const arrow2_1 = { x: dimEnd.x + (-ux * arrowSize + px * arrowSize * 0.5), y: dimEnd.y + (-uy * arrowSize + py * arrowSize * 0.5) };
+                            const arrow2_2 = { x: dimEnd.x + (-ux * arrowSize - px * arrowSize * 0.5), y: dimEnd.y + (-uy * arrowSize - py * arrowSize * 0.5) };
+
+                            return (
+                                <Group key={`auto-measure-${idx}`}>
+                                    <Line points={[ext1Start.x, ext1Start.y, ext1End.x, ext1End.y]} stroke="#00d9ff" strokeWidth={1 / stageScale} opacity={0.6} />
+                                    <Line points={[ext2Start.x, ext2Start.y, ext2End.x, ext2End.y]} stroke="#00d9ff" strokeWidth={1 / stageScale} opacity={0.6} />
+                                    <Line points={[dimStart.x, dimStart.y, dimEnd.x, dimEnd.y]} stroke="#00d9ff" strokeWidth={1.5 / stageScale} />
+                                    <Line points={[arrow1_1.x, arrow1_1.y, dimStart.x, dimStart.y, arrow1_2.x, arrow1_2.y]} stroke="#00d9ff" strokeWidth={1.5 / stageScale} />
+                                    <Line points={[arrow2_1.x, arrow2_1.y, dimEnd.x, dimEnd.y, arrow2_2.x, arrow2_2.y]} stroke="#00d9ff" strokeWidth={1.5 / stageScale} />
+                                    <Group x={(dimStart.x + dimEnd.x) / 2} y={(dimStart.y + dimEnd.y) / 2}>
+                                        <Circle radius={20 / stageScale} fill="rgba(0, 217, 255, 0.9)" />
+                                        <Text
+                                            x={-25 / stageScale}
+                                            y={-8 / stageScale}
+                                            text={`${Math.round(len)} mm`}
+                                            fontSize={12 / stageScale}
+                                            fill="#000"
+                                            fontStyle="bold"
+                                            align="center"
+                                            width={50 / stageScale}
+                                        />
+                                    </Group>
+                                </Group>
+                            );
+                        });
+                    })()}
+
                     {/* Measurement Tool Rendering */}
                     {toolMode === 'measure' && measurementStart && measurementEnd && (() => {
                         const dx = measurementEnd.x - measurementStart.x;
