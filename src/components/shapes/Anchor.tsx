@@ -17,6 +17,11 @@ const Anchor: React.FC<AnchorProps> = ({
     onDragEnd,
     snapToGrid,
 }) => {
+    if (!anchor.position || isNaN(anchor.position.x) || isNaN(anchor.position.y)) {
+        console.error('Invalid anchor position:', anchor.position);
+        return null;
+    }
+
     return (
         <Group
             x={anchor.position.x}

@@ -17,6 +17,11 @@ const Person: React.FC<PersonProps> = ({
     onDragEnd,
     snapToGrid,
 }) => {
+    if (!person.position || isNaN(person.position.x) || isNaN(person.position.y)) {
+        console.error('Invalid person position:', person.position);
+        return null;
+    }
+
     return (
         <Group
             x={person.position.x}

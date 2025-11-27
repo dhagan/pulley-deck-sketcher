@@ -17,6 +17,11 @@ const Cleat: React.FC<CleatProps> = ({
     onDragEnd,
     snapToGrid,
 }) => {
+    if (!cleat.position || isNaN(cleat.position.x) || isNaN(cleat.position.y)) {
+        console.error('Invalid cleat position:', cleat.position);
+        return null;
+    }
+
     return (
         <Group
             x={cleat.position.x}
