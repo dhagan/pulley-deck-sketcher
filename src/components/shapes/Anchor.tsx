@@ -42,8 +42,8 @@ const Anchor: React.FC<AnchorProps> = ({
             {/* Connection point */}
             <Circle
                 x={0}
-                y={8}
-                radius={4}
+                y={4}
+                radius={2}
                 fill="#fff"
                 stroke="#ff6b6b"
                 strokeWidth={2}
@@ -62,7 +62,7 @@ const Anchor: React.FC<AnchorProps> = ({
                 <Circle
                     x={0}
                     y={0}
-                    radius={20}
+                    radius={10}
                     stroke="#00d9ff"
                     strokeWidth={2}
                     dash={[5, 5]}

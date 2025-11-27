@@ -32,7 +32,7 @@ const App: React.FC = () => {
             id,
             type: ComponentType.PULLEY,
             position: defaultPosition,
-            diameter: 60,
+            diameter: 30,
             sheaves: 1,
             hasBecket: false,
             rotation: 0,

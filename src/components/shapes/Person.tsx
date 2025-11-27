@@ -32,8 +32,8 @@ const Person: React.FC<PersonProps> = ({
             {/* Head */}
             <Circle
                 x={0}
-                y={-20}
-                radius={8}
+                y={-10}
+                radius={4}
                 fill="#ffd43b"
                 stroke="#fff"
                 strokeWidth={2}
@@ -41,42 +41,42 @@ const Person: React.FC<PersonProps> = ({
 
             {/* Body */}
             <Line
-                points={[0, -12, 0, 10]}
+                points={[0, -6, 0, 5]}
                 stroke="#ffd43b"
-                strokeWidth={4}
+                strokeWidth={2}
                 lineCap="round"
             />
 
             {/* Arms */}
             <Line
-                points={person.pulling ? [-15, -5, 0, -5, 15, 0] : [-12, -2, 0, -5, 12, -2]}
+                points={person.pulling ? [-7.5, -2.5, 0, -2.5, 7.5, 0] : [-6, -1, 0, -2.5, 6, -1]}
                 stroke="#ffd43b"
-                strokeWidth={4}
+                strokeWidth={2}
                 lineCap="round"
                 lineJoin="round"
             />
 
             {/* Legs */}
             <Line
-                points={[-8, 10, 0, 10, 0, 25]}
+                points={[-4, 5, 0, 5, 0, 12.5]}
                 stroke="#ffd43b"
-                strokeWidth={4}
+                strokeWidth={2}
                 lineCap="round"
                 lineJoin="round"
             />
             <Line
-                points={[8, 10, 0, 10, 0, 25]}
+                points={[4, 5, 0, 5, 0, 12.5]}
                 stroke="#ffd43b"
-                strokeWidth={4}
+                strokeWidth={2}
                 lineCap="round"
                 lineJoin="round"
             />
 
             {/* Connection point (hands) */}
             <Circle
-                x={person.pulling ? 15 : 0}
-                y={person.pulling ? 0 : -5}
-                radius={4}
+                x={person.pulling ? 7.5 : 0}
+                y={person.pulling ? 0 : -2.5}
+                radius={2}
                 fill="#ff6b6b"
                 stroke="#fff"
                 strokeWidth={2}
