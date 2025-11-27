@@ -92,12 +92,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
                     max="500"
                 />
             </div>
-            {spring.currentLength !== undefined && (
-                <div className="property-row">
-                    <span className="property-label">Current Length:</span>
-                    <span className="property-value">{spring.currentLength.toFixed(1)} px</span>
-                </div>
-            )}
         </>
     );
 
