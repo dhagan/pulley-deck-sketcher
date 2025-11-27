@@ -13,6 +13,7 @@ interface ToolbarProps {
     onLoad: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onLoadScenario: (system: SystemState) => void;
     onExportSVG: () => void;
+    onClear: () => void;
     toolMode: 'select' | 'rope' | 'measure';
     ropeStart: string | null;
 }
@@ -28,6 +29,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     onLoad,
     onLoadScenario,
     onExportSVG,
+    onClear,
     toolMode,
     ropeStart,
 }) => {
@@ -92,6 +94,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     />
                 </label>
                 <button className="toolbar-button" onClick={onExportSVG} title="Export as SVG">📤 Export SVG</button>
+                <button
+                    className="toolbar-button"
+                    onClick={onClear}
+                    title="Clear All Components"
+                    style={{ background: '#ff4444', color: '#fff' }}
+                >
+                    🗑️ Clear
+                </button>
             </div>
         </div>
     );

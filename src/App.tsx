@@ -177,6 +177,21 @@ const App: React.FC = () => {
         exportMechanicalDrawing(system);
     };
 
+    const handleClear = () => {
+        if (window.confirm('Clear all components? This cannot be undone.')) {
+            setSystem({
+                components: [],
+                selectedId: null,
+                gridSize: 20,
+                snapToGrid: true,
+            });
+            setToolMode('select');
+            setRopeStart(null);
+            setMeasurementStart(null);
+            setMeasurementEnd(null);
+        }
+    };
+
     return (
         <div className="app">
             <Toolbar
@@ -190,6 +205,7 @@ const App: React.FC = () => {
                 onLoad={handleLoad}
                 onLoadScenario={handleLoadScenario}
                 onExportSVG={handleExport}
+                onClear={handleClear}
                 toolMode={toolMode}
                 ropeStart={ropeStart}
             />
