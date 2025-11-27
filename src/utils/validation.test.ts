@@ -53,19 +53,16 @@ describe('Validation System', () => {
                         startPoint: 'pulley-1-becket',
                         endId: 'person-1',
                         endPoint: 'person-1-center',
-                        routeThrough: [
-                            'pulley-1-sheave-0-in',
-                            'pulley-1-sheave-0-out'
-                        ],
+                        routeThrough: [],
                         label: 'Main'
                     } as RopeComponent,
                     {
                         id: 'rope-4',
                         type: ComponentType.ROPE,
-                        startId: 'pulley-1',
-                        startPoint: 'pulley-1-load',
-                        endId: 'anchor-2',
-                        endPoint: 'anchor-2',
+                        startId: 'anchor-2',
+                        startPoint: 'anchor-2',
+                        endId: 'pulley-1',
+                        endPoint: 'pulley-1-load',
                         routeThrough: [],
                         label: 'Load'
                     } as RopeComponent

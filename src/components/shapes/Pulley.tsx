@@ -51,7 +51,7 @@ const Pulley: React.FC<PulleyProps> = ({
 
                 {/* Connection Points */}
 
-                {/* 1. Anchor Point (top) - RED */}
+                {/* 1. Anchor Point (top) - RED - connects to fixed anchor via spring/strop */}
                 <Circle
                     x={0}
                     y={-radius - 8}
@@ -73,14 +73,15 @@ const Pulley: React.FC<PulleyProps> = ({
                     }}
                 />
                 <Text
-                    x={-15}
+                    x={-20}
                     y={-radius - 25}
                     text="Anchor"
                     fontSize={9}
                     fill="#ff6b6b"
                     fontFamily="monospace"
+                    fontStyle="bold"
                     rotation={-(pulley.rotation || 0)}
-                    offsetX={-15}
+                    offsetX={-20}
                     offsetY={-radius - 25}
                 />
 
@@ -173,7 +174,7 @@ const Pulley: React.FC<PulleyProps> = ({
     };
 
     const renderLoadAttachment = () => {
-        // Bottom attachment point for load (movable)
+        // Bottom attachment point - this is actually a BECKET (rope start point)
         const bottomY = radius + 30;
 
         return (
@@ -186,26 +187,27 @@ const Pulley: React.FC<PulleyProps> = ({
                     onClick={(e) => {
                         if (onPointClick) {
                             e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-load`, e);
+                            onPointClick(`${pulley.id}-becket-bottom`, e);
                         }
                     }}
                     onTap={(e) => {
                         if (onPointClick) {
                             e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-load`, e);
+                            onPointClick(`${pulley.id}-becket-bottom`, e);
                         }
                     }}
                     draggable
                 />
                 <Text
-                    x={-15}
+                    x={-20}
                     y={10}
-                    text="Load"
+                    text="Becket"
                     fontSize={9}
                     fill="#51cf66"
                     fontFamily="monospace"
+                    fontStyle="bold"
                     rotation={-(pulley.rotation || 0)}
-                    offsetX={-15}
+                    offsetX={-20}
                     offsetY={10}
                 />
             </Group>

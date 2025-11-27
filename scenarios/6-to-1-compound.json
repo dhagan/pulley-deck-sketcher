@@ -82,8 +82,6 @@
       "endId": "pulley-3",
       "endPoint": "pulley-3-load",
       "routeThrough": [
-        "pulley-2-sheave-0-in",
-        "pulley-2-sheave-0-out",
         "pulley-1-sheave-0-in",
         "pulley-1-sheave-0-out"
       ],
@@ -92,10 +90,10 @@
     {
       "id": "rope-3",
       "type": "rope",
-      "startId": "pulley-2",
-      "startPoint": "pulley-2-load",
-      "endId": "anchor-3",
-      "endPoint": "anchor-3",
+      "startId": "anchor-3",
+      "startPoint": "anchor-3",
+      "endId": "pulley-2",
+      "endPoint": "pulley-2-load",
       "routeThrough": [],
       "label": "Load"
     },

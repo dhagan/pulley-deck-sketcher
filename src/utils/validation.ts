@@ -73,12 +73,25 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
     const isValidStart = 
         startPoint.includes('anchor') && !startPoint.includes('sheave') ||
         startPoint.includes('becket') ||
-        startPoint.includes('load') && !startPoint.includes('sheave') ||
         startPoint.includes('spring') ||
         startPoint.endsWith('center');
 
     if (!isValidStart) {
-        errors.push(`${prefix}: Invalid start point "${startPoint}". Must start at Anchor, Becket, Load, Spring, or center`);
+        errors.push(`${prefix}: Invalid start point "${startPoint}". Ropes can only start from: Anchor, Becket, Spring, or Person center`);
+    }
+
+    // Validate that becket doesn't go back to its own pulley
+    if (startPoint.includes('becket')) {
+        const becketPulleyId = rope.startId;
+        // Check if any routeThrough points or endPoint connect to the same pulley
+        const connectsToSamePulley = rope.routeThrough.some(point => {
+            const pointStr = typeof point === 'string' ? point : `${point.id}`;
+            return pointStr.startsWith(becketPulleyId);
+        }) || rope.endPoint?.startsWith(becketPulleyId);
+
+        if (connectsToSamePulley) {
+            errors.push(`${prefix}: Becket cannot route back to its own pulley. Becket should start a rope going to another pulley or person.`);
+        }
     }
 
     // Validate end point - should be at person or terminal point

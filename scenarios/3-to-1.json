@@ -71,12 +71,12 @@
     {
       "id": "rope-3",
       "type": "rope",
-      "startId": "pulley-2",
-      "startPoint": "pulley-2-load",
-      "endId": "anchor-2",
-      "endPoint": "anchor-2",
+      "startId": "anchor-2",
+      "startPoint": "anchor-2",
+      "endId": "pulley-2",
+      "endPoint": "pulley-2-load",
       "routeThrough": [],
-      "label": "Load"
+      "label": "Load Connection"
     }
   ],
   "selectedId": null,
