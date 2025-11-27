@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Group, Text, Arrow, Arc } from 'react-konva';
+import { Circle, Group, Text, Arrow } from 'react-konva';
 import { PulleyComponent as PulleyType } from '../../types';
 
 interface PulleyProps {
@@ -14,7 +14,6 @@ interface PulleyProps {
 
 const Pulley: React.FC<PulleyProps> = ({
     pulley,
-    isSelected,
     onSelect,
     onDragEnd,
     snapToGrid,
