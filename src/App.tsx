@@ -451,12 +451,32 @@ const App: React.FC = () => {
                     </div>
                     {toolMode === 'rope' && ropeStart && (
                         <div className="status-item" style={{ color: '#4ade80', fontWeight: 'bold' }}>
-                            <strong>Rope Start:</strong> {ropeStart} → Click end point
+                            <strong>Rope Start:</strong> {(() => {
+                                const comp = system.components.find(c => ropeStart.startsWith(c.id));
+                                if (!comp) return ropeStart;
+                                const label = (comp as any).label || comp.type;
+                                const point = ropeStart.includes('becket') ? 'becket' : 
+                                             ropeStart.includes('anchor') ? 'anchor' :
+                                             ropeStart.includes('-in') ? 'IN' :
+                                             ropeStart.includes('-out') ? 'OUT' :
+                                             ropeStart.includes('center') ? 'center' : 'point';
+                                return `${label} (${point})`;
+                            })()} → Click end point
                         </div>
                     )}
                     {toolMode === 'rope' && hoveredPoint && (
                         <div className="status-item" style={{ color: '#3b82f6', fontWeight: 'bold' }}>
-                            <strong>Hover:</strong> {hoveredPoint}
+                            <strong>Hover:</strong> {(() => {
+                                const comp = system.components.find(c => hoveredPoint.startsWith(c.id));
+                                if (!comp) return hoveredPoint;
+                                const label = (comp as any).label || comp.type;
+                                const point = hoveredPoint.includes('becket') ? 'becket' :
+                                             hoveredPoint.includes('anchor') ? 'anchor' :
+                                             hoveredPoint.includes('-in') ? 'IN' :
+                                             hoveredPoint.includes('-out') ? 'OUT' :
+                                             hoveredPoint.includes('center') ? 'center' : 'point';
+                                return `${label} (${point})`;
+                            })()}
                         </div>
                     )}
                 </div>
