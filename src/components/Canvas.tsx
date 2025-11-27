@@ -19,6 +19,7 @@ interface CanvasProps {
     setMeasurementStart?: (pos: { x: number; y: number } | null) => void;
     measurementEnd?: { x: number; y: number } | null;
     setMeasurementEnd?: (pos: { x: number; y: number } | null) => void;
+    onContextMenu?: (e: any) => void;
 }
 
 const Canvas: React.FC<CanvasProps> = ({
@@ -30,7 +31,8 @@ const Canvas: React.FC<CanvasProps> = ({
     measurementStart,
     setMeasurementStart,
     measurementEnd,
-    setMeasurementEnd
+    setMeasurementEnd,
+    onContextMenu
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -210,7 +212,7 @@ const Canvas: React.FC<CanvasProps> = ({
                 scaleX={stageScale}
                 scaleY={stageScale}
                 onClick={handleStageClick}
-                onContextMenu={(e) => e.evt.preventDefault()} // Prevent context menu on right click
+                onContextMenu={onContextMenu || ((e) => e.evt.preventDefault())}
             >
                 <Layer>
                     {renderGrid()}

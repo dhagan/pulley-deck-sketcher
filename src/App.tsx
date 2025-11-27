@@ -21,6 +21,7 @@ const App: React.FC = () => {
     const [ropeStart, setRopeStart] = useState<string | null>(null);
     const [measurementStart, setMeasurementStart] = useState<{ x: number; y: number } | null>(null);
     const [measurementEnd, setMeasurementEnd] = useState<{ x: number; y: number } | null>(null);
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -295,8 +296,19 @@ const App: React.FC = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [system.selectedId, toolMode]);
 
+    const handleCanvasRightClick = (e: any) => {
+        e.evt.preventDefault();
+        const stage = e.target.getStage();
+        const pos = stage.getPointerPosition();
+        setContextMenu(pos);
+    };
+
+    const handleContextMenuClose = () => {
+        setContextMenu(null);
+    };
+
     return (
-        <div className="app">
+        <div className="app" onClick={handleContextMenuClose}>
             <Toolbar
                 onAddPulley={handleAddPulley}
                 onAddAnchor={handleAddAnchor}
@@ -327,7 +339,25 @@ const App: React.FC = () => {
                     setMeasurementStart={setMeasurementStart}
                     measurementEnd={measurementEnd}
                     setMeasurementEnd={setMeasurementEnd}
+                    onContextMenu={handleCanvasRightClick}
                 />
+                {contextMenu && (
+                    <div
+                        className="context-menu"
+                        style={{
+                            position: 'absolute',
+                            left: contextMenu.x,
+                            top: contextMenu.y,
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button className="context-menu-item" onClick={() => { handleAddPulley(); handleContextMenuClose(); }}>⚙️ Add Pulley</button>
+                        <button className="context-menu-item" onClick={() => { handleAddAnchor(); handleContextMenuClose(); }}>⚓ Add Anchor</button>
+                        <button className="context-menu-item" onClick={() => { handleAddCleat(); handleContextMenuClose(); }}>🪝 Add Cleat</button>
+                        <button className="context-menu-item" onClick={() => { handleAddPerson(); handleContextMenuClose(); }}>👤 Add Person</button>
+                        <button className="context-menu-item" onClick={() => { handleAddSpring(); handleContextMenuClose(); }}>🌀 Add Spring</button>
+                    </div>
+                )}
                 <PropertiesPanel system={system} setSystem={setSystem} />
             </div>
             <div className="status-bar">
