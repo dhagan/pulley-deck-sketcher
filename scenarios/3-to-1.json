@@ -3,45 +3,72 @@
     {
       "id": "anchor-1",
       "type": "anchor",
-      "position": { "x": 400, "y": 100 },
+      "position": {
+        "x": 400,
+        "y": 100
+      },
       "label": "Fixed Anchor"
     },
     {
       "id": "pulley-1",
       "type": "pulley",
-      "position": { "x": 400, "y": 200 },
+      "position": {
+        "x": 400,
+        "y": 200
+      },
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": true,
       "rotation": 0,
       "attachmentPoints": {
-        "top": { "x": 400, "y": 170 },
-        "bottom": { "x": 400, "y": 230 }
+        "top": {
+          "x": 400,
+          "y": 170
+        },
+        "bottom": {
+          "x": 400,
+          "y": 230
+        }
       }
     },
     {
       "id": "pulley-2",
       "type": "pulley",
-      "position": { "x": 400, "y": 350 },
+      "position": {
+        "x": 400,
+        "y": 350
+      },
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": true,
       "rotation": 180,
       "attachmentPoints": {
-        "top": { "x": 400, "y": 320 },
-        "bottom": { "x": 400, "y": 380 }
+        "top": {
+          "x": 400,
+          "y": 320
+        },
+        "bottom": {
+          "x": 400,
+          "y": 380
+        }
       }
     },
     {
       "id": "anchor-2",
       "type": "anchor",
-      "position": { "x": 400, "y": 480 },
+      "position": {
+        "x": 400,
+        "y": 480
+      },
       "label": ""
     },
     {
       "id": "person-1",
       "type": "person",
-      "position": { "x": 550, "y": 300 },
+      "position": {
+        "x": 550,
+        "y": 300
+      },
       "label": "Pull",
       "pulling": true
     },
@@ -52,7 +79,6 @@
       "startPoint": "anchor-1",
       "endId": "pulley-1",
       "endPoint": "pulley-1-anchor",
-      "routeThrough": [],
       "label": "Anchor"
     },
     {
@@ -62,10 +88,6 @@
       "startPoint": "pulley-1-becket-bottom",
       "endId": "person-1",
       "endPoint": "person-1-center",
-      "routeThrough": [
-        "pulley-2-sheave-0-in",
-        "pulley-2-sheave-0-out"
-      ],
       "label": ""
     },
     {
@@ -75,7 +97,6 @@
       "startPoint": "anchor-2",
       "endId": "pulley-1",
       "endPoint": "pulley-1-load",
-      "routeThrough": [],
       "label": ""
     }
   ],

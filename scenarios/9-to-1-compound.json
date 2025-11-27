@@ -3,77 +3,125 @@
     {
       "id": "anchor-1",
       "type": "anchor",
-      "position": { "x": 250, "y": 100 },
+      "position": {
+        "x": 250,
+        "y": 100
+      },
       "label": "Fixed Anchor 1"
     },
     {
       "id": "pulley-1",
       "type": "pulley",
-      "position": { "x": 250, "y": 200 },
+      "position": {
+        "x": 250,
+        "y": 200
+      },
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": false,
       "rotation": 0,
       "attachmentPoints": {
-        "top": { "x": 250, "y": 170 },
-        "bottom": { "x": 250, "y": 230 }
+        "top": {
+          "x": 250,
+          "y": 170
+        },
+        "bottom": {
+          "x": 250,
+          "y": 230
+        }
       }
     },
     {
       "id": "pulley-2",
       "type": "pulley",
-      "position": { "x": 250, "y": 340 },
+      "position": {
+        "x": 250,
+        "y": 340
+      },
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": true,
       "rotation": 180,
       "attachmentPoints": {
-        "top": { "x": 250, "y": 310 },
-        "bottom": { "x": 250, "y": 370 }
+        "top": {
+          "x": 250,
+          "y": 310
+        },
+        "bottom": {
+          "x": 250,
+          "y": 370
+        }
       }
     },
     {
       "id": "anchor-2",
       "type": "anchor",
-      "position": { "x": 450, "y": 100 },
+      "position": {
+        "x": 450,
+        "y": 100
+      },
       "label": "Fixed Anchor 2"
     },
     {
       "id": "pulley-3",
       "type": "pulley",
-      "position": { "x": 450, "y": 200 },
+      "position": {
+        "x": 450,
+        "y": 200
+      },
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": false,
       "rotation": 0,
       "attachmentPoints": {
-        "top": { "x": 450, "y": 170 },
-        "bottom": { "x": 450, "y": 230 }
+        "top": {
+          "x": 450,
+          "y": 170
+        },
+        "bottom": {
+          "x": 450,
+          "y": 230
+        }
       }
     },
     {
       "id": "pulley-4",
       "type": "pulley",
-      "position": { "x": 450, "y": 340 },
+      "position": {
+        "x": 450,
+        "y": 340
+      },
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": true,
       "rotation": 180,
       "attachmentPoints": {
-        "top": { "x": 450, "y": 310 },
-        "bottom": { "x": 450, "y": 370 }
+        "top": {
+          "x": 450,
+          "y": 310
+        },
+        "bottom": {
+          "x": 450,
+          "y": 370
+        }
       }
     },
     {
       "id": "anchor-3",
       "type": "anchor",
-      "position": { "x": 450, "y": 470 },
+      "position": {
+        "x": 450,
+        "y": 470
+      },
       "label": ""
     },
     {
       "id": "person-1",
       "type": "person",
-      "position": { "x": 650, "y": 270 },
+      "position": {
+        "x": 650,
+        "y": 270
+      },
       "label": "Pull",
       "pulling": true
     },
@@ -84,7 +132,6 @@
       "startPoint": "anchor-1",
       "endId": "pulley-1",
       "endPoint": "pulley-1-anchor",
-      "routeThrough": [],
       "label": "Anchor 1"
     },
     {
@@ -94,10 +141,6 @@
       "startPoint": "pulley-2-becket",
       "endId": "pulley-4",
       "endPoint": "pulley-4-load",
-      "routeThrough": [
-        "pulley-1-sheave-0-in",
-        "pulley-1-sheave-0-out"
-      ],
       "label": "First 3:1"
     },
     {
@@ -107,7 +150,6 @@
       "startPoint": "anchor-3",
       "endId": "pulley-2",
       "endPoint": "pulley-2-load",
-      "routeThrough": [],
       "label": ""
     },
     {
@@ -117,7 +159,6 @@
       "startPoint": "anchor-2",
       "endId": "pulley-3",
       "endPoint": "pulley-3-anchor",
-      "routeThrough": [],
       "label": "Anchor 2"
     },
     {
@@ -127,10 +168,6 @@
       "startPoint": "pulley-4-becket",
       "endId": "person-1",
       "endPoint": "person-1-center",
-      "routeThrough": [
-        "pulley-3-sheave-0-in",
-        "pulley-3-sheave-0-out"
-      ],
       "label": "Second 3:1"
     }
   ],

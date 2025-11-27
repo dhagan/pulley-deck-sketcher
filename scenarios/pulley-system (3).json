@@ -72,7 +72,6 @@
       "startPoint": "anchor-1",
       "endId": "pulley-1",
       "endPoint": "pulley-1-anchor",
-      "routeThrough": [],
       "label": "Anchor"
     },
     {
@@ -82,7 +81,6 @@
       "startPoint": "anchor-2",
       "endId": "pulley-2",
       "endPoint": "pulley-2-anchor",
-      "routeThrough": [],
       "label": "Rope 2"
     },
     {
@@ -92,7 +90,6 @@
       "startPoint": "pulley-1",
       "endId": "pulley-2",
       "endPoint": "pulley-2-sheave-0-in",
-      "routeThrough": [],
       "label": "Rope 3"
     },
     {
@@ -101,8 +98,7 @@
       "startId": "pulley-2-becket",
       "startPoint": "center",
       "endId": "pulley-1",
-      "endPoint": "center",
-      "routeThrough": []
+      "endPoint": "center"
     },
     {
       "id": "rope-1764231928589",
@@ -110,8 +106,7 @@
       "startId": "pulley-2-becket",
       "startPoint": "center",
       "endId": "pulley-1",
-      "endPoint": "center",
-      "routeThrough": []
+      "endPoint": "center"
     },
     {
       "id": "rope-1764231935636",
@@ -120,7 +115,6 @@
       "startPoint": "pulley-2-becket",
       "endId": "pulley-1",
       "endPoint": "pulley-1-sheave-0-in",
-      "routeThrough": [],
       "label": "Rope 6"
     },
     {
@@ -129,8 +123,7 @@
       "startId": "person-1",
       "startPoint": "center",
       "endId": "person-1",
-      "endPoint": "center",
-      "routeThrough": []
+      "endPoint": "center"
     },
     {
       "id": "rope-1764231955491",
@@ -138,8 +131,7 @@
       "startId": "pulley-1",
       "startPoint": "center",
       "endId": "rope-1764231947726",
-      "endPoint": "center",
-      "routeThrough": []
+      "endPoint": "center"
     },
     {
       "id": "person-1764231964178",
@@ -157,8 +149,7 @@
       "startId": "pulley-1",
       "startPoint": "center",
       "endId": "person-1764231964178",
-      "endPoint": "center",
-      "routeThrough": []
+      "endPoint": "center"
     }
   ],
   "timestamp": "2025-11-27T08:26:41.011Z"
