@@ -87,7 +87,7 @@ const Pulley: React.FC<PulleyProps> = ({
                     x={-20}
                     y={-radius - 25}
                     text="Anchor"
-                    fontSize={9}
+                    fontSize={7}
                     fill="#ff6b6b"
                     fontFamily="monospace"
                     fontStyle="bold"
@@ -128,10 +128,10 @@ const Pulley: React.FC<PulleyProps> = ({
                     pointerWidth={6}
                 />
                 <Text
-                    x={-radius - 20}
+                    x={-20}
                     y={-5}
                     text="In"
-                    fontSize={11}
+                    fontSize={7}
                     fill="#339af0"
                     fontFamily="monospace"
                     fontStyle="bold"
@@ -175,7 +175,7 @@ const Pulley: React.FC<PulleyProps> = ({
                     x={radius + 12}
                     y={-5}
                     text="Out"
-                    fontSize={11}
+                    fontSize={7}
                     fill="#ffd43b"
                     fontFamily="monospace"
                     fontStyle="bold"
@@ -208,7 +208,7 @@ const Pulley: React.FC<PulleyProps> = ({
             <Group x={0} y={bottomY}>
                 <Circle
                     radius={6}
-                    fill="#51cf66"
+                    fill="#e64980"
                     stroke="#fff"
                     strokeWidth={2}
                     onClick={(e) => {
@@ -229,8 +229,8 @@ const Pulley: React.FC<PulleyProps> = ({
                     x={-20}
                     y={10}
                     text="Becket"
-                    fontSize={9}
-                    fill="#51cf66"
+                    fontSize={7}
+                    fill="#e64980"
                     fontFamily="monospace"
                     fontStyle="bold"
                     rotation={-(pulley.rotation || 0)}
@@ -263,8 +263,8 @@ const Pulley: React.FC<PulleyProps> = ({
             <Group x={becketX} y={0}>
                 <Circle
                     radius={6}
-                    fill="rgba(100, 150, 255, 0.2)"
-                    stroke="#4a90e2"
+                    fill="#e64980"
+                    stroke="#fff"
                     strokeWidth={2}
                     onClick={(e) => {
                         if (onPointClick) {
@@ -277,8 +277,8 @@ const Pulley: React.FC<PulleyProps> = ({
                     x={-20}
                     y={10}
                     text="Becket"
-                    fontSize={9}
-                    fill="#4a90e2"
+                    fontSize={7}
+                    fill="#e64980"
                     fontFamily="monospace"
                     rotation={-(pulley.rotation || 0)}
                     offsetX={-20}
