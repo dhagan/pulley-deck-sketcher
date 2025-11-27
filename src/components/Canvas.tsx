@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Stage, Layer, Line } from 'react-konva';
+import { Stage, Layer, Line, Group, Circle, Text } from 'react-konva';
 import { SystemState, ComponentType, PulleyComponent, AnchorComponent, RopeComponent, CleatComponent, PersonComponent } from '../types';
 import { snapToGrid as snapToGridUtil } from '../utils/geometry';
 import Pulley from './shapes/Pulley';
@@ -11,12 +11,26 @@ import Person from './shapes/Person';
 interface CanvasProps {
     system: SystemState;
     setSystem: React.Dispatch<React.SetStateAction<SystemState>>;
-    toolMode: 'select' | 'rope';
+    toolMode: 'select' | 'rope' | 'measure';
     onComponentClick: (id: string) => void;
     onPointClick?: (pointId: string, e: any) => void;
+    measurementStart?: { x: number; y: number } | null;
+    setMeasurementStart?: (pos: { x: number; y: number } | null) => void;
+    measurementEnd?: { x: number; y: number } | null;
+    setMeasurementEnd?: (pos: { x: number; y: number } | null) => void;
 }
 
-const Canvas: React.FC<CanvasProps> = ({ system, setSystem, toolMode, onComponentClick, onPointClick }) => {
+const Canvas: React.FC<CanvasProps> = ({
+    system,
+    setSystem,
+    toolMode,
+    onComponentClick,
+    onPointClick,
+    measurementStart,
+    setMeasurementStart,
+    measurementEnd,
+    setMeasurementEnd
+}) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
@@ -86,9 +100,44 @@ const Canvas: React.FC<CanvasProps> = ({ system, setSystem, toolMode, onComponen
         return system.snapToGrid ? snapToGridUtil(pos, system.gridSize) : pos;
     };
 
+    const handleStageClick = (e: any) => {
+        if (toolMode === 'measure' && setMeasurementStart && setMeasurementEnd) {
+            const stage = e.target.getStage();
+            const pointerPosition = stage.getPointerPosition();
+
+            if (!measurementStart) {
+                setMeasurementStart(pointerPosition);
+                setMeasurementEnd(pointerPosition); // Initialize end to start
+            } else {
+                // Finish measurement
+                setMeasurementEnd(pointerPosition);
+                // Optional: Reset after a delay or keep it? 
+                // Let's keep it until next click starts a new one
+                if (measurementEnd && measurementStart) {
+                    // If we click again, restart
+                    setMeasurementStart(pointerPosition);
+                    setMeasurementEnd(pointerPosition);
+                }
+            }
+        }
+    };
+
+    const handleStageMouseMove = (e: any) => {
+        if (toolMode === 'measure' && measurementStart && setMeasurementEnd) {
+            const stage = e.target.getStage();
+            const pointerPosition = stage.getPointerPosition();
+            setMeasurementEnd(pointerPosition);
+        }
+    };
+
     return (
         <div ref={containerRef} className="canvas-container">
-            <Stage width={dimensions.width} height={dimensions.height}>
+            <Stage
+                width={dimensions.width}
+                height={dimensions.height}
+                onClick={handleStageClick}
+                onMouseMove={handleStageMouseMove}
+            >
                 <Layer>
                     {renderGrid()}
                 </Layer>
@@ -157,6 +206,30 @@ const Canvas: React.FC<CanvasProps> = ({ system, setSystem, toolMode, onComponen
                                 snapToGrid={snapToGrid}
                             />
                         ))}
+
+                    {/* Measurement Tool Rendering */}
+                    {toolMode === 'measure' && measurementStart && measurementEnd && (
+                        <Group>
+                            <Line
+                                points={[measurementStart.x, measurementStart.y, measurementEnd.x, measurementEnd.y]}
+                                stroke="#ff00ff"
+                                strokeWidth={2}
+                                dash={[10, 5]}
+                            />
+                            <Circle x={measurementStart.x} y={measurementStart.y} radius={4} fill="#ff00ff" />
+                            <Circle x={measurementEnd.x} y={measurementEnd.y} radius={4} fill="#ff00ff" />
+                            <Group x={(measurementStart.x + measurementEnd.x) / 2} y={(measurementStart.y + measurementEnd.y) / 2 - 20}>
+                                <div style={{ position: 'absolute' }}></div> {/* Dummy for React parsing if needed, but Konva handles Group */}
+                                <Text
+                                    text={`${Math.round(Math.sqrt(Math.pow(measurementEnd.x - measurementStart.x, 2) + Math.pow(measurementEnd.y - measurementStart.y, 2)))}px`}
+                                    fontSize={14}
+                                    fill="#ff00ff"
+                                    fontStyle="bold"
+                                    align="center"
+                                />
+                            </Group>
+                        </Group>
+                    )}
                 </Layer>
             </Stage>
         </div>

@@ -6,7 +6,7 @@ import PropertiesPanel from './components/PropertiesPanel';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import './App.css';
 
-type ToolMode = 'select' | 'rope';
+type ToolMode = 'select' | 'rope' | 'measure';
 
 const App: React.FC = () => {
     const [system, setSystem] = useState<SystemState>({
@@ -18,6 +18,8 @@ const App: React.FC = () => {
 
     const [toolMode, setToolMode] = useState<ToolMode>('select');
     const [ropeStart, setRopeStart] = useState<string | null>(null);
+    const [measurementStart, setMeasurementStart] = useState<{ x: number; y: number } | null>(null);
+    const [measurementEnd, setMeasurementEnd] = useState<{ x: number; y: number } | null>(null);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -77,6 +79,18 @@ const App: React.FC = () => {
     const handleAddRope = () => {
         setToolMode('rope');
         setRopeStart(null);
+    };
+
+    const handleMeasureToggle = () => {
+        if (toolMode === 'measure') {
+            setToolMode('select');
+            setMeasurementStart(null);
+            setMeasurementEnd(null);
+        } else {
+            setToolMode('measure');
+            setMeasurementStart(null);
+            setMeasurementEnd(null);
+        }
     };
 
     const handlePointClick = (pointId: string) => {
@@ -171,6 +185,7 @@ const App: React.FC = () => {
                 onAddCleat={handleAddCleat}
                 onAddPerson={handleAddPerson}
                 onAddRope={handleAddRope}
+                onMeasure={handleMeasureToggle}
                 onSave={handleSave}
                 onLoad={handleLoad}
                 onLoadScenario={handleLoadScenario}
@@ -185,6 +200,10 @@ const App: React.FC = () => {
                     toolMode={toolMode}
                     onComponentClick={handleComponentClick}
                     onPointClick={handlePointClick}
+                    measurementStart={measurementStart}
+                    setMeasurementStart={setMeasurementStart}
+                    measurementEnd={measurementEnd}
+                    setMeasurementEnd={setMeasurementEnd}
                 />
                 <PropertiesPanel system={system} setSystem={setSystem} />
             </div>

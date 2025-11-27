@@ -8,11 +8,12 @@ interface ToolbarProps {
     onAddCleat: () => void;
     onAddPerson: () => void;
     onAddRope: () => void;
+    onMeasure: () => void;
     onSave: () => void;
     onLoad: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onLoadScenario: (system: SystemState) => void;
     onExportSVG: () => void;
-    toolMode: 'select' | 'rope';
+    toolMode: 'select' | 'rope' | 'measure';
     ropeStart: string | null;
 }
 
@@ -22,6 +23,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     onAddCleat,
     onAddPerson,
     onAddRope,
+    onMeasure,
     onSave,
     onLoad,
     onLoadScenario,
@@ -39,9 +41,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 <button
                     className={`toolbar-button ${toolMode === 'rope' ? 'active' : ''}`}
                     onClick={onAddRope}
-                    title="Add Rope (Click start component, then end component)"
+                    title="Add Rope (Click points to connect)"
                 >
-                    🪢 Rope {ropeStart ? '(Select End)' : ''}
+                    〰️ Rope {ropeStart ? '(Select End)' : ''}
+                </button>
+                <button
+                    className={`toolbar-button ${toolMode === 'measure' ? 'active' : ''}`}
+                    onClick={onMeasure}
+                    title="Measure Distance"
+                >
+                    📏 Measure
                 </button>
             </div>
 
