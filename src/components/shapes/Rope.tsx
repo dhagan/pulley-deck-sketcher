@@ -125,7 +125,8 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
         // Build path through all intermediate points
         path = [startPos];
         
-        for (const point of rope.routeThrough) {
+        for (let i = 0; i < rope.routeThrough.length; i++) {
+            const point = rope.routeThrough[i];
             if (typeof point === 'string') {
                 // Parse the point ID to find the component and get coordinates
                 // Format: "pulley-1-sheave-0-in" or "pulley-1-anchor"
@@ -133,7 +134,35 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 const componentId = parts.slice(0, 2).join('-'); // e.g., "pulley-1"
                 const component = components.find(c => c.id === componentId);
                 
-                if (component) {
+                if (component && component.type === 'pulley') {
+                    const coords = getPointCoordinates(component, point);
+                    path.push(coords);
+                    
+                    // Check if next point is OUT on the same pulley (rope wraps around)
+                    const nextPoint = rope.routeThrough[i + 1];
+                    if (nextPoint && typeof nextPoint === 'string') {
+                        const nextParts = nextPoint.split('-');
+                        const nextComponentId = nextParts.slice(0, 2).join('-');
+                        
+                        // If current is IN and next is OUT on same pulley, add arc points
+                        if (point.includes('-in') && nextPoint.includes('-out') && componentId === nextComponentId) {
+                            const pulley = component as PulleyComponent;
+                            const radius = pulley.diameter / 2;
+                            const center = pulley.position;
+                            
+                            // IN is at -radius (left), OUT is at +radius (right)
+                            // Add points along the bottom arc (180 degrees from IN to OUT)
+                            const numArcPoints = 12; // More points = smoother arc
+                            for (let j = 1; j < numArcPoints; j++) {
+                                // Start at PI (left side) and go to 2*PI (right side) = bottom arc
+                                const angle = Math.PI + (j / numArcPoints) * Math.PI;
+                                const arcX = center.x + radius * Math.cos(angle);
+                                const arcY = center.y + radius * Math.sin(angle);
+                                path.push({ x: arcX, y: arcY });
+                            }
+                        }
+                    }
+                } else if (component) {
                     const coords = getPointCoordinates(component, point);
                     path.push(coords);
                 }
@@ -227,18 +256,20 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
             {rope.label && (
                 <Group x={midPoint.x} y={midPoint.y - 40}>
                     <Circle
-                        radius={25}
-                        fill="rgba(0, 0, 0, 0.7)"
+                        radius={28}
+                        fill="rgba(15, 23, 42, 0.9)"
+                        stroke="#475569"
+                        strokeWidth={1}
                     />
                     <Text
-                        x={-20}
-                        y={-6}
+                        x={-24}
+                        y={-7}
                         text={rope.label}
-                        fontSize={12}
-                        fill="#ffd43b"
-                        fontFamily="monospace"
+                        fontSize={13}
+                        fill="#eab308"
+                        fontFamily="'JetBrains Mono', 'Fira Code', monospace"
                         fontStyle="bold"
-                        width={40}
+                        width={48}
                         align="center"
                     />
                 </Group>
