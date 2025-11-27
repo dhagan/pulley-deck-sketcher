@@ -65,12 +65,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 localY = -radius; // On top of circumference
             } else if (pointId.includes('becket')) {
                 const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
-                localX = totalWidth / 2 + radius + 20;
+                localX = totalWidth / 2 + radius + 8;
                 localY = 0;
             } else if (pointId.includes('load') || pointId.includes('becket-bottom')) {
                 // Bottom attachment point (load/becket connection)
                 localX = 0;
-                localY = radius + 30;
+                localY = radius + 8;
             } else if (pointId.includes('top')) {
                 localX = 0;
                 localY = -radius;

@@ -175,7 +175,7 @@ const Pulley: React.FC<PulleyProps> = ({
 
     const renderLoadAttachment = () => {
         // Bottom attachment point - this is actually a BECKET (rope start point)
-        const bottomY = radius + 30;
+        const bottomY = radius + 8;
 
         return (
             <Group x={0} y={bottomY}>
@@ -230,7 +230,7 @@ const Pulley: React.FC<PulleyProps> = ({
         if (!pulley.hasBecket) return null;
 
         const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
-        const becketX = totalWidth / 2 + radius + 20;
+        const becketX = totalWidth / 2 + radius + 8;
 
         return (
             <Group x={becketX} y={0}>
