@@ -82,21 +82,36 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
         return errors;
     }
 
+    // CRITICAL: Ropes must NEVER connect to center of pulleys
+    const startPoint = rope.startPoint || '';
+    const endPoint = rope.endPoint || '';
+    
+    if (startPoint === 'center' || startPoint.endsWith('-center')) {
+        if (startComponent.type === ComponentType.PULLEY) {
+            errors.push(`${prefix}: INVALID - Rope cannot start from pulley center. Must use specific connection points (anchor, becket, IN, or OUT).`);
+        }
+    }
+    
+    if (endPoint === 'center' || endPoint.endsWith('-center')) {
+        if (endComponent.type === ComponentType.PULLEY) {
+            errors.push(`${prefix}: INVALID - Rope cannot end at pulley center. Must use specific connection points (anchor, IN, or OUT).`);
+        }
+    }
+
     // Validate start point - can start from: Fixed Anchor, Becket, Spring, Person center, OUT points
     // NOT valid: Pulley Anchor (red - suspension point), IN points (blue)
-    const startPoint = rope.startPoint || '';
     const isPulleyAnchor = startPoint.includes('pulley') && startPoint.includes('anchor');
     const isInPoint = startPoint.includes('-in');
     const isFixedAnchor = startPoint.includes('anchor-') && !startPoint.includes('pulley');
     const isBecket = startPoint.includes('becket');
     const isSpring = startPoint.includes('spring');
-    const isCenter = startPoint.endsWith('center');
+    const isPersonCenter = startPoint.includes('person') && startPoint.includes('center');
     const isOutPoint = startPoint.includes('-out');
     
-    const isValidStart = (isFixedAnchor || isBecket || isSpring || isCenter || isOutPoint) && !isPulleyAnchor && !isInPoint;
+    const isValidStart = (isFixedAnchor || isBecket || isSpring || isPersonCenter || isOutPoint) && !isPulleyAnchor && !isInPoint;
 
-    if (!isValidStart) {
-        errors.push(`${prefix}: Invalid start point "${startPoint}". Ropes can start from: Fixed Anchor, Becket, OUT point, Spring, or Person center. NOT from Pulley Anchor (red) or IN point (blue).`);
+    if (!isValidStart && startComponent.type !== ComponentType.SPRING) {
+        errors.push(`${prefix}: Invalid start point "${startPoint}". Ropes can start from: Fixed Anchor, Becket, OUT point, Spring, or Person center. NOT from Pulley center, Pulley Anchor (red) or IN point (blue).`);
     }
 
     // Validate that becket doesn't go back to its own pulley (simplified - just check endPoint)
@@ -110,7 +125,6 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
     }
 
     // Validate end point - should be at person or terminal point
-    const endPoint = rope.endPoint || '';
     const isValidEnd = 
         endPoint.includes('person') ||
         endPoint.includes('anchor') && !endPoint.includes('sheave') ||
@@ -118,7 +132,7 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
         endPoint.includes('spring') ||
         endPoint.includes('in') ||
         endPoint.includes('out') ||
-        endPoint.endsWith('center');
+        (endPoint.includes('center') && endComponent.type === ComponentType.PERSON);
 
     if (!isValidEnd) {
         errors.push(`${prefix}: Invalid end point "${endPoint}"`);
