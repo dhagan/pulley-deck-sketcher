@@ -404,7 +404,7 @@ const App: React.FC = () => {
                 onExportSVG={handleExport}
                 onClear={handleClear}
                 onDelete={handleDelete}
-                toolMode={toolMode}
+                toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
                 ropeStart={ropeStart}
                 selectedId={system.selectedId}
                 system={system}
@@ -413,7 +413,7 @@ const App: React.FC = () => {
                 <Canvas
                     system={system}
                     setSystem={setSystem}
-                    toolMode={toolMode}
+                    toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
                     onComponentClick={handleComponentClick}
                     onPointClick={handlePointClick}
                     onPointHover={(pointId) => setHoveredPoint(pointId)}

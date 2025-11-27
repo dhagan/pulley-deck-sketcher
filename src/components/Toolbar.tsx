@@ -19,7 +19,7 @@ interface ToolbarProps {
     onExportSVG: () => void;
     onClear: () => void;
     onDelete?: () => void;
-    toolMode: 'select' | 'rope' | 'measure';
+    toolMode: 'select' | 'rope' | 'spring' | 'measure';
     ropeStart: string | null;
     selectedId?: string | null;
     system: SystemState;
