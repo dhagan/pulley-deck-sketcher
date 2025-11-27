@@ -127,8 +127,33 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
     const startPos = getPointCoordinates(startComp, rope.startPoint);
     const endPos = getPointCoordinates(endComp, rope.endPoint);
 
-    // Simple point-to-point path - no more routeThrough
-    let path: Array<{ x: number; y: number }> = [startPos, endPos];
+    // Build path including pulley wraps
+    let path: Array<{ x: number; y: number }> = [startPos];
+    
+    // Check if rope goes through a pulley (IN to OUT on same pulley = wrap around)
+    const startIsIn = rope.startPoint?.includes('-in');
+    const endIsOut = rope.endPoint?.includes('-out');
+    const startPulleyId = rope.startPoint?.split('-sheave')[0];
+    const endPulleyId = rope.endPoint?.split('-sheave')[0];
+    
+    // If start is IN and end is OUT on the same pulley, add arc points
+    if (startIsIn && endIsOut && startPulleyId === endPulleyId && endComp.type === 'pulley') {
+        const pulley = endComp as PulleyComponent;
+        const radius = pulley.diameter / 2;
+        const center = pulley.position;
+        
+        // Add points along the arc from IN (left) to OUT (right) going around the bottom
+        const numArcPoints = 8;
+        for (let i = 1; i < numArcPoints; i++) {
+            const angle = Math.PI + (i / numArcPoints) * Math.PI; // From PI (left) to 2*PI (right)
+            path.push({
+                x: center.x + radius * Math.cos(angle),
+                y: center.y + radius * Math.sin(angle)
+            });
+        }
+    }
+    
+    path.push(endPos);
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);
