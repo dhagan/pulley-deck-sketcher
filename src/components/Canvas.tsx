@@ -33,6 +33,8 @@ const Canvas: React.FC<CanvasProps> = ({
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+    const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
+    const [stageScale, setStageScale] = useState(1);
 
     useEffect(() => {
         const updateDimensions = () => {
@@ -49,29 +51,55 @@ const Canvas: React.FC<CanvasProps> = ({
         return () => window.removeEventListener('resize', updateDimensions);
     }, []);
 
+    const handleWheel = (e: any) => {
+        e.evt.preventDefault();
+        const scaleBy = 1.1;
+        const stage = e.target.getStage();
+        const oldScale = stage.scaleX();
+        const mousePointTo = {
+            x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
+            y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
+        };
+
+        const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+        setStageScale(newScale);
+        setStagePos({
+            x: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+            y: -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
+        });
+    };
+
     const renderGrid = () => {
         const { gridSize } = system;
         const lines = [];
-        const { width, height } = dimensions;
+        // Render a large enough grid to cover panning
+        // Ideally this should be dynamic based on view, but fixed large range is easier for now
+        const startX = -5000;
+        const endX = 5000;
+        const startY = -5000;
+        const endY = 5000;
 
-        for (let x = 0; x <= width; x += gridSize) {
+        for (let x = startX; x <= endX; x += gridSize) {
             lines.push(
                 <Line
                     key={`v-${x}`}
-                    points={[x, 0, x, height]}
+                    points={[x, startY, x, endY]}
                     stroke="#3d3d3d"
                     strokeWidth={1}
+                    opacity={0.3}
                 />
             );
         }
 
-        for (let y = 0; y <= height; y += gridSize) {
+        for (let y = startY; y <= endY; y += gridSize) {
             lines.push(
                 <Line
                     key={`h-${y}`}
-                    points={[0, y, width, y]}
+                    points={[startX, y, endX, y]}
                     stroke="#3d3d3d"
                     strokeWidth={1}
+                    opacity={0.3}
                 />
             );
         }
@@ -100,10 +128,17 @@ const Canvas: React.FC<CanvasProps> = ({
         return system.snapToGrid ? snapToGridUtil(pos, system.gridSize) : pos;
     };
 
+    const getRelativePointerPosition = (stage: any) => {
+        const transform = stage.getAbsoluteTransform().copy();
+        transform.invert();
+        const pos = stage.getPointerPosition();
+        return transform.point(pos);
+    };
+
     const handleStageClick = (e: any) => {
         if (toolMode === 'measure' && setMeasurementStart && setMeasurementEnd) {
             const stage = e.target.getStage();
-            const pointerPosition = stage.getPointerPosition();
+            const pointerPosition = getRelativePointerPosition(stage);
 
             if (!measurementStart) {
                 setMeasurementStart(pointerPosition);
@@ -111,8 +146,6 @@ const Canvas: React.FC<CanvasProps> = ({
             } else {
                 // Finish measurement
                 setMeasurementEnd(pointerPosition);
-                // Optional: Reset after a delay or keep it? 
-                // Let's keep it until next click starts a new one
                 if (measurementEnd && measurementStart) {
                     // If we click again, restart
                     setMeasurementStart(pointerPosition);
@@ -125,9 +158,40 @@ const Canvas: React.FC<CanvasProps> = ({
     const handleStageMouseMove = (e: any) => {
         if (toolMode === 'measure' && measurementStart && setMeasurementEnd) {
             const stage = e.target.getStage();
-            const pointerPosition = stage.getPointerPosition();
+            const pointerPosition = getRelativePointerPosition(stage);
             setMeasurementEnd(pointerPosition);
         }
+    };
+
+    const [isPanning, setIsPanning] = useState(false);
+    const lastMousePos = useRef({ x: 0, y: 0 });
+
+    const handleMouseDown = (e: any) => {
+        const isMiddle = e.evt.button === 1;
+        const isLeft = e.evt.button === 0;
+        const isStage = e.target === e.target.getStage();
+
+        if (isMiddle || (isLeft && toolMode === 'select' && isStage)) {
+            setIsPanning(true);
+            lastMousePos.current = { x: e.evt.clientX, y: e.evt.clientY };
+            e.evt.preventDefault(); // Prevent default browser scrolling for MMB
+        }
+    };
+
+    const handleMouseMove = (e: any) => {
+        if (isPanning) {
+            const dx = e.evt.clientX - lastMousePos.current.x;
+            const dy = e.evt.clientY - lastMousePos.current.y;
+
+            setStagePos(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+            lastMousePos.current = { x: e.evt.clientX, y: e.evt.clientY };
+        }
+
+        handleStageMouseMove(e);
+    };
+
+    const handleMouseUp = () => {
+        setIsPanning(false);
     };
 
     return (
@@ -135,8 +199,17 @@ const Canvas: React.FC<CanvasProps> = ({
             <Stage
                 width={dimensions.width}
                 height={dimensions.height}
+                onWheel={handleWheel}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                x={stagePos.x}
+                y={stagePos.y}
+                scaleX={stageScale}
+                scaleY={stageScale}
                 onClick={handleStageClick}
-                onMouseMove={handleStageMouseMove}
+                onContextMenu={(e) => e.evt.preventDefault()} // Prevent context menu on right click
             >
                 <Layer>
                     {renderGrid()}
@@ -208,28 +281,79 @@ const Canvas: React.FC<CanvasProps> = ({
                         ))}
 
                     {/* Measurement Tool Rendering */}
-                    {toolMode === 'measure' && measurementStart && measurementEnd && (
-                        <Group>
-                            <Line
-                                points={[measurementStart.x, measurementStart.y, measurementEnd.x, measurementEnd.y]}
-                                stroke="#ff00ff"
-                                strokeWidth={2}
-                                dash={[10, 5]}
-                            />
-                            <Circle x={measurementStart.x} y={measurementStart.y} radius={4} fill="#ff00ff" />
-                            <Circle x={measurementEnd.x} y={measurementEnd.y} radius={4} fill="#ff00ff" />
-                            <Group x={(measurementStart.x + measurementEnd.x) / 2} y={(measurementStart.y + measurementEnd.y) / 2 - 20}>
-                                <div style={{ position: 'absolute' }}></div> {/* Dummy for React parsing if needed, but Konva handles Group */}
-                                <Text
-                                    text={`${Math.round(Math.sqrt(Math.pow(measurementEnd.x - measurementStart.x, 2) + Math.pow(measurementEnd.y - measurementStart.y, 2)))}px`}
-                                    fontSize={14}
-                                    fill="#ff00ff"
-                                    fontStyle="bold"
-                                    align="center"
-                                />
+                    {toolMode === 'measure' && measurementStart && measurementEnd && (() => {
+                        const dx = measurementEnd.x - measurementStart.x;
+                        const dy = measurementEnd.y - measurementStart.y;
+                        const len = Math.sqrt(dx * dx + dy * dy);
+                        if (len < 1) return null;
+
+                        // Unit vector
+                        const ux = dx / len;
+                        const uy = dy / len;
+
+                        // Perpendicular vector (rotate 90 deg)
+                        const px = -uy;
+                        const py = ux;
+
+                        const offset = 40 / stageScale;
+                        const extLen = 10 / stageScale;
+
+                        // Extension lines start points (slightly offset from object)
+                        const gap = 5 / stageScale;
+                        const ext1Start = { x: measurementStart.x + px * gap, y: measurementStart.y + py * gap };
+                        const ext1End = { x: measurementStart.x + px * (offset + extLen), y: measurementStart.y + py * (offset + extLen) };
+
+                        const ext2Start = { x: measurementEnd.x + px * gap, y: measurementEnd.y + py * gap };
+                        const ext2End = { x: measurementEnd.x + px * (offset + extLen), y: measurementEnd.y + py * (offset + extLen) };
+
+                        // Dimension line points
+                        const dimStart = { x: measurementStart.x + px * offset, y: measurementStart.y + py * offset };
+                        const dimEnd = { x: measurementEnd.x + px * offset, y: measurementEnd.y + py * offset };
+
+                        // Arrow head size
+                        const arrowSize = 10 / stageScale;
+                        // Arrow 1 (at dimStart, pointing to dimStart)
+                        // Vector from dimStart towards dimEnd is (ux, uy)
+                        // Arrow wings
+                        const arrow1_1 = { x: dimStart.x + (ux * arrowSize + px * arrowSize * 0.5), y: dimStart.y + (uy * arrowSize + py * arrowSize * 0.5) };
+                        const arrow1_2 = { x: dimStart.x + (ux * arrowSize - px * arrowSize * 0.5), y: dimStart.y + (uy * arrowSize - py * arrowSize * 0.5) };
+
+                        // Arrow 2 (at dimEnd, pointing to dimEnd)
+                        // Vector from dimEnd towards dimStart is (-ux, -uy)
+                        const arrow2_1 = { x: dimEnd.x + (-ux * arrowSize + px * arrowSize * 0.5), y: dimEnd.y + (-uy * arrowSize + py * arrowSize * 0.5) };
+                        const arrow2_2 = { x: dimEnd.x + (-ux * arrowSize - px * arrowSize * 0.5), y: dimEnd.y + (-uy * arrowSize - py * arrowSize * 0.5) };
+
+                        return (
+                            <Group>
+                                {/* Extension Lines */}
+                                <Line points={[ext1Start.x, ext1Start.y, ext1End.x, ext1End.y]} stroke="#ff00ff" strokeWidth={1 / stageScale} />
+                                <Line points={[ext2Start.x, ext2Start.y, ext2End.x, ext2End.y]} stroke="#ff00ff" strokeWidth={1 / stageScale} />
+
+                                {/* Dimension Line */}
+                                <Line points={[dimStart.x, dimStart.y, dimEnd.x, dimEnd.y]} stroke="#ff00ff" strokeWidth={1 / stageScale} />
+
+                                {/* Arrows */}
+                                <Line points={[arrow1_1.x, arrow1_1.y, dimStart.x, dimStart.y, arrow1_2.x, arrow1_2.y]} stroke="#ff00ff" strokeWidth={1 / stageScale} closed={false} />
+                                <Line points={[arrow2_1.x, arrow2_1.y, dimEnd.x, dimEnd.y, arrow2_2.x, arrow2_2.y]} stroke="#ff00ff" strokeWidth={1 / stageScale} closed={false} />
+
+                                {/* Text */}
+                                <Group x={(dimStart.x + dimEnd.x) / 2} y={(dimStart.y + dimEnd.y) / 2}>
+                                    {/* Background for text to read it over lines */}
+                                    <Circle radius={15 / stageScale} fill="rgba(0,0,0,0.5)" />
+                                    <Text
+                                        x={-20 / stageScale}
+                                        y={-7 / stageScale}
+                                        text={`${Math.round(len)}px`}
+                                        fontSize={14 / stageScale}
+                                        fill="#ff00ff"
+                                        fontStyle="bold"
+                                        align="center"
+                                        width={40 / stageScale}
+                                    />
+                                </Group>
                             </Group>
-                        </Group>
-                    )}
+                        );
+                    })()}
                 </Layer>
             </Stage>
         </div>

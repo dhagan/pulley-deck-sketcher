@@ -23,23 +23,24 @@ function getExternalTangents(
     // Angle from point to circle center
     const angleToCenter = Math.atan2(dy, dx);
 
-    // Angle offset for tangent
+    // Angle offset for tangent (angle between line to center and line to tangent point)
     const tangentOffset = Math.asin(circleRadius / dist);
 
-    // Two tangent angles
-    const angle1 = angleToCenter + tangentOffset;
-    const angle2 = angleToCenter - tangentOffset;
+    // The tangent point angles on the circle (measured from circle center)
+    // We need to rotate 90 degrees from the direction to the tangent point
+    const tangentAngle1 = angleToCenter + Math.PI / 2 - tangentOffset;
+    const tangentAngle2 = angleToCenter - Math.PI / 2 + tangentOffset;
 
     return [
         {
-            x: circleCenter.x + circleRadius * Math.cos(angle1 + Math.PI / 2),
-            y: circleCenter.y + circleRadius * Math.sin(angle1 + Math.PI / 2),
-            angle: angle1 + Math.PI / 2
+            x: circleCenter.x + circleRadius * Math.cos(tangentAngle1),
+            y: circleCenter.y + circleRadius * Math.sin(tangentAngle1),
+            angle: tangentAngle1
         },
         {
-            x: circleCenter.x + circleRadius * Math.cos(angle2 - Math.PI / 2),
-            y: circleCenter.y + circleRadius * Math.sin(angle2 - Math.PI / 2),
-            angle: angle2 - Math.PI / 2
+            x: circleCenter.x + circleRadius * Math.cos(tangentAngle2),
+            y: circleCenter.y + circleRadius * Math.sin(tangentAngle2),
+            angle: tangentAngle2
         }
     ];
 }
@@ -56,21 +57,31 @@ function generateArc(
     const points: Array<{ x: number; y: number }> = [];
     const segments = 16;
 
-    // Normalize angles to 0-2π
-    let start = startAngle;
-    let end = endAngle;
+    // Normalize angles to -π to π range
+    const normalizeAngle = (angle: number) => {
+        let a = angle % (2 * Math.PI);
+        if (a > Math.PI) a -= 2 * Math.PI;
+        if (a < -Math.PI) a += 2 * Math.PI;
+        return a;
+    };
 
-    // Always go the shorter way around
+    let start = normalizeAngle(startAngle);
+    let end = normalizeAngle(endAngle);
+
+    // Calculate the angular difference
     let diff = end - start;
+
+    // Always take the shorter arc (less than 180 degrees)
     if (diff > Math.PI) {
-        end -= 2 * Math.PI;
+        diff -= 2 * Math.PI;
     } else if (diff < -Math.PI) {
-        end += 2 * Math.PI;
+        diff += 2 * Math.PI;
     }
 
+    // Generate arc points
     for (let i = 0; i <= segments; i++) {
         const t = i / segments;
-        const angle = start + (end - start) * t;
+        const angle = start + diff * t;
         points.push({
             x: center.x + radius * Math.cos(angle),
             y: center.y + radius * Math.sin(angle)

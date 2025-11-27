@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line, Group, Text, Circle } from 'react-konva';
 import { RopeComponent as RopeType, Component, PulleyComponent } from '../../types';
-import { calculatePathLength } from '../../utils/geometry';
+import { calculatePathLength, calculateRopePath } from '../../utils/geometry';
 
 interface RopeProps {
     rope: RopeType;
@@ -44,6 +44,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
                 const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
                 localX = totalWidth / 2 + radius + 20;
                 localY = 0;
+            } else if (pointId.includes('top')) {
+                localX = 0;
+                localY = -radius;
+            } else if (pointId.includes('bottom')) {
+                localX = 0;
+                localY = radius;
             } else if (pointId.includes('sheave')) {
                 const parts = pointId.split('-');
                 const sheaveIndex = parseInt(parts[parts.indexOf('sheave') + 1]);
@@ -89,42 +95,46 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
     let path: Array<{ x: number; y: number }> = [];
 
     if (rope.routeThrough && rope.routeThrough.length > 0) {
-        // Rope wraps through pulleys
-        path.push(startPos);
+        // Use the geometry utility to calculate proper rope path through pulleys
+        // Use the geometry utility to calculate proper rope path through pulleys
+        const pulleyData = rope.routeThrough
+            .map(item => {
+                const pulleyId = typeof item === 'string' ? item : item.id;
+                const sheaveIndex = typeof item === 'string' ? 0 : item.sheaveIndex;
 
-        for (const pulleyId of rope.routeThrough) {
-            const pulley = components.find(c => c.id === pulleyId);
-            if (pulley && pulley.type === 'pulley') {
-                const p = pulley as PulleyComponent;
-                const radius = p.diameter / 2;
+                const pulley = components.find(c => c.id === pulleyId);
+                if (pulley && pulley.type === 'pulley') {
+                    const p = pulley as PulleyComponent;
 
-                // Add arc points around the pulley (simple approximation)
-                const center = p.position;
-                const segments = 16;
+                    // Calculate offset based on sheave index
+                    // Logic matches getPointCoordinates
+                    const radius = p.diameter / 2;
+                    const sheaveSpacing = radius * 2 + 15;
+                    const totalWidth = (p.sheaves - 1) * sheaveSpacing;
+                    const startX = -totalWidth / 2;
+                    const sheaveX = startX + sheaveIndex * sheaveSpacing;
 
-                // Calculate angles from start to end around the pulley
-                const startAngle = Math.atan2(path[path.length - 1].y - center.y, path[path.length - 1].x - center.x);
-                const endAngle = Math.atan2(endPos.y - center.y, endPos.x - center.x);
+                    // Apply rotation
+                    const rotationRad = (p.rotation || 0) * (Math.PI / 180);
+                    // Local offset is (sheaveX, 0) relative to pulley center
+                    // Note: In getPointCoordinates, localY was 0 for sheaves.
+                    const rotatedX = sheaveX * Math.cos(rotationRad);
+                    const rotatedY = sheaveX * Math.sin(rotationRad);
 
-                // Generate arc
-                for (let i = 0; i <= segments; i++) {
-                    const t = i / segments;
-                    let angle = startAngle + (endAngle - startAngle) * t;
-
-                    // Normalize angle difference
-                    let diff = endAngle - startAngle;
-                    if (diff > Math.PI) angle = startAngle + (endAngle - 2 * Math.PI - startAngle) * t;
-                    else if (diff < -Math.PI) angle = startAngle + (endAngle + 2 * Math.PI - startAngle) * t;
-
-                    path.push({
-                        x: center.x + radius * Math.cos(angle),
-                        y: center.y + radius * Math.sin(angle)
-                    });
+                    return {
+                        position: {
+                            x: p.position.x + rotatedX,
+                            y: p.position.y + rotatedY
+                        },
+                        diameter: p.diameter
+                    };
                 }
-            }
-        }
+                return null;
+            })
+            .filter((p): p is { position: { x: number; y: number }; diameter: number } => p !== null);
 
-        path.push(endPos);
+        // Use calculateRopePath
+        path = calculateRopePath(startPos, pulleyData, endPos);
     } else {
         // Simple straight line
         path = [startPos, endPos];

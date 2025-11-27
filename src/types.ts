@@ -5,6 +5,7 @@ export enum ComponentType {
     ROPE = 'rope',
     CLEAT = 'cleat',
     PERSON = 'person',
+    SPRING = 'spring',
 }
 
 export interface Point {
@@ -41,7 +42,7 @@ export interface RopeComponent {
     startPoint?: string; // e.g., 'anchor', 'becket', 'sheave-0-in'
     endId: string;
     endPoint?: string;
-    routeThrough: string[];
+    routeThrough: (string | { id: string; sheaveIndex: number })[];
     tension?: number;
 }
 
@@ -60,7 +61,17 @@ export interface PersonComponent {
     pulling: boolean;
 }
 
-export type Component = PulleyComponent | AnchorComponent | RopeComponent | CleatComponent | PersonComponent;
+export interface SpringComponent {
+    id: string;
+    type: ComponentType.SPRING;
+    position: Point;
+    label?: string;
+    stiffness: number; // Spring constant (N/m)
+    restLength: number; // Unloaded length in pixels
+    currentLength?: number; // Current length when loaded
+}
+
+export type Component = PulleyComponent | AnchorComponent | RopeComponent | CleatComponent | PersonComponent | SpringComponent;
 
 export interface SystemState {
     components: Component[];
@@ -83,4 +94,21 @@ export interface SystemAnalysis {
     totalRopeLength: number;
     forces: ForceAnalysis[];
     efficiency: number;
+}
+
+export interface Route {
+    type: 'simple' | 'compound';
+    ratio: number;
+    maxLength?: number;
+    nested?: Route[];
+}
+
+export interface PulleyCalcSystem {
+    name: string;
+    description?: string;
+    throw: number;
+    sheaveWidth: number;
+    connectionLength: number;
+    friction: number;
+    routes: Route[];
 }
