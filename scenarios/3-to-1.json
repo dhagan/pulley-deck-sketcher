@@ -18,7 +18,7 @@
       },
       "diameter": 30,
       "sheaves": 1,
-      "hasBecket": false,
+      "hasBecket": true,
       "rotation": 0,
       "attachmentPoints": {
         "top": {
@@ -40,7 +40,7 @@
       },
       "diameter": 30,
       "sheaves": 1,
-      "hasBecket": true,
+      "hasBecket": false,
       "rotation": 180,
       "attachmentPoints": {
         "top": {
@@ -85,19 +85,19 @@
     {
       "id": "rope-2",
       "type": "rope",
-      "startId": "pulley-2",
-      "startPoint": "pulley-2-becket",
-      "endId": "pulley-1",
-      "endPoint": "pulley-1-sheave-0-in",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-becket",
+      "endId": "pulley-2",
+      "endPoint": "pulley-2-sheave-0-in",
       "label": "Working rope segment 1"
     },
     {
       "id": "rope-3",
       "type": "rope",
-      "startId": "pulley-1",
-      "startPoint": "pulley-1-sheave-0-out",
-      "endId": "person-1",
-      "endPoint": "person-1-center",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-sheave-0-out",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-sheave-0-in",
       "label": "Working rope segment 2"
     },
     {
@@ -108,6 +108,15 @@
       "endId": "pulley-2",
       "endPoint": "pulley-2-anchor",
       "label": "Load attachment"
+    },
+    {
+      "id": "rope-5",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-0-out",
+      "endId": "person-1",
+      "endPoint": "person-1-center",
+      "label": "Working rope segment 3"
     }
   ],
   "selectedId": null,

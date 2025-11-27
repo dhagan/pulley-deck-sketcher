@@ -109,6 +109,14 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
         return compWithPos.position;
     };
 
+    // Check if this is an anchor rope (suspension/load attachment)
+    const isAnchorRope = rope.startPoint?.includes('anchor') || 
+                         rope.endPoint?.includes('anchor') ||
+                         rope.startPoint?.includes('spring') ||
+                         rope.endPoint?.includes('spring');
+    
+    const ropeColor = isAnchorRope ? '#888888' : '#3b82f6'; // gray for anchor, blue for working ropes
+
     // Find start and end components
     const startComp = components.find(c => c.id === rope.startId);
     const endComp = components.find(c => c.id === rope.endId);
@@ -156,7 +164,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
             {/* Rope line - using lineCap and lineJoin for clean segments */}
             <Line
                 points={points}
-                stroke={isSelected ? '#00d9ff' : '#ffd43b'}
+                stroke={isSelected ? '#00d9ff' : ropeColor}
                 strokeWidth={isSelected ? 4 : 2}
                 lineCap="round"
                 lineJoin="round"
@@ -236,47 +244,47 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 </Group>
             )}
 
-            {/* Start label */}
-            {path.length > 0 && (
+            {/* Start label - only for non-anchor ropes */}
+            {!isAnchorRope && path.length > 0 && (
                 <Group x={path[0].x} y={path[0].y}>
                     <Circle
-                        radius={18}
-                        fill="rgba(68, 255, 68, 0.8)"
+                        radius={10}
+                        fill="rgba(68, 255, 68, 0.6)"
                         stroke="#fff"
-                        strokeWidth={2}
+                        strokeWidth={1}
                     />
                     <Text
-                        x={-12}
-                        y={-6}
-                        text="START"
-                        fontSize={8}
+                        x={-8}
+                        y={-4}
+                        text="S"
+                        fontSize={10}
                         fill="#000"
                         fontFamily="monospace"
                         fontStyle="bold"
-                        width={24}
+                        width={16}
                         align="center"
                     />
                 </Group>
             )}
 
-            {/* End label */}
-            {path.length > 0 && (
+            {/* End label - only for non-anchor ropes */}
+            {!isAnchorRope && path.length > 0 && (
                 <Group x={path[path.length - 1].x} y={path[path.length - 1].y}>
                     <Circle
-                        radius={18}
-                        fill="rgba(255, 68, 68, 0.8)"
+                        radius={10}
+                        fill="rgba(255, 68, 68, 0.6)"
                         stroke="#fff"
-                        strokeWidth={2}
+                        strokeWidth={1}
                     />
                     <Text
-                        x={-10}
-                        y={-6}
-                        text="END"
-                        fontSize={9}
+                        x={-7}
+                        y={-4}
+                        text="E"
+                        fontSize={10}
                         fill="#fff"
                         fontFamily="monospace"
                         fontStyle="bold"
-                        width={20}
+                        width={14}
                         align="center"
                     />
                 </Group>
