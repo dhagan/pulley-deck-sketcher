@@ -12,7 +12,7 @@ import Spring from './shapes/Spring';
 interface CanvasProps {
     system: SystemState;
     setSystem: React.Dispatch<React.SetStateAction<SystemState>>;
-    toolMode: 'select' | 'rope' | 'measure';
+    toolMode: 'select' | 'rope' | 'spring' | 'measure';
     onComponentClick: (id: string) => void;
     onPointClick?: (pointId: string, e: any) => void;
     onPointHover?: (pointId: string | null) => void;
@@ -291,11 +291,9 @@ const Canvas: React.FC<CanvasProps> = ({
                             <Spring
                                 key={spring.id}
                                 spring={spring}
+                                components={system.components}
                                 isSelected={spring.id === system.selectedId}
                                 onSelect={() => handleSelect(spring.id)}
-                                onDragEnd={(pos) => handleDragEnd(spring.id, pos)}
-                                snapToGrid={snapToGrid}
-                                onPointClick={onPointClick}
                             />
                         ))}
 

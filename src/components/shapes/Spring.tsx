@@ -1,120 +1,73 @@
 import React from 'react';
-import { Group, Line, Circle, Text } from 'react-konva';
-import { SpringComponent as SpringType } from '../../types';
+import { Group, Line, Text, Circle } from 'react-konva';
+import { SpringComponent as SpringType, Component } from '../../types';
 
 interface SpringProps {
     spring: SpringType;
+    components: Component[];
     isSelected: boolean;
     onSelect: () => void;
-    onDragEnd: (pos: { x: number; y: number }) => void;
-    snapToGrid: (pos: { x: number; y: number }) => { x: number; y: number };
-    onPointClick?: (pointId: string, e: any) => void;
 }
 
-const Spring: React.FC<SpringProps> = ({ spring, isSelected, onSelect, onDragEnd, snapToGrid, onPointClick }) => {
-    if (!spring.position || isNaN(spring.position.x) || isNaN(spring.position.y)) {
-        console.error('Invalid spring position:', spring.position);
+const Spring: React.FC<SpringProps> = ({ spring, components, isSelected, onSelect }) => {
+    const getPointPosition = (pointId: string): { x: number; y: number } | null => {
+        const componentId = pointId.split('-')[0] + '-' + pointId.split('-')[1];
+        const component = components.find(c => c.id === componentId);
+        
+        if (!component || !('position' in component)) return null;
+        return component.position;
+    };
+
+    const startPos = getPointPosition(spring.startPoint);
+    const endPos = getPointPosition(spring.endPoint);
+
+    if (!startPos || !endPos) {
+        console.error('Invalid spring connection points:', spring);
         return null;
     }
 
-    const coils = 8;
-    const coilWidth = 12;
-    const length = spring.currentLength || spring.restLength;
-    const coilHeight = length / coils;
+    const dx = endPos.x - startPos.x;
+    const dy = endPos.y - startPos.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx);
 
-    // Generate zigzag spring path
+    const coils = 8;
+    const coilWidth = 15;
+
     const springPoints: number[] = [];
     for (let i = 0; i <= coils; i++) {
-        const y = i * coilHeight;
-        const x = (i % 2 === 0) ? -coilWidth / 2 : coilWidth / 2;
-        springPoints.push(x, y);
+        const t = i / coils;
+        const x = startPos.x + dx * t;
+        const y = startPos.y + dy * t;
+        
+        const offset = (i % 2 === 0) ? -coilWidth / 2 : coilWidth / 2;
+        const perpX = -Math.sin(angle) * offset;
+        const perpY = Math.cos(angle) * offset;
+        
+        springPoints.push(x + perpX, y + perpY);
     }
 
     return (
-        <Group
-            x={spring.position.x}
-            y={spring.position.y}
-            draggable
-            onClick={onSelect}
-            onTap={onSelect}
-            onDragEnd={(e) => {
-                const pos = snapToGrid({ x: e.target.x(), y: e.target.y() });
-                onDragEnd(pos);
-            }}
-        >
-            {/* Top anchor point */}
-            <Circle
-                x={0}
-                y={0}
-                radius={5}
-                fill={isSelected ? '#00d9ff' : '#ff6b6b'}
-                stroke="#000"
-                strokeWidth={1}
-                onClick={(e) => {
-                    if (onPointClick) {
-                        e.cancelBubble = true;
-                        onPointClick(`${spring.id}-top`, e);
-                    }
-                }}
-                onTap={(e) => {
-                    if (onPointClick) {
-                        e.cancelBubble = true;
-                        onPointClick(`${spring.id}-top`, e);
-                    }
-                }}
-            />
-
-            {/* Spring coils */}
+        <Group onClick={onSelect} onTap={onSelect}>
             <Line
                 points={springPoints}
-                stroke={isSelected ? '#00d9ff' : '#888'}
-                strokeWidth={2}
+                stroke={isSelected ? '#00d9ff' : '#ff6b6b'}
+                strokeWidth={isSelected ? 3 : 2}
                 lineCap="round"
                 lineJoin="round"
             />
-
-            {/* Bottom anchor point */}
-            <Circle
-                x={0}
-                y={length}
-                radius={5}
-                fill={isSelected ? '#00d9ff' : '#ff6b6b'}
-                stroke="#000"
-                strokeWidth={1}
-                onClick={(e) => {
-                    if (onPointClick) {
-                        e.cancelBubble = true;
-                        onPointClick(`${spring.id}-bottom`, e);
-                    }
-                }}
-                onTap={(e) => {
-                    if (onPointClick) {
-                        e.cancelBubble = true;
-                        onPointClick(`${spring.id}-bottom`, e);
-                    }
-                }}
-            />
-
-            {/* Label */}
+            <Circle x={startPos.x} y={startPos.y} radius={4} fill="#ff6b6b" stroke="#fff" strokeWidth={1} />
+            <Circle x={endPos.x} y={endPos.y} radius={4} fill="#ff6b6b" stroke="#fff" strokeWidth={1} />
             {spring.label && (
                 <Text
-                    x={15}
-                    y={length / 2 - 6}
+                    x={(startPos.x + endPos.x) / 2 - 20}
+                    y={(startPos.y + endPos.y) / 2 - 25}
                     text={spring.label}
                     fontSize={12}
-                    fill={isSelected ? '#00d9ff' : '#fff'}
-                    fontStyle="bold"
+                    fill="#ff6b6b"
+                    fontFamily="monospace"
                 />
             )}
-
-            {/* Spring info */}
-            <Text
-                x={15}
-                y={length / 2 + 8}
-                text={`k=${spring.stiffness}N/m`}
-                fontSize={10}
-                fill="#aaa"
-            />
         </Group>
     );
 };
