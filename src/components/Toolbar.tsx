@@ -5,6 +5,8 @@ import { validateSystem, formatValidationReport } from '../utils/validation';
 
 interface ToolbarProps {
     onAddPulley: () => void;
+    onAddDoubleBlock: () => void;
+    onAddTripleBlock: () => void;
     onAddAnchor: () => void;
     onAddCleat: () => void;
     onAddPerson: () => void;
@@ -25,6 +27,8 @@ interface ToolbarProps {
 
 const Toolbar: React.FC<ToolbarProps> = ({
     onAddPulley,
+    onAddDoubleBlock,
+    onAddTripleBlock,
     onAddAnchor,
     onAddCleat,
     onAddPerson,
@@ -56,7 +60,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
     return (
         <div className="toolbar">
             <div className="toolbar-group" style={{ display: 'flex', gap: '8px' }}>
-                <button className="toolbar-button" onClick={onAddPulley} title="Add Pulley">◉ Pulley</button>
+                <button className="toolbar-button" onClick={onAddPulley} title="Add Single Pulley">◉ Single</button>
+                <button className="toolbar-button" onClick={onAddDoubleBlock} title="Add Double Block">◎ Double</button>
+                <button className="toolbar-button" onClick={onAddTripleBlock} title="Add Triple Block">⊚ Triple</button>
                 <button className="toolbar-button" onClick={onAddAnchor} title="Add Anchor">▲ Anchor</button>
                 <button className="toolbar-button" onClick={onAddCleat} title="Add Cleat">⊥ Cleat</button>
                 <button className="toolbar-button" onClick={onAddPerson} title="Add Person">● Person</button>

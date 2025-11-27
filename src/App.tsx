@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComponent, PersonComponent, RopeComponent, SpringComponent } from './types';
 import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
@@ -16,6 +16,14 @@ const App: React.FC = () => {
         snapToGrid: true,
         showRopeArrows: true,
     });
+
+    // Load first scenario on mount
+    useEffect(() => {
+        fetch('/scenarios/3-to-1.json')
+            .then(res => res.json())
+            .then(data => setSystem(data))
+            .catch(err => console.error('Failed to load default scenario:', err));
+    }, []);
 
     const [toolMode, setToolMode] = useState<ToolMode>('select');
     const [ropeStart, setRopeStart] = useState<string | null>(null);
@@ -35,6 +43,42 @@ const App: React.FC = () => {
             position: defaultPosition,
             diameter: 30,
             sheaves: 1,
+            hasBecket: false,
+            rotation: 0,
+            attachmentPoints: {
+                top: { x: defaultPosition.x, y: defaultPosition.y - 40 },
+                bottom: { x: defaultPosition.x, y: defaultPosition.y + 40 },
+            },
+        };
+        setSystem(prev => ({ ...prev, components: [...prev.components, pulley] }));
+    };
+
+    const handleAddDoubleBlock = () => {
+        const id = createComponentId('pulley');
+        const pulley: PulleyComponent = {
+            id,
+            type: ComponentType.PULLEY,
+            position: defaultPosition,
+            diameter: 30,
+            sheaves: 2,
+            hasBecket: false,
+            rotation: 0,
+            attachmentPoints: {
+                top: { x: defaultPosition.x, y: defaultPosition.y - 40 },
+                bottom: { x: defaultPosition.x, y: defaultPosition.y + 40 },
+            },
+        };
+        setSystem(prev => ({ ...prev, components: [...prev.components, pulley] }));
+    };
+
+    const handleAddTripleBlock = () => {
+        const id = createComponentId('pulley');
+        const pulley: PulleyComponent = {
+            id,
+            type: ComponentType.PULLEY,
+            position: defaultPosition,
+            diameter: 30,
+            sheaves: 3,
             hasBecket: false,
             rotation: 0,
             attachmentPoints: {
@@ -322,6 +366,8 @@ const App: React.FC = () => {
         <div className="app" onClick={handleContextMenuClose}>
             <Toolbar
                 onAddPulley={handleAddPulley}
+                onAddDoubleBlock={handleAddDoubleBlock}
+                onAddTripleBlock={handleAddTripleBlock}
                 onAddAnchor={handleAddAnchor}
                 onAddCleat={handleAddCleat}
                 onAddPerson={handleAddPerson}
