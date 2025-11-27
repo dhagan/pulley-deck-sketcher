@@ -457,9 +457,9 @@ const App: React.FC = () => {
                             })() : 'None'}
                     </div>
                     <div className="status-item">
-                        <strong>Mode:</strong> {toolMode === 'rope' ? 'Rope Drawing' : toolMode === 'measure' ? 'Measuring' : 'Select'}
+                        <strong>Mode:</strong> {toolMode === 'rope' ? 'Rope Drawing' : toolMode === 'spring' ? 'Spring Drawing' : toolMode === 'measure' ? 'Measuring' : 'Select'}
                     </div>
-                    {toolMode === 'rope' && ropeStart && (
+                    {(toolMode === 'rope' || toolMode === 'spring') && ropeStart && (
                         <div className="status-item" style={{ color: '#4ade80', fontWeight: 'bold' }}>
                             <strong>Rope Start:</strong> {(() => {
                                 const comp = system.components.find(c => ropeStart.startsWith(c.id));
@@ -474,7 +474,7 @@ const App: React.FC = () => {
                             })()} → Click end point
                         </div>
                     )}
-                    {toolMode === 'rope' && hoveredPoint && (
+                    {(toolMode === 'rope' || toolMode === 'spring') && hoveredPoint && (
                         <div className="status-item" style={{ color: '#3b82f6', fontWeight: 'bold' }}>
                             <strong>Hover:</strong> {(() => {
                                 const comp = system.components.find(c => hoveredPoint.startsWith(c.id));
