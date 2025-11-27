@@ -269,12 +269,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 </Group>
             )}
 
-            {/* Start label - only for non-anchor ropes */}
-            {!isAnchorRope && path.length > 0 && (
+            {/* Start label - only at chain start (becket) */}
+            {rope.startPoint?.includes('becket') && path.length > 0 && (
                 <Group x={path[0].x} y={path[0].y}>
                     <Circle
                         radius={10}
-                        fill="rgba(68, 255, 68, 0.6)"
+                        fill="rgba(255, 140, 0, 0.6)"
                         stroke="#fff"
                         strokeWidth={1}
                     />
@@ -283,7 +283,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                         y={-4}
                         text="S"
                         fontSize={10}
-                        fill="#000"
+                        fill="#fff"
                         fontFamily="monospace"
                         fontStyle="bold"
                         width={16}
@@ -292,8 +292,8 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 </Group>
             )}
 
-            {/* End label - only for non-anchor ropes */}
-            {!isAnchorRope && path.length > 0 && (
+            {/* End label - only at chain end (person) */}
+            {rope.endPoint?.includes('person') && path.length > 0 && (
                 <Group x={path[path.length - 1].x} y={path[path.length - 1].y}>
                     <Circle
                         radius={10}
