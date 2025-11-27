@@ -302,9 +302,6 @@ const Pulley: React.FC<PulleyProps> = ({
             {/* Render becket if present */}
             {renderBecket()}
 
-            {/* Render load attachment point */}
-            {renderLoadAttachment()}
-
             {/* Overall label */}
             <Text
                 x={-40}
