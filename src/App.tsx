@@ -113,15 +113,20 @@ const App: React.FC = () => {
         if (toolMode === 'rope') {
             if (!ropeStart) {
                 // First click - validate it's a valid start point
-                // Valid starts: Anchor (fixed point), Becket (rope start), Spring, Person center
-                // NOT valid: IN, OUT, Load (load is a destination)
-                const isValidStart = (pointId.includes('anchor') && !pointId.includes('sheave')) || 
-                                    pointId.includes('becket') || 
-                                    pointId.includes('spring') ||
-                                    pointId.endsWith('center');
+                // Valid starts: Fixed Anchor (standalone), Becket (rope start), Spring, Person center, OUT points
+                // NOT valid: Pulley Anchor (red - suspension point), IN points (blue)
+                const isPulleyAnchor = pointId.includes('pulley') && pointId.includes('anchor');
+                const isInPoint = pointId.includes('-in');
+                const isFixedAnchor = pointId.includes('anchor-') && !pointId.includes('pulley');
+                const isBecket = pointId.includes('becket');
+                const isSpring = pointId.includes('spring');
+                const isCenter = pointId.endsWith('center');
+                const isOutPoint = pointId.includes('-out');
+                
+                const isValidStart = (isFixedAnchor || isBecket || isSpring || isCenter || isOutPoint) && !isPulleyAnchor && !isInPoint;
                 
                 if (!isValidStart) {
-                    alert('Ropes must START at:\n- Anchor (fixed point)\n- Becket (rope start)\n- Spring\n- Person/Component center\n\nNOT at IN, OUT, or Load points!');
+                    alert('Ropes can START at:\n✓ Fixed Anchor\n✓ Becket (green)\n✓ OUT point (yellow)\n✓ Spring\n✓ Person center\n\n✗ NOT at Pulley Anchor (red) or IN point (blue)!');
                     return;
                 }
                 

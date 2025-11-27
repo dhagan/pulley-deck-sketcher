@@ -90,7 +90,7 @@ describe('Validation System', () => {
     });
 
     describe('Invalid Start Points', () => {
-        it('should reject rope starting at OUT point', () => {
+        it('should allow rope starting from OUT point', () => {
             const system: SystemState = {
                 components: [
                     {
@@ -118,7 +118,7 @@ describe('Validation System', () => {
                         endId: 'person-1',
                         endPoint: 'person-1-center',
                         routeThrough: [],
-                        label: 'Invalid'
+                        label: 'Valid from OUT'
                     } as RopeComponent
                 ],
                 selectedId: null,
@@ -129,9 +129,8 @@ describe('Validation System', () => {
 
             const result = validateSystem(system);
             
-            expect(result.valid).toBe(false);
-            expect(result.errors.length).toBeGreaterThan(0);
-            expect(result.errors[0]).toContain('Invalid start point');
+            expect(result.valid).toBe(true);
+            expect(result.errors.length).toBe(0);
         });
 
         it('should reject rope starting at IN point', () => {
