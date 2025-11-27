@@ -24,6 +24,12 @@ const Pulley: React.FC<PulleyProps> = ({
     const sheaveSpacing = radius * 2 + 15; // Space between sheaves
     const [hoveredPoint, setHoveredPoint] = React.useState<string | null>(null);
 
+    // Validate radius to prevent NaN errors
+    if (!pulley.diameter || isNaN(pulley.diameter) || pulley.diameter <= 0) {
+        console.error('Invalid pulley diameter:', pulley.diameter);
+        return null;
+    }
+
     const renderSheave = (index: number, xOffset: number) => {
         const sheaveId = `${pulley.id}-sheave-${index}`;
 
