@@ -248,6 +248,35 @@ const App: React.FC = () => {
                 setRopeStart(null);
                 setToolMode('select');
             }
+        } else if (toolMode === 'spring') {
+            if (!ropeStart) {
+                // First click - spring start point (usually pulley anchor)
+                setRopeStart(pointId);
+            } else {
+                // Second click - spring end point (load point)
+                const getComponentId = (fullId: string) => {
+                    const parts = fullId.split('-');
+                    return `${parts[0]}-${parts[1]}`;
+                };
+
+                const startCompId = getComponentId(ropeStart);
+                const endCompId = getComponentId(pointId);
+
+                const spring: SpringComponent = {
+                    id: `spring-${Date.now()}`,
+                    type: ComponentType.SPRING,
+                    startId: startCompId,
+                    startPoint: ropeStart,
+                    endId: endCompId,
+                    endPoint: pointId,
+                    label: `Load ${system.components.filter(c => c.type === ComponentType.SPRING).length + 1}`,
+                    stiffness: 1.0, // N/mm
+                    restLength: 100, // mm
+                };
+                setSystem(prev => ({ ...prev, components: [...prev.components, spring] }));
+                setRopeStart(null);
+                setToolMode('select');
+            }
         }
     };
 
