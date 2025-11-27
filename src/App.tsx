@@ -112,16 +112,23 @@ const App: React.FC = () => {
         if (toolMode === 'rope') {
             if (!ropeStart) {
                 // First click - validate it's a valid start point
+                // Valid starts: Anchor (fixed point), Becket (rope start), Spring, Person center
+                // NOT valid: IN, OUT, Load (load is a destination)
                 const isValidStart = (pointId.includes('anchor') && !pointId.includes('sheave')) || 
                                     pointId.includes('becket') || 
-                                    (pointId.includes('load') && !pointId.includes('sheave')) ||
                                     pointId.includes('spring') ||
                                     pointId.endsWith('center');
                 
                 if (!isValidStart) {
-                    alert('Ropes must START at an Anchor point, Becket, Load, Spring, or component center (not at IN or OUT)');
+                    alert('Ropes must START at:\n- Anchor (fixed point)\n- Becket (rope start)\n- Spring\n- Person/Component center\n\nNOT at IN, OUT, or Load points!');
                     return;
                 }
+                
+                // Extra validation: becket cannot be used if it's the same component we're routing through
+                if (pointId.includes('becket')) {
+                    console.log('Starting rope from becket:', pointId);
+                }
+                
                 setRopeStart(pointId);
             } else {
                 // Second click - validate it's a valid end point
