@@ -34,25 +34,25 @@ export const scenarios: Scenario[] = [
                         bottom: { x: 200, y: 330 }
                     }
                 } as PulleyComponent,
-                // Rope from anchor to pulley input
+                // Anchor to pulley anchor point
                 {
                     id: "rope-1",
                     type: ComponentType.ROPE,
                     startId: "anchor-1",
                     startPoint: "anchor-1",
                     endId: "pulley-1",
-                    endPoint: "pulley-1-sheave-0-in",
+                    endPoint: "pulley-1-anchor",
                     routeThrough: []
                 } as RopeComponent,
-                // Rope from pulley output to becket (creates the 2:1)
+                // Main rope: goes in sheave, wraps around, comes out, goes to becket
                 {
                     id: "rope-2",
                     type: ComponentType.ROPE,
                     startId: "pulley-1",
-                    startPoint: "pulley-1-sheave-0-out",
+                    startPoint: "pulley-1-sheave-0-in",
                     endId: "pulley-1",
                     endPoint: "pulley-1-becket",
-                    routeThrough: []
+                    routeThrough: ["pulley-1"]
                 } as RopeComponent
             ]
         }
@@ -97,45 +97,25 @@ export const scenarios: Scenario[] = [
                         bottom: { x: 300, y: 430 }
                     }
                 } as PulleyComponent,
-                // Rope segment 1: Anchor to double pulley
+                // Anchor to double pulley anchor point
                 {
                     id: "rope-1",
                     type: ComponentType.ROPE,
                     startId: "anchor-1",
                     startPoint: "anchor-1",
                     endId: "pulley-double",
-                    endPoint: "pulley-double-sheave-0-in",
+                    endPoint: "pulley-double-anchor",
                     routeThrough: []
                 } as RopeComponent,
-                // Rope segment 2: Double pulley out to single pulley in
+                // Main continuous rope through the system
                 {
                     id: "rope-2",
                     type: ComponentType.ROPE,
                     startId: "pulley-double",
-                    startPoint: "pulley-double-sheave-0-out",
-                    endId: "pulley-single",
-                    endPoint: "pulley-single-sheave-0-in",
-                    routeThrough: []
-                } as RopeComponent,
-                // Rope segment 3: Single pulley out to double pulley second sheave in
-                {
-                    id: "rope-3",
-                    type: ComponentType.ROPE,
-                    startId: "pulley-single",
-                    startPoint: "pulley-single-sheave-0-out",
-                    endId: "pulley-double",
-                    endPoint: "pulley-double-sheave-1-in",
-                    routeThrough: []
-                } as RopeComponent,
-                // Rope segment 4: Double pulley second sheave out to becket
-                {
-                    id: "rope-4",
-                    type: ComponentType.ROPE,
-                    startId: "pulley-double",
-                    startPoint: "pulley-double-sheave-1-out",
+                    startPoint: "pulley-double-sheave-0-in",
                     endId: "pulley-double",
                     endPoint: "pulley-double-becket",
-                    routeThrough: []
+                    routeThrough: ["pulley-double", "pulley-single", "pulley-double"]
                 } as RopeComponent
             ]
         }

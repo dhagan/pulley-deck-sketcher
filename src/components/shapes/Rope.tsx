@@ -86,9 +86,49 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
     const startPos = getPointCoordinates(startComp, rope.startPoint);
     const endPos = getPointCoordinates(endComp, rope.endPoint);
 
-    // For now, just draw a straight line between the points
-    // TODO: Handle intermediate pulleys in routeThrough
-    const path = [startPos, endPos];
+    let path: Array<{ x: number; y: number }> = [];
+
+    if (rope.routeThrough && rope.routeThrough.length > 0) {
+        // Rope wraps through pulleys
+        path.push(startPos);
+
+        for (const pulleyId of rope.routeThrough) {
+            const pulley = components.find(c => c.id === pulleyId);
+            if (pulley && pulley.type === 'pulley') {
+                const p = pulley as PulleyComponent;
+                const radius = p.diameter / 2;
+
+                // Add arc points around the pulley (simple approximation)
+                const center = p.position;
+                const segments = 16;
+
+                // Calculate angles from start to end around the pulley
+                const startAngle = Math.atan2(path[path.length - 1].y - center.y, path[path.length - 1].x - center.x);
+                const endAngle = Math.atan2(endPos.y - center.y, endPos.x - center.x);
+
+                // Generate arc
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    let angle = startAngle + (endAngle - startAngle) * t;
+
+                    // Normalize angle difference
+                    let diff = endAngle - startAngle;
+                    if (diff > Math.PI) angle = startAngle + (endAngle - 2 * Math.PI - startAngle) * t;
+                    else if (diff < -Math.PI) angle = startAngle + (endAngle + 2 * Math.PI - startAngle) * t;
+
+                    path.push({
+                        x: center.x + radius * Math.cos(angle),
+                        y: center.y + radius * Math.sin(angle)
+                    });
+                }
+            }
+        }
+
+        path.push(endPos);
+    } else {
+        // Simple straight line
+        path = [startPos, endPos];
+    }
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);
