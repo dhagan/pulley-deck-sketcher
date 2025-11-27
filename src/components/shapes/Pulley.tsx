@@ -208,54 +208,6 @@ const Pulley: React.FC<PulleyProps> = ({
         return sheaves;
     };
 
-    // SINGLE TEMPLATE: Becket rendering - side becket for pulley
-    const renderBecket = () => {
-        if (!pulley.hasBecket) return null;
-
-        const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
-        const becketX = totalWidth / 2 + radius + 8;
-
-        return (
-            <Group x={becketX} y={0}>
-                <Circle
-                    radius={6}
-                    fill="#ff8c00"
-                    stroke="#fff"
-                    strokeWidth={2}
-                    onClick={(e) => {
-                        e.cancelBubble = true;
-                        if (onSelect) onSelect();
-                        if (onPointClick) onPointClick(`${pulley.id}-becket`, e);
-                    }}
-                    onTap={(e) => {
-                        e.cancelBubble = true;
-                        if (onPointClick) onPointClick(`${pulley.id}-becket`, e);
-                    }}
-                    onMouseEnter={() => {
-                        setHoveredPoint(`${pulley.id}-becket`);
-                        onPointHover && onPointHover(`${pulley.id}-becket`);
-                    }}
-                    onMouseLeave={() => {
-                        setHoveredPoint(null);
-                        onPointHover && onPointHover(null);
-                    }}
-                />
-                <Text
-                    x={-20}
-                    y={10}
-                    text="Becket"
-                    fontSize={7}
-                    fill="#ff8c00"
-                    fontFamily="monospace"
-                    fontStyle="bold"
-                    rotation={-(pulley.rotation || 0)}
-                    offsetX={-20}
-                    offsetY={10}
-                />
-            </Group>
-        );
-    };
-
     return (
         <Group
             x={pulley.position.x}
@@ -271,9 +223,6 @@ const Pulley: React.FC<PulleyProps> = ({
         >
             {/* Render all sheaves */}
             {renderSheaves()}
-
-            {/* Render becket if present */}
-            {renderBecket()}
 
             {/* Overall label */}
             <Text
