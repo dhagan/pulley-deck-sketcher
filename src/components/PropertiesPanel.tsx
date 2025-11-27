@@ -1,5 +1,5 @@
 import React from 'react';
-import { SystemState, PulleyComponent, ComponentType, Component } from '../types';
+import { SystemState, PulleyComponent, SpringComponent, RopeComponent, ComponentType, Component } from '../types';
 
 interface PropertiesPanelProps {
     system: SystemState;
@@ -70,6 +70,59 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
         </>
     );
 
+    const renderSpringProperties = (spring: SpringComponent) => (
+        <>
+            <div className="property-row">
+                <span className="property-label">Stiffness (N/m):</span>
+                <input
+                    type="number"
+                    value={spring.stiffness}
+                    onChange={(e) => updateComponent({ stiffness: parseFloat(e.target.value) || 100 })}
+                    min="1"
+                    max="10000"
+                />
+            </div>
+            <div className="property-row">
+                <span className="property-label">Rest Length (px):</span>
+                <input
+                    type="number"
+                    value={spring.restLength}
+                    onChange={(e) => updateComponent({ restLength: parseFloat(e.target.value) || 100 })}
+                    min="10"
+                    max="500"
+                />
+            </div>
+            {spring.currentLength !== undefined && (
+                <div className="property-row">
+                    <span className="property-label">Current Length:</span>
+                    <span className="property-value">{spring.currentLength.toFixed(1)} px</span>
+                </div>
+            )}
+        </>
+    );
+
+    const renderRopeProperties = (rope: RopeComponent) => (
+        <>
+            <div className="property-row">
+                <span className="property-label">Label:</span>
+                <input
+                    type="text"
+                    value={rope.label || ''}
+                    onChange={(e) => updateComponent({ label: e.target.value })}
+                    placeholder="Rope name"
+                />
+            </div>
+            <div className="property-row">
+                <span className="property-label">Start:</span>
+                <span className="property-value">{rope.startId}</span>
+            </div>
+            <div className="property-row">
+                <span className="property-label">End:</span>
+                <span className="property-value">{rope.endId}</span>
+            </div>
+        </>
+    );
+
     return (
         <div className="properties-panel">
             <h2 style={{ marginBottom: '20px', fontSize: '16px' }}>Properties</h2>
@@ -94,6 +147,14 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
                         onChange={(e) => setSystem({ ...system, snapToGrid: e.target.checked })}
                     />
                 </div>
+                <div className="property-row">
+                    <span className="property-label">Rope Arrows:</span>
+                    <input
+                        type="checkbox"
+                        checked={system.showRopeArrows !== false}
+                        onChange={(e) => setSystem({ ...system, showRopeArrows: e.target.checked })}
+                    />
+                </div>
             </div>
 
             {selectedComponent && (
@@ -105,6 +166,10 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
                     </div>
 
                     {selectedComponent.type === ComponentType.PULLEY && renderPulleyProperties(selectedComponent as PulleyComponent)}
+
+                    {selectedComponent.type === ComponentType.ROPE && renderRopeProperties(selectedComponent as RopeComponent)}
+
+                    {selectedComponent.type === ComponentType.SPRING && renderSpringProperties(selectedComponent as SpringComponent)}
 
                     {(selectedComponent.type === ComponentType.ANCHOR ||
                         selectedComponent.type === ComponentType.CLEAT ||
@@ -119,6 +184,17 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
                                 />
                             </div>
                         )}
+
+                    {selectedComponent.type === ComponentType.SPRING && 'label' in selectedComponent && (
+                        <div className="property-row">
+                            <span className="property-label">Label:</span>
+                            <input
+                                type="text"
+                                value={selectedComponent.label || ''}
+                                onChange={(e) => updateComponent({ label: e.target.value })}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
 

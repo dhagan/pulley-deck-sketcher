@@ -7,6 +7,7 @@ interface ToolbarProps {
     onAddAnchor: () => void;
     onAddCleat: () => void;
     onAddPerson: () => void;
+    onAddSpring: () => void;
     onAddRope: () => void;
     onMeasure: () => void;
     onSave: () => void;
@@ -14,8 +15,10 @@ interface ToolbarProps {
     onLoadScenario: (system: SystemState) => void;
     onExportSVG: () => void;
     onClear: () => void;
+    onDelete?: () => void;
     toolMode: 'select' | 'rope' | 'measure';
     ropeStart: string | null;
+    selectedId?: string | null;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -23,6 +26,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     onAddAnchor,
     onAddCleat,
     onAddPerson,
+    onAddSpring,
     onAddRope,
     onMeasure,
     onSave,
@@ -30,8 +34,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
     onLoadScenario,
     onExportSVG,
     onClear,
+    onDelete,
     toolMode,
     ropeStart,
+    selectedId,
 }) => {
     return (
         <div className="toolbar">
@@ -40,6 +46,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 <button className="toolbar-button" onClick={onAddAnchor} title="Add Anchor">⚓ Anchor</button>
                 <button className="toolbar-button" onClick={onAddCleat} title="Add Cleat">🪝 Cleat</button>
                 <button className="toolbar-button" onClick={onAddPerson} title="Add Person">👤 Person</button>
+                <button className="toolbar-button" onClick={onAddSpring} title="Add Spring">🌀 Spring</button>
                 <button
                     className={`toolbar-button ${toolMode === 'rope' ? 'active' : ''}`}
                     onClick={onAddRope}
@@ -94,6 +101,17 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     />
                 </label>
                 <button className="toolbar-button" onClick={onExportSVG} title="Export as SVG">📤 Export SVG</button>
+                {onDelete && (
+                    <button
+                        className="toolbar-button"
+                        onClick={onDelete}
+                        title="Delete Selected Component (Del)"
+                        disabled={!selectedId}
+                        style={{ opacity: selectedId ? 1 : 0.5, cursor: selectedId ? 'pointer' : 'not-allowed' }}
+                    >
+                        🗑️ Delete
+                    </button>
+                )}
                 <button
                     className="toolbar-button"
                     onClick={onClear}

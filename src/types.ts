@@ -44,6 +44,7 @@ export interface RopeComponent {
     endPoint?: string;
     routeThrough: (string | { id: string; sheaveIndex: number })[];
     tension?: number;
+    label?: string;
 }
 
 export interface CleatComponent {
@@ -78,6 +79,7 @@ export interface SystemState {
     selectedId: string | null;
     gridSize: number;
     snapToGrid: boolean;
+    showRopeArrows?: boolean;
 }
 
 export interface ForceAnalysis {

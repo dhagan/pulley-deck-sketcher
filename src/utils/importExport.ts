@@ -27,6 +27,7 @@ export function importSceneGraph(json: string): SystemState | null {
             selectedId: null,
             gridSize: data.gridSize || 20,
             snapToGrid: data.snapToGrid !== undefined ? data.snapToGrid : true,
+            showRopeArrows: data.showRopeArrows !== undefined ? data.showRopeArrows : true,
         };
     } catch (error) {
         console.error('Failed to import scene graph:', error);
@@ -293,6 +294,7 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
         selectedId: null,
         gridSize: 20,
         snapToGrid: true,
+        showRopeArrows: true,
     };
 }
 

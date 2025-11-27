@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComponent, PersonComponent, RopeComponent } from './types';
+import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComponent, PersonComponent, RopeComponent, SpringComponent } from './types';
 import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
@@ -14,6 +14,7 @@ const App: React.FC = () => {
         selectedId: null,
         gridSize: 20,
         snapToGrid: true,
+        showRopeArrows: true,
     });
 
     const [toolMode, setToolMode] = useState<ToolMode>('select');
@@ -76,6 +77,19 @@ const App: React.FC = () => {
         setSystem(prev => ({ ...prev, components: [...prev.components, person] }));
     };
 
+    const handleAddSpring = () => {
+        const id = createComponentId('spring');
+        const spring: SpringComponent = {
+            id,
+            type: ComponentType.SPRING,
+            position: defaultPosition,
+            label: `Spring ${system.components.filter(c => c.type === ComponentType.SPRING).length + 1}`,
+            stiffness: 100,
+            restLength: 100,
+        };
+        setSystem(prev => ({ ...prev, components: [...prev.components, spring] }));
+    };
+
     const handleAddRope = () => {
         setToolMode('rope');
         setRopeStart(null);
@@ -96,16 +110,70 @@ const App: React.FC = () => {
     const handlePointClick = (pointId: string) => {
         if (toolMode === 'rope') {
             if (!ropeStart) {
+                // First click - validate it's a valid start point
+                const isValidStart = (pointId.includes('anchor') && !pointId.includes('sheave')) || 
+                                    pointId.includes('becket') || 
+                                    (pointId.includes('load') && !pointId.includes('sheave')) ||
+                                    pointId.includes('spring') ||
+                                    pointId.endsWith('center');
+                
+                if (!isValidStart) {
+                    alert('Ropes must START at an Anchor point, Becket, Load, Spring, or component center (not at IN or OUT)');
+                    return;
+                }
                 setRopeStart(pointId);
             } else {
-                // Parse start and end IDs to get component IDs
-                // Format: componentId-suffix (e.g., pulley-1-sheave-0-in)
-                // We need to extract the base component ID for the rope definition
-                // But for now, let's store the full point ID in startPoint/endPoint
+                // Second click - validate it's a valid end point
+                const isValidEnd = pointId.includes('in') || 
+                                  pointId.includes('out') || 
+                                  pointId.includes('anchor') ||
+                                  pointId.includes('load') ||
+                                  pointId.includes('spring') ||
+                                  pointId.endsWith('center'); // Allow anchors, cleats, person
+                
+                if (!isValidEnd) {
+                    alert('Ropes must end at a sheave In/Out point, Anchor, Load, Spring, or component center');
+                    setRopeStart(null);
+                    return;
+                }
 
+                // Validate proper flow direction
+                if (ropeStart.includes('-out') && pointId.includes('-out')) {
+                    alert('Cannot connect Out to Out. Route should go: Start → In → Out → In → Out...');
+                    setRopeStart(null);
+                    return;
+                }
+                if (ropeStart.includes('-in') && pointId.includes('-in')) {
+                    alert('Cannot connect In to In. Route should go: Out → In or Start → In');
+                    setRopeStart(null);
+                    return;
+                }
+                
+                // Validate IN->OUT flow (In must connect to Out, Out must connect to In)
+                // Start points (anchor/becket/load/spring) should connect to IN
+                const isStartPoint = ropeStart.includes('anchor') || ropeStart.includes('becket') || 
+                                    ropeStart.includes('load') || ropeStart.includes('spring') || 
+                                    ropeStart.endsWith('center');
+                
+                if (isStartPoint && pointId.includes('-out')) {
+                    alert('Start points must connect to an IN point first (not directly to OUT)');
+                    setRopeStart(null);
+                    return;
+                }
+                
+                if (ropeStart.includes('-in') && !pointId.includes('-out') && !pointId.includes('anchor') && !pointId.includes('load') && !pointId.includes('spring') && !pointId.endsWith('center')) {
+                    alert('After an IN point, rope must go to an OUT point (or end at Anchor/Load/Spring)');
+                    setRopeStart(null);
+                    return;
+                }
+                if (ropeStart.includes('-out') && !pointId.includes('-in')) {
+                    alert('After an OUT point, rope must go to an IN point');
+                    setRopeStart(null);
+                    return;
+                }
+
+                // Parse start and end IDs to get component IDs
                 const getComponentId = (fullId: string) => {
-                    // Simple heuristic: take the first two parts as ID if it starts with pulley/anchor
-                    // This might need refinement based on ID generation strategy
                     const parts = fullId.split('-');
                     return `${parts[0]}-${parts[1]}`;
                 };
@@ -122,6 +190,7 @@ const App: React.FC = () => {
                     endId: endCompId,
                     endPoint: pointId,
                     routeThrough: [],
+                    label: `Rope ${system.components.filter(c => c.type === ComponentType.ROPE).length + 1}`,
                 };
                 setSystem(prev => ({ ...prev, components: [...prev.components, rope] }));
                 setRopeStart(null);
@@ -184,6 +253,7 @@ const App: React.FC = () => {
                 selectedId: null,
                 gridSize: 20,
                 snapToGrid: true,
+                showRopeArrows: true,
             });
             setToolMode('select');
             setRopeStart(null);
@@ -192,6 +262,39 @@ const App: React.FC = () => {
         }
     };
 
+    const handleDelete = () => {
+        if (system.selectedId) {
+            setSystem(prev => ({
+                ...prev,
+                components: prev.components.filter(c => c.id !== system.selectedId),
+                selectedId: null,
+            }));
+        }
+    };
+
+    // Keyboard shortcuts
+    React.useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Delete' && system.selectedId) {
+                handleDelete();
+            } else if (e.key === 'Escape') {
+                if (toolMode === 'rope') {
+                    setToolMode('select');
+                    setRopeStart(null);
+                } else if (toolMode === 'measure') {
+                    setToolMode('select');
+                    setMeasurementStart(null);
+                    setMeasurementEnd(null);
+                } else if (system.selectedId) {
+                    setSystem(prev => ({ ...prev, selectedId: null }));
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [system.selectedId, toolMode]);
+
     return (
         <div className="app">
             <Toolbar
@@ -199,6 +302,7 @@ const App: React.FC = () => {
                 onAddAnchor={handleAddAnchor}
                 onAddCleat={handleAddCleat}
                 onAddPerson={handleAddPerson}
+                onAddSpring={handleAddSpring}
                 onAddRope={handleAddRope}
                 onMeasure={handleMeasureToggle}
                 onSave={handleSave}
@@ -206,8 +310,10 @@ const App: React.FC = () => {
                 onLoadScenario={handleLoadScenario}
                 onExportSVG={handleExport}
                 onClear={handleClear}
+                onDelete={handleDelete}
                 toolMode={toolMode}
                 ropeStart={ropeStart}
+                selectedId={system.selectedId}
             />
             <div className="main-content">
                 <Canvas
@@ -222,6 +328,24 @@ const App: React.FC = () => {
                     setMeasurementEnd={setMeasurementEnd}
                 />
                 <PropertiesPanel system={system} setSystem={setSystem} />
+            </div>
+            <div className="status-bar">
+                <div className="status-info">
+                    <div className="status-item">
+                        <strong>Components:</strong> {system.components.length}
+                    </div>
+                    <div className="status-item">
+                        <strong>Selected:</strong> {system.selectedId ? system.components.find(c => c.id === system.selectedId)?.type || 'None' : 'None'}
+                    </div>
+                    <div className="status-item">
+                        <strong>Mode:</strong> {toolMode === 'rope' ? 'Rope Drawing' : toolMode === 'measure' ? 'Measuring' : 'Select'}
+                    </div>
+                </div>
+                <div className="status-info">
+                    <div className="status-item">
+                        Shortcuts: <strong>Del</strong> to delete, <strong>Esc</strong> to deselect/cancel
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Line, Group, Text, Circle } from 'react-konva';
+import { Line, Group, Text, Circle, Arrow } from 'react-konva';
 import { RopeComponent as RopeType, Component, PulleyComponent } from '../../types';
 import { calculatePathLength, calculateRopePath } from '../../utils/geometry';
 
@@ -8,9 +8,10 @@ interface RopeProps {
     components: Component[];
     isSelected: boolean;
     onSelect: () => void;
+    showArrows?: boolean;
 }
 
-const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) => {
+const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, showArrows = true }) => {
     // Helper to get coordinates for a specific point on a component
     const getPointCoordinates = (component: Component, pointId?: string): { x: number; y: number } => {
         // Rope components don't have a single position
@@ -22,6 +23,28 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
         // Handle Anchor points
         if (component.type === 'anchor') {
             return compWithPos.position;
+        }
+
+        // Handle Cleat points
+        if (component.type === 'cleat') {
+            return compWithPos.position;
+        }
+
+        // Handle Person points
+        if (component.type === 'person') {
+            return compWithPos.position;
+        }
+
+        // Handle Spring points
+        if (component.type === 'spring') {
+            const spring = component as any;
+            if (pointId?.includes('top')) {
+                return spring.position;
+            } else if (pointId?.includes('bottom')) {
+                const length = spring.currentLength || spring.restLength || 100;
+                return { x: spring.position.x, y: spring.position.y + length };
+            }
+            return spring.position;
         }
 
         // Handle Pulley points
@@ -44,6 +67,9 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
                 const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
                 localX = totalWidth / 2 + radius + 20;
                 localY = 0;
+            } else if (pointId.includes('load')) {
+                localX = 0;
+                localY = radius + 30;
             } else if (pointId.includes('top')) {
                 localX = 0;
                 localY = -radius;
@@ -152,15 +178,106 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
 
     return (
         <Group onClick={onSelect} onTap={onSelect}>
-            {/* Rope line */}
+            {/* Rope line - using lineCap and lineJoin for clean segments */}
             <Line
                 points={points}
                 stroke={isSelected ? '#00d9ff' : '#ffd43b'}
                 strokeWidth={isSelected ? 3 : 2}
                 lineCap="round"
                 lineJoin="round"
-                tension={0.5} // Add some curve to look more natural
+                tension={0} // No bezier smoothing - show actual path with wraps
             />
+
+            {/* Directional arrows */}
+            {showArrows && length > 20 && (() => {
+                const arrows = [];
+                const numArrows = Math.max(2, Math.min(6, Math.floor(length / 60)));
+                
+                // Place arrows along the line segments, avoiding pulley circumferences
+                for (let i = 0; i < numArrows; i++) {
+                    // Calculate position along total length
+                    const t = (i + 1) / (numArrows + 1);
+                    let targetDist = t * length;
+                    let accumulatedDist = 0;
+                    
+                    // Find the segment containing this distance
+                    for (let j = 0; j < path.length - 1; j++) {
+                        const p1 = path[j];
+                        const p2 = path[j + 1];
+                        const segLen = Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+                        
+                        if (accumulatedDist + segLen >= targetDist) {
+                            // Arrow is in this segment
+                            const segT = (targetDist - accumulatedDist) / segLen;
+                            const x = p1.x + segT * (p2.x - p1.x);
+                            const y = p1.y + segT * (p2.y - p1.y);
+                            const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+                            
+                            arrows.push(
+                                <Arrow
+                                    key={`arrow-${i}`}
+                                    x={x}
+                                    y={y}
+                                    points={[0, 0, 12, 0]}
+                                    pointerLength={5}
+                                    pointerWidth={5}
+                                    fill={isSelected ? '#00d9ff' : '#ffd43b'}
+                                    stroke={isSelected ? '#00d9ff' : '#ffd43b'}
+                                    strokeWidth={1.5}
+                                    rotation={angle}
+                                />
+                            );
+                            break;
+                        }
+                        accumulatedDist += segLen;
+                    }
+                }
+                return arrows;
+            })()}
+
+            {/* Rope label */}
+            {rope.label && (
+                <Group x={midPoint.x} y={midPoint.y - 40}>
+                    <Circle
+                        radius={25}
+                        fill="rgba(0, 0, 0, 0.7)"
+                    />
+                    <Text
+                        x={-20}
+                        y={-6}
+                        text={rope.label}
+                        fontSize={12}
+                        fill="#ffd43b"
+                        fontFamily="monospace"
+                        fontStyle="bold"
+                        width={40}
+                        align="center"
+                    />
+                </Group>
+            )}
+
+            {/* End label */}
+            {path.length > 0 && (
+                <Group x={path[path.length - 1].x} y={path[path.length - 1].y}>
+                    <Circle
+                        radius={15}
+                        fill="rgba(255, 68, 68, 0.8)"
+                        stroke="#fff"
+                        strokeWidth={2}
+                    />
+                    <Text
+                        x={-10}
+                        y={-6}
+                        text="END"
+                        fontSize={9}
+                        fill="#fff"
+                        fontFamily="monospace"
+                        fontStyle="bold"
+                        width={20}
+                        align="center"
+                    />
+                </Group>
+            )}
 
             {/* Length label */}
             <Group x={midPoint.x} y={midPoint.y}>

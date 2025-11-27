@@ -1,0 +1,11 @@
+{
+  "name": "9:1 Compound",
+  "throw": 10,
+  "sheaveWidth": 2,
+  "connectionLength": 1,
+  "friction": 0.1,
+  "routes": [
+    { "type": "simple", "ratio": 3 },
+    { "type": "simple", "ratio": 3 }
+  ]
+}

@@ -47,6 +47,14 @@ const Anchor: React.FC<AnchorProps> = ({
                 fill="#fff"
                 stroke="#ff6b6b"
                 strokeWidth={2}
+                onClick={(e) => {
+                    e.cancelBubble = true;
+                    onSelect();
+                }}
+                onTap={(e) => {
+                    e.cancelBubble = true;
+                    onSelect();
+                }}
             />
 
             {/* Selection indicator */}

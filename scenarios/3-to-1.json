@@ -1,0 +1,93 @@
+{
+  "components": [
+    {
+      "id": "anchor-1",
+      "type": "anchor",
+      "position": { "x": 400, "y": 100 },
+      "label": "Fixed Anchor"
+    },
+    {
+      "id": "pulley-1",
+      "type": "pulley",
+      "position": { "x": 400, "y": 200 },
+      "diameter": 60,
+      "sheaves": 1,
+      "hasBecket": false,
+      "rotation": 0,
+      "attachmentPoints": {
+        "top": { "x": 400, "y": 170 },
+        "bottom": { "x": 400, "y": 230 }
+      }
+    },
+    {
+      "id": "pulley-2",
+      "type": "pulley",
+      "position": { "x": 400, "y": 350 },
+      "diameter": 60,
+      "sheaves": 1,
+      "hasBecket": true,
+      "rotation": 180,
+      "attachmentPoints": {
+        "top": { "x": 400, "y": 320 },
+        "bottom": { "x": 400, "y": 380 }
+      }
+    },
+    {
+      "id": "anchor-2",
+      "type": "anchor",
+      "position": { "x": 400, "y": 480 },
+      "label": "Load"
+    },
+    {
+      "id": "person-1",
+      "type": "person",
+      "position": { "x": 550, "y": 300 },
+      "label": "Pull",
+      "pulling": true
+    },
+    {
+      "id": "rope-1",
+      "type": "rope",
+      "startId": "anchor-1",
+      "startPoint": "anchor-1",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-anchor",
+      "routeThrough": [],
+      "label": "Anchor"
+    },
+    {
+      "id": "rope-2",
+      "type": "rope",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-becket",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-sheave-0-in",
+      "routeThrough": [],
+      "label": "Main"
+    },
+    {
+      "id": "rope-3",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-0-out",
+      "endId": "person-1",
+      "endPoint": "person-1-center",
+      "routeThrough": [],
+      "label": "Pull"
+    },
+    {
+      "id": "rope-4",
+      "type": "rope",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-load",
+      "endId": "anchor-2",
+      "endPoint": "anchor-2",
+      "routeThrough": [],
+      "label": "Load"
+    }
+  ],
+  "selectedId": null,
+  "gridSize": 20,
+  "snapToGrid": true,
+  "showRopeArrows": true
+}

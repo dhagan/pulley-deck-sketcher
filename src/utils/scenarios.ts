@@ -1,5 +1,4 @@
-import { SystemState, PulleyCalcSystem } from '../types';
-import { convertFromPulleyCalc } from './importExport';
+import { SystemState } from '../types';
 
 export interface Scenario {
     name: string;
@@ -7,79 +6,23 @@ export interface Scenario {
     system: SystemState;
 }
 
-const createScenario = (name: string, description: string, calcSystem: PulleyCalcSystem): Scenario => {
+// Dynamically load all JSON files from scenarios folder
+const scenarioModules = import.meta.glob('../../scenarios/*.json', { eager: true });
+
+export const scenarios: Scenario[] = Object.entries(scenarioModules).map(([path, module]: [string, any]) => {
+    const system = module.default || module;
+    const filename = path.split('/').pop()?.replace('.json', '') || 'Unknown';
+    
+    // Generate a nice name from filename
+    const name = filename
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+        .replace(/To/g, 'to');
+    
     return {
         name,
-        description,
-        system: convertFromPulleyCalc(calcSystem)
+        description: `${name} mechanical advantage system.`,
+        system
     };
-};
-
-export const scenarios: Scenario[] = [
-    createScenario(
-        "3:1 Simple",
-        "Standard 3:1 mechanical advantage (Z-drag equivalent).",
-        {
-            name: "3:1",
-            throw: 10,
-            sheaveWidth: 2,
-            connectionLength: 1,
-            friction: 0.1,
-            routes: [{ type: 'simple', ratio: 3 }]
-        }
-    ),
-    createScenario(
-        "4:1 Simple",
-        "4:1 mechanical advantage using double pulleys.",
-        {
-            name: "4:1",
-            throw: 10,
-            sheaveWidth: 2,
-            connectionLength: 1,
-            friction: 0.1,
-            routes: [{ type: 'simple', ratio: 4 }]
-        }
-    ),
-    createScenario(
-        "5:1 Simple",
-        "5:1 mechanical advantage using double and triple pulleys.",
-        {
-            name: "5:1",
-            throw: 10,
-            sheaveWidth: 2,
-            connectionLength: 1,
-            friction: 0.1,
-            routes: [{ type: 'simple', ratio: 5 }]
-        }
-    ),
-    createScenario(
-        "6:1 Compound (3:1 -> 2:1)",
-        "Compound system: A 3:1 system pulling on a 2:1 system.",
-        {
-            name: "6:1 Compound",
-            throw: 10,
-            sheaveWidth: 2,
-            connectionLength: 1,
-            friction: 0.1,
-            routes: [
-                { type: 'simple', ratio: 3 },
-                { type: 'simple', ratio: 2 }
-            ]
-        }
-    ),
-    createScenario(
-        "9:1 Compound (3:1 -> 3:1)",
-        "Compound system: A 3:1 system pulling on another 3:1 system.",
-        {
-            name: "9:1 Compound",
-            throw: 10,
-            sheaveWidth: 2,
-            connectionLength: 1,
-            friction: 0.1,
-            routes: [
-                { type: 'simple', ratio: 3 },
-                { type: 'simple', ratio: 3 }
-            ]
-        }
-    )
-];
+});

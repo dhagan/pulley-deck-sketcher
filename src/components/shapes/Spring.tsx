@@ -7,10 +7,11 @@ interface SpringProps {
     isSelected: boolean;
     onSelect: () => void;
     onDragEnd: (pos: { x: number; y: number }) => void;
-    snapToGrid: boolean;
+    snapToGrid: (pos: { x: number; y: number }) => { x: number; y: number };
+    onPointClick?: (pointId: string, e: any) => void;
 }
 
-const Spring: React.FC<SpringProps> = ({ spring, isSelected, onSelect, onDragEnd, snapToGrid }) => {
+const Spring: React.FC<SpringProps> = ({ spring, isSelected, onSelect, onDragEnd, snapToGrid, onPointClick }) => {
     const coils = 8;
     const coilWidth = 12;
     const length = spring.currentLength || spring.restLength;
@@ -32,7 +33,7 @@ const Spring: React.FC<SpringProps> = ({ spring, isSelected, onSelect, onDragEnd
             onClick={onSelect}
             onTap={onSelect}
             onDragEnd={(e) => {
-                const pos = e.target.position();
+                const pos = snapToGrid({ x: e.target.x(), y: e.target.y() });
                 onDragEnd(pos);
             }}
         >
@@ -44,6 +45,18 @@ const Spring: React.FC<SpringProps> = ({ spring, isSelected, onSelect, onDragEnd
                 fill={isSelected ? '#00d9ff' : '#ff6b6b'}
                 stroke="#000"
                 strokeWidth={1}
+                onClick={(e) => {
+                    if (onPointClick) {
+                        e.cancelBubble = true;
+                        onPointClick(`${spring.id}-top`, e);
+                    }
+                }}
+                onTap={(e) => {
+                    if (onPointClick) {
+                        e.cancelBubble = true;
+                        onPointClick(`${spring.id}-top`, e);
+                    }
+                }}
             />
 
             {/* Spring coils */}
@@ -63,6 +76,18 @@ const Spring: React.FC<SpringProps> = ({ spring, isSelected, onSelect, onDragEnd
                 fill={isSelected ? '#00d9ff' : '#ff6b6b'}
                 stroke="#000"
                 strokeWidth={1}
+                onClick={(e) => {
+                    if (onPointClick) {
+                        e.cancelBubble = true;
+                        onPointClick(`${spring.id}-bottom`, e);
+                    }
+                }}
+                onTap={(e) => {
+                    if (onPointClick) {
+                        e.cancelBubble = true;
+                        onPointClick(`${spring.id}-bottom`, e);
+                    }
+                }}
             />
 
             {/* Label */}

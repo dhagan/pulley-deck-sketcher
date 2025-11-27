@@ -1,0 +1,8 @@
+{
+  "name": "5:1",
+  "throw": 10,
+  "sheaveWidth": 2,
+  "connectionLength": 1,
+  "friction": 0.1,
+  "routes": [{ "type": "simple", "ratio": 5 }]
+}

@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Line, Group, Circle, Text } from 'react-konva';
-import { SystemState, ComponentType, PulleyComponent, AnchorComponent, RopeComponent, CleatComponent, PersonComponent } from '../types';
+import { SystemState, ComponentType, PulleyComponent, AnchorComponent, RopeComponent, CleatComponent, PersonComponent, SpringComponent } from '../types';
 import { snapToGrid as snapToGridUtil } from '../utils/geometry';
 import Pulley from './shapes/Pulley';
 import Anchor from './shapes/Anchor';
 import Rope from './shapes/Rope';
 import Cleat from './shapes/Cleat';
 import Person from './shapes/Person';
+import Spring from './shapes/Spring';
 
 interface CanvasProps {
     system: SystemState;
@@ -224,6 +225,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                 components={system.components}
                                 isSelected={rope.id === system.selectedId}
                                 onSelect={() => handleSelect(rope.id)}
+                                showArrows={system.showRopeArrows}
                             />
                         ))}
 
@@ -277,6 +279,20 @@ const Canvas: React.FC<CanvasProps> = ({
                                 onSelect={() => handleSelect(person.id)}
                                 onDragEnd={(pos) => handleDragEnd(person.id, pos)}
                                 snapToGrid={snapToGrid}
+                            />
+                        ))}
+
+                    {system.components
+                        .filter((c): c is SpringComponent => c.type === ComponentType.SPRING)
+                        .map(spring => (
+                            <Spring
+                                key={spring.id}
+                                spring={spring}
+                                isSelected={spring.id === system.selectedId}
+                                onSelect={() => handleSelect(spring.id)}
+                                onDragEnd={(pos) => handleDragEnd(spring.id, pos)}
+                                snapToGrid={snapToGrid}
+                                onPointClick={onPointClick}
                             />
                         ))}
 

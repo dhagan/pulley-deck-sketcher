@@ -79,6 +79,9 @@ const Pulley: React.FC<PulleyProps> = ({
                     fontSize={9}
                     fill="#ff6b6b"
                     fontFamily="monospace"
+                    rotation={-(pulley.rotation || 0)}
+                    offsetX={-15}
+                    offsetY={-radius - 25}
                 />
 
                 {/* 2. Input Rope Point (left) - BLUE with arrow */}
@@ -105,12 +108,16 @@ const Pulley: React.FC<PulleyProps> = ({
                     pointerWidth={6}
                 />
                 <Text
-                    x={-radius - 45}
-                    y={-8}
+                    x={-radius - 20}
+                    y={-5}
                     text="In"
-                    fontSize={9}
+                    fontSize={11}
                     fill="#339af0"
                     fontFamily="monospace"
+                    fontStyle="bold"
+                    rotation={-(pulley.rotation || 0)}
+                    offsetX={-radius - 20}
+                    offsetY={-5}
                 />
 
                 {/* 3. Output Rope Point (right) - GOLD with arrow */}
@@ -137,12 +144,16 @@ const Pulley: React.FC<PulleyProps> = ({
                     pointerWidth={6}
                 />
                 <Text
-                    x={radius + 25}
-                    y={-8}
+                    x={radius + 12}
+                    y={-5}
                     text="Out"
-                    fontSize={9}
+                    fontSize={11}
                     fill="#ffd43b"
                     fontFamily="monospace"
+                    fontStyle="bold"
+                    rotation={-(pulley.rotation || 0)}
+                    offsetX={radius + 12}
+                    offsetY={-5}
                 />
 
                 {/* Sheave number label */}
@@ -153,6 +164,49 @@ const Pulley: React.FC<PulleyProps> = ({
                     fontSize={10}
                     fill="#aaa"
                     fontFamily="monospace"
+                    rotation={-(pulley.rotation || 0)}
+                    offsetX={-8}
+                    offsetY={radius + 15}
+                />
+            </Group>
+        );
+    };
+
+    const renderLoadAttachment = () => {
+        // Bottom attachment point for load (movable)
+        const bottomY = radius + 30;
+
+        return (
+            <Group x={0} y={bottomY}>
+                <Circle
+                    radius={6}
+                    fill="#51cf66"
+                    stroke="#fff"
+                    strokeWidth={2}
+                    onClick={(e) => {
+                        if (onPointClick) {
+                            e.cancelBubble = true;
+                            onPointClick(`${pulley.id}-load`, e);
+                        }
+                    }}
+                    onTap={(e) => {
+                        if (onPointClick) {
+                            e.cancelBubble = true;
+                            onPointClick(`${pulley.id}-load`, e);
+                        }
+                    }}
+                    draggable
+                />
+                <Text
+                    x={-15}
+                    y={10}
+                    text="Load"
+                    fontSize={9}
+                    fill="#51cf66"
+                    fontFamily="monospace"
+                    rotation={-(pulley.rotation || 0)}
+                    offsetX={-15}
+                    offsetY={10}
                 />
             </Group>
         );
@@ -197,6 +251,9 @@ const Pulley: React.FC<PulleyProps> = ({
                     fontSize={9}
                     fill="#4a90e2"
                     fontFamily="monospace"
+                    rotation={-(pulley.rotation || 0)}
+                    offsetX={-20}
+                    offsetY={10}
                 />
             </Group>
         );
@@ -221,6 +278,9 @@ const Pulley: React.FC<PulleyProps> = ({
             {/* Render becket if present */}
             {renderBecket()}
 
+            {/* Render load attachment point */}
+            {renderLoadAttachment()}
+
             {/* Selection indicator */}
             {isSelected && (
                 <Circle
@@ -241,6 +301,9 @@ const Pulley: React.FC<PulleyProps> = ({
                 fontSize={12}
                 fill="#aaa"
                 fontFamily="monospace"
+                rotation={-(pulley.rotation || 0)}
+                offsetX={-40}
+                offsetY={radius + 35}
             />
         </Group>
     );
