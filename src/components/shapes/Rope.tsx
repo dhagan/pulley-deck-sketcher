@@ -320,40 +320,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                     />
                 </Group>
             )}
-
-            {/* Length label */}
-            <Group x={midPoint.x} y={midPoint.y}>
-                <Circle
-                    radius={20}
-                    fill="rgba(0, 0, 0, 0.7)"
-                />
-                <Text
-                    x={-15}
-                    y={-6}
-                    text={`${length.toFixed(0)}px`}
-                    fontSize={11}
-                    fill="#ffd43b"
-                    fontFamily="monospace"
-                />
-            </Group>
-
-            {/* Tension label (if calculated) */}
-            {rope.tension !== undefined && (
-                <Group x={midPoint.x} y={midPoint.y - 30}>
-                    <Circle
-                        radius={18}
-                        fill="rgba(0, 0, 0, 0.7)"
-                    />
-                    <Text
-                        x={-12}
-                        y={-6}
-                        text={`T=${rope.tension.toFixed(1)}N`}
-                        fontSize={10}
-                        fill="#51cf66"
-                        fontFamily="monospace"
-                    />
-                </Group>
-            )}
         </Group>
     );
 };
