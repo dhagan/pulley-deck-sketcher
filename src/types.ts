@@ -83,8 +83,6 @@ export interface RopeChain {
 export interface SystemState {
     components: Component[];
     selectedId: string | null;
-    selectedChainId?: string | null; // ID of selected rope chain
-    chains?: RopeChain[]; // Detected or manually created rope chains
     gridSize: number;
     snapToGrid: boolean;
     showRopeArrows?: boolean;

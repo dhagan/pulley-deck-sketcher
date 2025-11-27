@@ -205,19 +205,8 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
         const isLastStage = index === stageBlocks.length - 1;
         const nextStage = !isLastStage ? stageBlocks[index + 1] : null;
 
-        const bottomSheaves = Math.floor(stage.ratio / 2);
-
-        let topSheaveIdx = 0;
-        let bottomSheaveIdx = 0;
-
-        // Build rope path through sheaves
-        if (stage.startAtTop) {
-            for (let i = 0; i < bottomSheaves; i++) {
-            }
-        } else {
-            for (let i = 0; i < bottomSheaves; i++) {
-            }
-        }
+        // Simplified - no complex routing needed with segment model
+        // Each rope is now a simple segment
 
         const startId = stage.startAtTop ? stage.top : stage.bottom;
 

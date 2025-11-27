@@ -38,6 +38,10 @@ export const validateSystem = (system: SystemState): ValidationResult => {
     const duplicateWarnings = checkDuplicateStarts(ropes);
     warnings.push(...duplicateWarnings);
 
+    // Check rope continuity (segments connecting properly)
+    const continuityWarnings = checkRopeContinuity(ropes);
+    warnings.push(...continuityWarnings);
+
     return {
         valid: errors.length === 0,
         errors,
@@ -110,24 +114,34 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
         errors.push(`${prefix}: Invalid end point "${endPoint}"`);
     }
 
-    // Check if rope ends at person (recommended)
-    if (!endPoint.includes('person') && !endPoint.includes('cleat')) {
-        // This is a warning, not an error, but we'll note it
-        // warnings would need to be passed through
-    }
-
-    // Validate routing through pulleys - must follow OUT -> IN pattern
-    const routingErrors = validateRouting(rope, components);
-    if (routingErrors.length > 0) {
-        errors.push(...routingErrors.map(e => `${prefix}: ${e}`));
-    }
-
     return errors;
 };
 
-const validateRouting = (rope: RopeComponent, _components: Component[]): string[] => {
-    // No routing validation needed since we use simple segments now
-    return [];
+const checkRopeContinuity = (ropes: RopeComponent[]): string[] => {
+    const warnings: string[] = [];
+    
+    // Build a map of connection points to ropes
+    const pointToRopes = new Map<string, RopeComponent[]>();
+    
+    ropes.forEach(rope => {
+        const startPt = rope.startPoint || rope.startId;
+        const endPt = rope.endPoint || rope.endId;
+        
+        if (!pointToRopes.has(startPt)) pointToRopes.set(startPt, []);
+        if (!pointToRopes.has(endPt)) pointToRopes.set(endPt, []);
+        
+        pointToRopes.get(startPt)!.push(rope);
+        pointToRopes.get(endPt)!.push(rope);
+    });
+    
+    // Check for points with multiple connections (potential chains)
+    pointToRopes.forEach((connectedRopes, point) => {
+        if (connectedRopes.length > 2) {
+            warnings.push(`Point ${point} has ${connectedRopes.length} rope segments - may need review`);
+        }
+    });
+    
+    return warnings;
 };
 
 const checkDisconnectedComponents = (components: Component[]): string[] => {

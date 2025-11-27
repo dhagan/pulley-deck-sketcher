@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line, Group, Text, Circle, Arrow } from 'react-konva';
 import { RopeComponent as RopeType, Component, PulleyComponent } from '../../types';
-import { calculatePathLength, calculateRopePath } from '../../utils/geometry';
+import { calculatePathLength } from '../../utils/geometry';
 
 interface RopeProps {
     rope: RopeType;
