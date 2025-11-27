@@ -252,24 +252,24 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 return arrows;
             })()}
 
-            {/* Rope label */}
-            {rope.label && (
-                <Group x={midPoint.x} y={midPoint.y - 40}>
+            {/* Rope length indicator */}
+            {length > 0 && (
+                <Group x={midPoint.x} y={midPoint.y + 30}>
                     <Circle
-                        radius={28}
-                        fill="rgba(15, 23, 42, 0.9)"
-                        stroke="#475569"
+                        radius={22}
+                        fill="rgba(59, 130, 246, 0.9)"
+                        stroke="#3b82f6"
                         strokeWidth={1}
                     />
                     <Text
-                        x={-24}
-                        y={-7}
-                        text={rope.label}
-                        fontSize={13}
-                        fill="#eab308"
+                        x={-18}
+                        y={-6}
+                        text={`${Math.round(length)}px`}
+                        fontSize={11}
+                        fill="#f1f5f9"
                         fontFamily="'JetBrains Mono', 'Fira Code', monospace"
                         fontStyle="bold"
-                        width={48}
+                        width={36}
                         align="center"
                     />
                 </Group>
