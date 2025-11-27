@@ -29,20 +29,20 @@ const Pulley: React.FC<PulleyProps> = ({
 
         return (
             <Group key={sheaveId} x={xOffset} y={0}>
-                {/* Main sheave circle */}
+                {/* Main sheave circle - all pulleys identical */}
                 <Circle
                     radius={radius}
-                    fill="rgba(100, 150, 255, 0.2)"
+                    fill="rgba(100, 150, 255, 0.15)"
                     stroke="#4a90e2"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                 />
 
                 {/* Inner circle for depth */}
                 <Circle
                     radius={radius * 0.7}
                     stroke="#4a90e2"
-                    strokeWidth={1}
-                    opacity={0.5}
+                    strokeWidth={1.5}
+                    opacity={0.4}
                 />
 
                 {/* Center axle */}
@@ -229,7 +229,7 @@ const Pulley: React.FC<PulleyProps> = ({
                     y={10}
                     text="Becket"
                     fontSize={7}
-                    fill="#e64980"
+                    fill="#ff8c00"
                     fontFamily="monospace"
                     fontStyle="bold"
                     rotation={-(pulley.rotation || 0)}

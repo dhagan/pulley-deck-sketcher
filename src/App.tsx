@@ -164,13 +164,13 @@ const App: React.FC = () => {
                 const isFixedAnchor = pointId.includes('anchor-') && !pointId.includes('pulley');
                 const isBecket = pointId.includes('becket');
                 const isSpring = pointId.includes('spring');
-                const isCenter = pointId.endsWith('center');
+                const isPersonCenter = pointId.includes('person') && pointId.endsWith('center');
                 const isOutPoint = pointId.includes('-out');
                 
-                const isValidStart = (isFixedAnchor || isBecket || isSpring || isCenter || isOutPoint) && !isPulleyAnchor && !isInPoint;
+                const isValidStart = (isFixedAnchor || isBecket || isSpring || isPersonCenter || isOutPoint) && !isPulleyAnchor && !isInPoint;
                 
                 if (!isValidStart) {
-                    alert('Ropes can START at:\n✓ Fixed Anchor\n✓ Becket (green)\n✓ OUT point (yellow)\n✓ Spring\n✓ Person center\n\n✗ NOT at Pulley Anchor (red) or IN point (blue)!');
+                    alert('Ropes can START at:\n✓ Fixed Anchor\n✓ Becket (orange)\n✓ OUT point (yellow)\n✓ Spring\n✓ Person center\n\n✗ NOT at Pulley center, Pulley Anchor (red) or IN point (blue)!');
                     return;
                 }
                 
@@ -182,15 +182,29 @@ const App: React.FC = () => {
                 setRopeStart(pointId);
             } else {
                 // Second click - validate it's a valid end point
+                const isPulleyCenter = !pointId.includes('anchor') && 
+                                      !pointId.includes('becket') && 
+                                      !pointId.includes('in') && 
+                                      !pointId.includes('out') &&
+                                      !pointId.includes('person') &&
+                                      !pointId.includes('spring') &&
+                                      pointId.endsWith('center');
+                
+                if (isPulleyCenter) {
+                    alert('ERROR: Ropes cannot connect to pulley center!\n\nMust end at:\n✓ IN point (blue)\n✓ OUT point (yellow)\n✓ Anchor/Spring\n✓ Person center');
+                    setRopeStart(null);
+                    return;
+                }
+                
                 const isValidEnd = pointId.includes('in') || 
                                   pointId.includes('out') || 
                                   pointId.includes('anchor') ||
                                   pointId.includes('load') ||
                                   pointId.includes('spring') ||
-                                  pointId.endsWith('center'); // Allow anchors, cleats, person
+                                  (pointId.includes('person') && pointId.endsWith('center'));
                 
                 if (!isValidEnd) {
-                    alert('Ropes must end at a sheave In/Out point, Anchor, Load, Spring, or component center');
+                    alert('Ropes must end at a sheave In/Out point, Anchor, Load, Spring, or Person center\n\n✗ NOT at Pulley center!');
                     setRopeStart(null);
                     return;
                 }
@@ -424,11 +438,22 @@ const App: React.FC = () => {
                         <strong>Components:</strong> {system.components.length}
                     </div>
                     <div className="status-item">
-                        <strong>Selected:</strong> {system.selectedId ? system.components.find(c => c.id === system.selectedId)?.type || 'None' : 'None'}
+                        <strong>Selected:</strong> {system.selectedId ? 
+                            (() => {
+                                const comp = system.components.find(c => c.id === system.selectedId);
+                                if (!comp) return 'None';
+                                const label = (comp as any).label || comp.id;
+                                return `${comp.type} (${label})`;
+                            })() : 'None'}
                     </div>
                     <div className="status-item">
                         <strong>Mode:</strong> {toolMode === 'rope' ? 'Rope Drawing' : toolMode === 'measure' ? 'Measuring' : 'Select'}
                     </div>
+                    {toolMode === 'rope' && ropeStart && (
+                        <div className="status-item" style={{ color: '#4ade80', fontWeight: 'bold' }}>
+                            <strong>Rope Start:</strong> {ropeStart} → Click end point
+                        </div>
+                    )}
                     {toolMode === 'rope' && hoveredPoint && (
                         <div className="status-item" style={{ color: '#3b82f6', fontWeight: 'bold' }}>
                             <strong>Hover:</strong> {hoveredPoint}
