@@ -53,7 +53,7 @@ const Pulley: React.FC<PulleyProps> = ({
 
                 {/* Connection Points */}
 
-                {/* 1. Anchor Point (top) - RED - connects to fixed anchor via spring/strop */}
+                {/* 1. Anchor Point (top) - RED */}
                 <Circle
                     x={0}
                     y={-radius - 8}
@@ -62,10 +62,9 @@ const Pulley: React.FC<PulleyProps> = ({
                     stroke={hoveredPoint === `${pulley.id}-anchor` ? "#00d9ff" : "#fff"}
                     strokeWidth={hoveredPoint === `${pulley.id}-anchor` ? 3 : 2}
                     onClick={(e) => {
-                        if (onPointClick) {
-                            e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-anchor`, e);
-                        }
+                        e.cancelBubble = true;
+                        if (onSelect) onSelect();
+                        if (onPointClick) onPointClick(`${pulley.id}-anchor`, e);
                     }}
                     onTap={(e) => {
                         if (onPointClick) {
@@ -104,10 +103,9 @@ const Pulley: React.FC<PulleyProps> = ({
                     stroke={hoveredPoint === `${pulley.id}-sheave-${index}-in` ? "#00d9ff" : "#fff"}
                     strokeWidth={hoveredPoint === `${pulley.id}-sheave-${index}-in` ? 3 : 2}
                     onClick={(e) => {
-                        if (onPointClick) {
-                            e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-sheave-${index}-in`, e);
-                        }
+                        e.cancelBubble = true;
+                        if (onSelect) onSelect();
+                        if (onPointClick) onPointClick(`${pulley.id}-sheave-${index}-in`, e);
                     }}
                     onMouseEnter={() => {
                         setHoveredPoint(`${pulley.id}-sheave-${index}-in`);
@@ -148,10 +146,9 @@ const Pulley: React.FC<PulleyProps> = ({
                     stroke={hoveredPoint === `${pulley.id}-sheave-${index}-out` ? "#00d9ff" : "#fff"}
                     strokeWidth={hoveredPoint === `${pulley.id}-sheave-${index}-out` ? 3 : 2}
                     onClick={(e) => {
-                        if (onPointClick) {
-                            e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-sheave-${index}-out`, e);
-                        }
+                        e.cancelBubble = true;
+                        if (onSelect) onSelect();
+                        if (onPointClick) onPointClick(`${pulley.id}-sheave-${index}-out`, e);
                     }}
                     onMouseEnter={() => {
                         setHoveredPoint(`${pulley.id}-sheave-${index}-out`);
@@ -266,10 +263,9 @@ const Pulley: React.FC<PulleyProps> = ({
                     stroke="#fff"
                     strokeWidth={2}
                     onClick={(e) => {
-                        if (onPointClick) {
-                            e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-becket`, e);
-                        }
+                        e.cancelBubble = true;
+                        if (onSelect) onSelect();
+                        if (onPointClick) onPointClick(`${pulley.id}-becket`, e);
                     }}
                 />
                 <Text

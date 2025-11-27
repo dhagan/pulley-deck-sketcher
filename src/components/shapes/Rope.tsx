@@ -106,6 +106,11 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
             };
         }
 
+        // Handle Spring - return the top attachment point (position)
+        if (component.type === 'spring') {
+            return compWithPos.position;
+        }
+
         return compWithPos.position;
     };
 

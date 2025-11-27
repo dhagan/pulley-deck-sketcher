@@ -362,7 +362,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                     <Text
                                         x={-20 / stageScale}
                                         y={-7 / stageScale}
-                                        text={`${Math.round(len)}px`}
+                                        text={`${Math.round(len)} mm`}
                                         fontSize={14 / stageScale}
                                         fill="#ff00ff"
                                         fontStyle="bold"
