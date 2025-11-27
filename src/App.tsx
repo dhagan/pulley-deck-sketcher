@@ -314,6 +314,7 @@ const App: React.FC = () => {
                 toolMode={toolMode}
                 ropeStart={ropeStart}
                 selectedId={system.selectedId}
+                system={system}
             />
             <div className="main-content">
                 <Canvas

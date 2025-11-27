@@ -60,23 +60,16 @@
       "type": "rope",
       "startId": "pulley-2",
       "startPoint": "pulley-2-becket",
-      "endId": "pulley-1",
-      "endPoint": "pulley-1-sheave-0-in",
-      "routeThrough": [],
+      "endId": "person-1",
+      "endPoint": "person-1-center",
+      "routeThrough": [
+        "pulley-1-sheave-0-in",
+        "pulley-1-sheave-0-out"
+      ],
       "label": "Main"
     },
     {
       "id": "rope-3",
-      "type": "rope",
-      "startId": "pulley-1",
-      "startPoint": "pulley-1-sheave-0-out",
-      "endId": "person-1",
-      "endPoint": "person-1-center",
-      "routeThrough": [],
-      "label": "Pull"
-    },
-    {
-      "id": "rope-4",
       "type": "rope",
       "startId": "pulley-2",
       "startPoint": "pulley-2-load",

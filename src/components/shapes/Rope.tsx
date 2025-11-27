@@ -256,11 +256,34 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 </Group>
             )}
 
+            {/* Start label */}
+            {path.length > 0 && (
+                <Group x={path[0].x} y={path[0].y}>
+                    <Circle
+                        radius={18}
+                        fill="rgba(68, 255, 68, 0.8)"
+                        stroke="#fff"
+                        strokeWidth={2}
+                    />
+                    <Text
+                        x={-12}
+                        y={-6}
+                        text="START"
+                        fontSize={8}
+                        fill="#000"
+                        fontFamily="monospace"
+                        fontStyle="bold"
+                        width={24}
+                        align="center"
+                    />
+                </Group>
+            )}
+
             {/* End label */}
             {path.length > 0 && (
                 <Group x={path[path.length - 1].x} y={path[path.length - 1].y}>
                     <Circle
-                        radius={15}
+                        radius={18}
                         fill="rgba(255, 68, 68, 0.8)"
                         stroke="#fff"
                         strokeWidth={2}

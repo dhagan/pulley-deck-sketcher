@@ -1,0 +1,248 @@
+import { SystemState, Component, RopeComponent, ComponentType } from '../types';
+
+export interface ValidationResult {
+    valid: boolean;
+    errors: string[];
+    warnings: string[];
+    stats: {
+        totalRopes: number;
+        validRopes: number;
+        invalidRopes: number;
+    };
+}
+
+export const validateSystem = (system: SystemState): ValidationResult => {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    const ropes = system.components.filter((c): c is RopeComponent => c.type === ComponentType.ROPE);
+    
+    let validRopes = 0;
+    let invalidRopes = 0;
+
+    // Validate each rope
+    ropes.forEach((rope, index) => {
+        const ropeErrors = validateRope(rope, system.components, index + 1);
+        if (ropeErrors.length > 0) {
+            errors.push(...ropeErrors);
+            invalidRopes++;
+        } else {
+            validRopes++;
+        }
+    });
+
+    // Check for disconnected components
+    const disconnectedWarnings = checkDisconnectedComponents(system.components);
+    warnings.push(...disconnectedWarnings);
+
+    // Check for multiple ropes from same start point
+    const duplicateWarnings = checkDuplicateStarts(ropes);
+    warnings.push(...duplicateWarnings);
+
+    return {
+        valid: errors.length === 0,
+        errors,
+        warnings,
+        stats: {
+            totalRopes: ropes.length,
+            validRopes,
+            invalidRopes,
+        }
+    };
+};
+
+const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: number): string[] => {
+    const errors: string[] = [];
+    const prefix = `Rope ${ropeNumber} (${rope.label || rope.id})`;
+
+    // Check start point exists and is valid
+    const startComponent = components.find(c => c.id === rope.startId);
+    if (!startComponent) {
+        errors.push(`${prefix}: Start component not found`);
+        return errors;
+    }
+
+    // Check end point exists and is valid
+    const endComponent = components.find(c => c.id === rope.endId);
+    if (!endComponent) {
+        errors.push(`${prefix}: End component not found`);
+        return errors;
+    }
+
+    // Validate start point - must be anchor, becket, load, or spring
+    const startPoint = rope.startPoint || '';
+    const isValidStart = 
+        startPoint.includes('anchor') && !startPoint.includes('sheave') ||
+        startPoint.includes('becket') ||
+        startPoint.includes('load') && !startPoint.includes('sheave') ||
+        startPoint.includes('spring') ||
+        startPoint.endsWith('center');
+
+    if (!isValidStart) {
+        errors.push(`${prefix}: Invalid start point "${startPoint}". Must start at Anchor, Becket, Load, Spring, or center`);
+    }
+
+    // Validate end point - should be at person or terminal point
+    const endPoint = rope.endPoint || '';
+    const isValidEnd = 
+        endPoint.includes('person') ||
+        endPoint.includes('anchor') && !endPoint.includes('sheave') ||
+        endPoint.includes('load') ||
+        endPoint.includes('spring') ||
+        endPoint.includes('in') ||
+        endPoint.includes('out') ||
+        endPoint.endsWith('center');
+
+    if (!isValidEnd) {
+        errors.push(`${prefix}: Invalid end point "${endPoint}"`);
+    }
+
+    // Check if rope ends at person (recommended)
+    if (!endPoint.includes('person') && !endPoint.includes('cleat')) {
+        // This is a warning, not an error, but we'll note it
+        // warnings would need to be passed through
+    }
+
+    // Validate routing through pulleys - must follow OUT -> IN pattern
+    const routingErrors = validateRouting(rope, components);
+    if (routingErrors.length > 0) {
+        errors.push(...routingErrors.map(e => `${prefix}: ${e}`));
+    }
+
+    return errors;
+};
+
+const validateRouting = (rope: RopeComponent, _components: Component[]): string[] => {
+    const errors: string[] = [];
+    
+    // Build the full path of connection points
+    const path: string[] = [rope.startPoint || rope.startId];
+    
+    // Add intermediate points from routeThrough
+    rope.routeThrough.forEach(point => {
+        if (typeof point === 'string') {
+            path.push(point);
+        } else {
+            path.push(`${point.id}-sheave-${point.sheaveIndex}`);
+        }
+    });
+    
+    path.push(rope.endPoint || rope.endId);
+
+    // Check each transition
+    for (let i = 0; i < path.length - 1; i++) {
+        const current = path[i];
+        const next = path[i + 1];
+
+        // If current is IN, next must be OUT (or terminal point)
+        if (current.includes('-in')) {
+            const isTerminal = next.includes('anchor') || next.includes('load') || 
+                              next.includes('person') || next.includes('spring') || 
+                              next.endsWith('center');
+            if (!next.includes('-out') && !isTerminal) {
+                errors.push(`After IN point, must connect to OUT point or terminal. Found: ${current} -> ${next}`);
+            }
+        }
+
+        // If current is OUT, next must be IN (or terminal point)
+        if (current.includes('-out')) {
+            const isTerminal = next.includes('anchor') || next.includes('load') || 
+                              next.includes('person') || next.includes('spring') || 
+                              next.endsWith('center');
+            if (!next.includes('-in') && !isTerminal) {
+                errors.push(`After OUT point, must connect to IN point or terminal. Found: ${current} -> ${next}`);
+            }
+        }
+
+        // Cannot connect IN to IN
+        if (current.includes('-in') && next.includes('-in')) {
+            errors.push(`Cannot connect IN to IN: ${current} -> ${next}`);
+        }
+
+        // Cannot connect OUT to OUT
+        if (current.includes('-out') && next.includes('-out')) {
+            errors.push(`Cannot connect OUT to OUT: ${current} -> ${next}`);
+        }
+
+        // Start points should not connect directly to OUT
+        const isStartPoint = current.includes('anchor') || current.includes('becket') || 
+                            current.includes('load') || current.includes('spring') || 
+                            current.endsWith('center');
+        if (isStartPoint && next.includes('-out')) {
+            errors.push(`Start point must connect to IN first, not OUT: ${current} -> ${next}`);
+        }
+    }
+
+    return errors;
+};
+
+const checkDisconnectedComponents = (components: Component[]): string[] => {
+    const warnings: string[] = [];
+    const ropes = components.filter((c): c is RopeComponent => c.type === ComponentType.ROPE);
+    const connectedIds = new Set<string>();
+
+    // Mark all components that have ropes connected
+    ropes.forEach(rope => {
+        connectedIds.add(rope.startId);
+        connectedIds.add(rope.endId);
+    });
+
+    // Check for disconnected pulleys, anchors, etc.
+    components.forEach(comp => {
+        if (comp.type === ComponentType.ROPE) return;
+        
+        if (!connectedIds.has(comp.id)) {
+            const label = (comp as any).label || comp.id;
+            warnings.push(`Component "${label}" (${comp.type}) is not connected to any ropes`);
+        }
+    });
+
+    return warnings;
+};
+
+const checkDuplicateStarts = (ropes: RopeComponent[]): string[] => {
+    const warnings: string[] = [];
+    const startPoints = new Map<string, number>();
+
+    ropes.forEach(rope => {
+        const start = rope.startPoint || rope.startId;
+        startPoints.set(start, (startPoints.get(start) || 0) + 1);
+    });
+
+    startPoints.forEach((count, point) => {
+        if (count > 1) {
+            warnings.push(`${count} ropes start from the same point: ${point}`);
+        }
+    });
+
+    return warnings;
+};
+
+export const formatValidationReport = (result: ValidationResult): string => {
+    let report = '=== SYSTEM VALIDATION REPORT ===\n\n';
+    
+    report += `Status: ${result.valid ? '✓ VALID' : '✗ INVALID'}\n`;
+    report += `Total Ropes: ${result.stats.totalRopes}\n`;
+    report += `Valid: ${result.stats.validRopes}, Invalid: ${result.stats.invalidRopes}\n\n`;
+
+    if (result.errors.length > 0) {
+        report += '--- ERRORS ---\n';
+        result.errors.forEach(err => {
+            report += `  ✗ ${err}\n`;
+        });
+        report += '\n';
+    }
+
+    if (result.warnings.length > 0) {
+        report += '--- WARNINGS ---\n';
+        result.warnings.forEach(warn => {
+            report += `  ⚠ ${warn}\n`;
+        });
+        report += '\n';
+    }
+
+    if (result.valid && result.warnings.length === 0) {
+        report += '✓ System is properly configured!\n';
+    }
+
+    return report;
+};

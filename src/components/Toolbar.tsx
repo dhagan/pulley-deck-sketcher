@@ -1,6 +1,7 @@
 import React from 'react';
 import { SystemState } from '../types';
 import { scenarios } from '../utils/scenarios';
+import { validateSystem, formatValidationReport } from '../utils/validation';
 
 interface ToolbarProps {
     onAddPulley: () => void;
@@ -19,6 +20,7 @@ interface ToolbarProps {
     toolMode: 'select' | 'rope' | 'measure';
     ropeStart: string | null;
     selectedId?: string | null;
+    system: SystemState;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -38,7 +40,19 @@ const Toolbar: React.FC<ToolbarProps> = ({
     toolMode,
     ropeStart,
     selectedId,
+    system,
 }) => {
+    const handleValidate = () => {
+        const result = validateSystem(system);
+        const report = formatValidationReport(result);
+        
+        if (result.valid) {
+            alert('✓ System Valid!\n\n' + report);
+        } else {
+            alert('✗ System has errors:\n\n' + report);
+        }
+    };
+
     return (
         <div className="toolbar">
             <div className="toolbar-group" style={{ display: 'flex', gap: '8px' }}>
@@ -101,6 +115,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     />
                 </label>
                 <button className="toolbar-button" onClick={onExportSVG} title="Export as SVG">📤 Export SVG</button>
+                <button 
+                    className="toolbar-button" 
+                    onClick={handleValidate} 
+                    title="Validate System"
+                    style={{ 
+                        marginLeft: '16px',
+                        background: 'linear-gradient(135deg, #51cf66 0%, #40c057 100%)', 
+                        borderColor: '#69db7c' 
+                    }}
+                >
+                    ✓ Validate
+                </button>
                 {onDelete && (
                     <button
                         className="toolbar-button"
