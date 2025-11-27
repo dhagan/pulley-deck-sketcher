@@ -208,6 +208,7 @@ const Pulley: React.FC<PulleyProps> = ({
         return sheaves;
     };
 
+    // SINGLE TEMPLATE: Becket rendering - side becket for pulley
     const renderBecket = () => {
         if (!pulley.hasBecket) return null;
 
@@ -226,6 +227,18 @@ const Pulley: React.FC<PulleyProps> = ({
                         if (onSelect) onSelect();
                         if (onPointClick) onPointClick(`${pulley.id}-becket`, e);
                     }}
+                    onTap={(e) => {
+                        e.cancelBubble = true;
+                        if (onPointClick) onPointClick(`${pulley.id}-becket`, e);
+                    }}
+                    onMouseEnter={() => {
+                        setHoveredPoint(`${pulley.id}-becket`);
+                        onPointHover && onPointHover(`${pulley.id}-becket`);
+                    }}
+                    onMouseLeave={() => {
+                        setHoveredPoint(null);
+                        onPointHover && onPointHover(null);
+                    }}
                 />
                 <Text
                     x={-20}
@@ -234,6 +247,7 @@ const Pulley: React.FC<PulleyProps> = ({
                     fontSize={7}
                     fill="#ff8c00"
                     fontFamily="monospace"
+                    fontStyle="bold"
                     rotation={-(pulley.rotation || 0)}
                     offsetX={-20}
                     offsetY={10}
