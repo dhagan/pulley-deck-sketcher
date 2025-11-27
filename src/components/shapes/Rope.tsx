@@ -194,15 +194,37 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
     const midPoint = path[midIndex] || path[0];
 
     return (
-        <Group onClick={onSelect} onTap={onSelect}>
+        <Group>
+            {/* Invisible wider hitbox for easier selection */}
+            <Line
+                points={points}
+                stroke="transparent"
+                strokeWidth={10}
+                lineCap="round"
+                lineJoin="round"
+                onClick={onSelect}
+                onTap={onSelect}
+                onMouseEnter={(e) => {
+                    const container = e.target.getStage()?.container();
+                    if (container) container.style.cursor = 'pointer';
+                }}
+                onMouseLeave={(e) => {
+                    const container = e.target.getStage()?.container();
+                    if (container) container.style.cursor = 'default';
+                }}
+            />
+            
             {/* Rope line - using lineCap and lineJoin for clean segments */}
             <Line
                 points={points}
                 stroke={isSelected ? '#00d9ff' : '#ffd43b'}
-                strokeWidth={isSelected ? 3 : 2}
+                strokeWidth={isSelected ? 4 : 2}
                 lineCap="round"
                 lineJoin="round"
                 tension={0} // No bezier smoothing - show actual path with wraps
+                shadowColor={isSelected ? '#00d9ff' : undefined}
+                shadowBlur={isSelected ? 10 : 0}
+                listening={false}
             />
 
             {/* Directional arrows */}

@@ -1,0 +1,165 @@
+{
+  "version": "1.0",
+  "gridSize": 20,
+  "snapToGrid": true,
+  "components": [
+    {
+      "id": "anchor-1",
+      "type": "anchor",
+      "position": {
+        "x": 400,
+        "y": 100
+      },
+      "label": "Fixed Anchor"
+    },
+    {
+      "id": "pulley-1",
+      "type": "pulley",
+      "position": {
+        "x": 400,
+        "y": 200
+      },
+      "diameter": 30,
+      "sheaves": 1,
+      "hasBecket": true,
+      "rotation": 0,
+      "attachmentPoints": {
+        "top": {
+          "x": 400,
+          "y": 170
+        },
+        "bottom": {
+          "x": 400,
+          "y": 230
+        }
+      }
+    },
+    {
+      "id": "pulley-2",
+      "type": "pulley",
+      "position": {
+        "x": 400,
+        "y": 350
+      },
+      "diameter": 30,
+      "sheaves": 1,
+      "hasBecket": true,
+      "rotation": 180,
+      "attachmentPoints": {
+        "top": {
+          "x": 400,
+          "y": 320
+        },
+        "bottom": {
+          "x": 400,
+          "y": 380
+        }
+      }
+    },
+    {
+      "id": "anchor-2",
+      "type": "anchor",
+      "position": {
+        "x": 400,
+        "y": 480
+      },
+      "label": ""
+    },
+    {
+      "id": "rope-1",
+      "type": "rope",
+      "startId": "anchor-1",
+      "startPoint": "anchor-1",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-anchor",
+      "routeThrough": [],
+      "label": "Anchor"
+    },
+    {
+      "id": "rope-1764231875940",
+      "type": "rope",
+      "startId": "anchor-2",
+      "startPoint": "anchor-2",
+      "endId": "pulley-2",
+      "endPoint": "pulley-2-anchor",
+      "routeThrough": [],
+      "label": "Rope 2"
+    },
+    {
+      "id": "rope-1764231904572",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1",
+      "endId": "pulley-2",
+      "endPoint": "pulley-2-sheave-0-in",
+      "routeThrough": [],
+      "label": "Rope 3"
+    },
+    {
+      "id": "rope-1764231916588",
+      "type": "rope",
+      "startId": "pulley-2-becket",
+      "startPoint": "center",
+      "endId": "pulley-1",
+      "endPoint": "center",
+      "routeThrough": []
+    },
+    {
+      "id": "rope-1764231928589",
+      "type": "rope",
+      "startId": "pulley-2-becket",
+      "startPoint": "center",
+      "endId": "pulley-1",
+      "endPoint": "center",
+      "routeThrough": []
+    },
+    {
+      "id": "rope-1764231935636",
+      "type": "rope",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-becket",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-sheave-0-in",
+      "routeThrough": [],
+      "label": "Rope 6"
+    },
+    {
+      "id": "rope-1764231947726",
+      "type": "rope",
+      "startId": "person-1",
+      "startPoint": "center",
+      "endId": "person-1",
+      "endPoint": "center",
+      "routeThrough": []
+    },
+    {
+      "id": "rope-1764231955491",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "center",
+      "endId": "rope-1764231947726",
+      "endPoint": "center",
+      "routeThrough": []
+    },
+    {
+      "id": "person-1764231964178",
+      "type": "person",
+      "position": {
+        "x": 560,
+        "y": 320
+      },
+      "label": "Person",
+      "pulling": false
+    },
+    {
+      "id": "rope-1764231979894",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "center",
+      "endId": "person-1764231964178",
+      "endPoint": "center",
+      "routeThrough": []
+    }
+  ],
+  "timestamp": "2025-11-27T08:26:41.011Z"
+}

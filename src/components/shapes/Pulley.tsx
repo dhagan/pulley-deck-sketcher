@@ -23,6 +23,7 @@ const Pulley: React.FC<PulleyProps> = ({
 }) => {
     const radius = pulley.diameter / 2;
     const sheaveSpacing = radius * 2 + 15; // Space between sheaves
+    const [hoveredPoint, setHoveredPoint] = React.useState<string | null>(null);
 
     const renderSheave = (index: number, xOffset: number) => {
         const sheaveId = `${pulley.id}-sheave-${index}`;
@@ -57,10 +58,10 @@ const Pulley: React.FC<PulleyProps> = ({
                 <Circle
                     x={0}
                     y={-radius - 8}
-                    radius={5}
+                    radius={hoveredPoint === `${pulley.id}-anchor` ? 7 : 5}
                     fill="#ff6b6b"
-                    stroke="#fff"
-                    strokeWidth={2}
+                    stroke={hoveredPoint === `${pulley.id}-anchor` ? "#00d9ff" : "#fff"}
+                    strokeWidth={hoveredPoint === `${pulley.id}-anchor` ? 3 : 2}
                     onClick={(e) => {
                         if (onPointClick) {
                             e.cancelBubble = true;
@@ -73,8 +74,14 @@ const Pulley: React.FC<PulleyProps> = ({
                             onPointClick(`${pulley.id}-anchor`, e);
                         }
                     }}
-                    onMouseEnter={() => onPointHover && onPointHover(`${pulley.id}-anchor`)}
-                    onMouseLeave={() => onPointHover && onPointHover(null)}
+                    onMouseEnter={() => {
+                        setHoveredPoint(`${pulley.id}-anchor`);
+                        onPointHover && onPointHover(`${pulley.id}-anchor`);
+                    }}
+                    onMouseLeave={() => {
+                        setHoveredPoint(null);
+                        onPointHover && onPointHover(null);
+                    }}
                 />
                 <Text
                     x={-20}
@@ -93,18 +100,24 @@ const Pulley: React.FC<PulleyProps> = ({
                 <Circle
                     x={-radius - 8}
                     y={0}
-                    radius={5}
+                    radius={hoveredPoint === `${pulley.id}-sheave-${index}-in` ? 7 : 5}
                     fill="#339af0"
-                    stroke="#fff"
-                    strokeWidth={2}
+                    stroke={hoveredPoint === `${pulley.id}-sheave-${index}-in` ? "#00d9ff" : "#fff"}
+                    strokeWidth={hoveredPoint === `${pulley.id}-sheave-${index}-in` ? 3 : 2}
                     onClick={(e) => {
                         if (onPointClick) {
                             e.cancelBubble = true;
                             onPointClick(`${pulley.id}-sheave-${index}-in`, e);
                         }
                     }}
-                    onMouseEnter={() => onPointHover && onPointHover(`${pulley.id}-sheave-${index}-in`)}
-                    onMouseLeave={() => onPointHover && onPointHover(null)}
+                    onMouseEnter={() => {
+                        setHoveredPoint(`${pulley.id}-sheave-${index}-in`);
+                        onPointHover && onPointHover(`${pulley.id}-sheave-${index}-in`);
+                    }}
+                    onMouseLeave={() => {
+                        setHoveredPoint(null);
+                        onPointHover && onPointHover(null);
+                    }}
                 />
                 <Arrow
                     points={[-radius - 20, 0, -radius - 8, 0]}
@@ -131,18 +144,24 @@ const Pulley: React.FC<PulleyProps> = ({
                 <Circle
                     x={radius + 8}
                     y={0}
-                    radius={5}
+                    radius={hoveredPoint === `${pulley.id}-sheave-${index}-out` ? 7 : 5}
                     fill="#ffd43b"
-                    stroke="#fff"
-                    strokeWidth={2}
+                    stroke={hoveredPoint === `${pulley.id}-sheave-${index}-out` ? "#00d9ff" : "#fff"}
+                    strokeWidth={hoveredPoint === `${pulley.id}-sheave-${index}-out` ? 3 : 2}
                     onClick={(e) => {
                         if (onPointClick) {
                             e.cancelBubble = true;
                             onPointClick(`${pulley.id}-sheave-${index}-out`, e);
                         }
                     }}
-                    onMouseEnter={() => onPointHover && onPointHover(`${pulley.id}-sheave-${index}-out`)}
-                    onMouseLeave={() => onPointHover && onPointHover(null)}
+                    onMouseEnter={() => {
+                        setHoveredPoint(`${pulley.id}-sheave-${index}-out`);
+                        onPointHover && onPointHover(`${pulley.id}-sheave-${index}-out`);
+                    }}
+                    onMouseLeave={() => {
+                        setHoveredPoint(null);
+                        onPointHover && onPointHover(null);
+                    }}
                 />
                 <Arrow
                     points={[radius + 8, 0, radius + 20, 0]}
