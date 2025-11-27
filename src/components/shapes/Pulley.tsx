@@ -196,47 +196,6 @@ const Pulley: React.FC<PulleyProps> = ({
         );
     };
 
-    const renderLoadAttachment = () => {
-        // Bottom attachment point - this is actually a BECKET (rope start point)
-        const bottomY = radius + 8;
-
-        return (
-            <Group x={0} y={bottomY}>
-                <Circle
-                    radius={6}
-                    fill="#ff8c00"
-                    stroke="#fff"
-                    strokeWidth={2}
-                    onClick={(e) => {
-                        if (onPointClick) {
-                            e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-becket-bottom`, e);
-                        }
-                    }}
-                    onTap={(e) => {
-                        if (onPointClick) {
-                            e.cancelBubble = true;
-                            onPointClick(`${pulley.id}-becket-bottom`, e);
-                        }
-                    }}
-                    draggable
-                />
-                <Text
-                    x={-20}
-                    y={10}
-                    text="Becket"
-                    fontSize={7}
-                    fill="#ff8c00"
-                    fontFamily="monospace"
-                    fontStyle="bold"
-                    rotation={-(pulley.rotation || 0)}
-                    offsetX={-20}
-                    offsetY={10}
-                />
-            </Group>
-        );
-    };
-
     const renderSheaves = () => {
         const sheaves = [];
         const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
