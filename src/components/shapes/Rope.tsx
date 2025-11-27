@@ -39,7 +39,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
 
             if (pointId.includes('anchor')) {
                 localX = 0;
-                localY = -radius - 8;
+                localY = -radius; // On top of circumference
             } else if (pointId.includes('becket')) {
                 const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
                 localX = totalWidth / 2 + radius + 20;
@@ -53,11 +53,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect }) =
                 const startX = -totalWidth / 2;
                 const sheaveX = startX + sheaveIndex * sheaveSpacing;
 
+                // Place connection points ON the circumference, not offset
                 if (type === 'in') {
-                    localX = sheaveX - radius - 8;
+                    localX = sheaveX - radius;
                     localY = 0;
                 } else if (type === 'out') {
-                    localX = sheaveX + radius + 8;
+                    localX = sheaveX + radius;
                     localY = 0;
                 }
             }
