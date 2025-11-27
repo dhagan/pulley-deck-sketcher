@@ -36,7 +36,7 @@
       "id": "anchor-2",
       "type": "anchor",
       "position": { "x": 400, "y": 480 },
-      "label": "Load"
+      "label": ""
     },
     {
       "id": "person-1",
@@ -68,7 +68,7 @@
         "pulley-1-sheave-1-in",
         "pulley-1-sheave-1-out"
       ],
-      "label": "Main Rope"
+      "label": ""
     },
     {
       "id": "rope-3",
@@ -78,7 +78,7 @@
       "endId": "pulley-2",
       "endPoint": "pulley-2-load",
       "routeThrough": [],
-      "label": "Load"
+      "label": ""
     }
   ],
   "selectedId": null,

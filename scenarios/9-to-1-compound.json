@@ -68,7 +68,7 @@
       "id": "anchor-3",
       "type": "anchor",
       "position": { "x": 450, "y": 470 },
-      "label": "Load"
+      "label": ""
     },
     {
       "id": "person-1",
@@ -108,7 +108,7 @@
       "endId": "pulley-2",
       "endPoint": "pulley-2-load",
       "routeThrough": [],
-      "label": "Load"
+      "label": ""
     },
     {
       "id": "rope-4",
