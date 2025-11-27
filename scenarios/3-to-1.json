@@ -19,17 +19,7 @@
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": false,
-      "rotation": 0,
-      "attachmentPoints": {
-        "top": {
-          "x": 400,
-          "y": 170
-        },
-        "bottom": {
-          "x": 400,
-          "y": 230
-        }
-      }
+      "rotation": 0
     },
     {
       "id": "pulley-2",
@@ -41,17 +31,7 @@
       "diameter": 30,
       "sheaves": 1,
       "hasBecket": true,
-      "rotation": 180,
-      "attachmentPoints": {
-        "top": {
-          "x": 400,
-          "y": 320
-        },
-        "bottom": {
-          "x": 400,
-          "y": 380
-        }
-      }
+      "rotation": 180
     },
     {
       "id": "spring-1",

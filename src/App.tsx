@@ -45,10 +45,6 @@ const App: React.FC = () => {
             sheaves: 1,
             hasBecket: false,
             rotation: 0,
-            attachmentPoints: {
-                top: { x: defaultPosition.x, y: defaultPosition.y - 40 },
-                bottom: { x: defaultPosition.x, y: defaultPosition.y + 40 },
-            },
         };
         setSystem(prev => ({ ...prev, components: [...prev.components, pulley] }));
     };
@@ -63,10 +59,6 @@ const App: React.FC = () => {
             sheaves: 2,
             hasBecket: false,
             rotation: 0,
-            attachmentPoints: {
-                top: { x: defaultPosition.x, y: defaultPosition.y - 40 },
-                bottom: { x: defaultPosition.x, y: defaultPosition.y + 40 },
-            },
         };
         setSystem(prev => ({ ...prev, components: [...prev.components, pulley] }));
     };
@@ -81,10 +73,6 @@ const App: React.FC = () => {
             sheaves: 3,
             hasBecket: false,
             rotation: 0,
-            attachmentPoints: {
-                top: { x: defaultPosition.x, y: defaultPosition.y - 40 },
-                bottom: { x: defaultPosition.x, y: defaultPosition.y + 40 },
-            },
         };
         setSystem(prev => ({ ...prev, components: [...prev.components, pulley] }));
     };

@@ -21,11 +21,6 @@ export interface PulleyComponent {
     sheaves: 1 | 2 | 3;
     hasBecket: boolean;
     rotation: number; // Rotation in degrees
-    attachmentPoints: {
-        top: Point;
-        bottom: Point;
-        becket?: Point;
-    };
 }
 
 export interface AnchorComponent {
