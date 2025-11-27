@@ -9,6 +9,7 @@ interface PulleyProps {
     onDragEnd: (pos: { x: number; y: number }) => void;
     snapToGrid: (pos: { x: number; y: number }) => { x: number; y: number };
     onPointClick?: (pointId: string, e: any) => void;
+    onPointHover?: (pointId: string | null) => void;
 }
 
 const Pulley: React.FC<PulleyProps> = ({
@@ -18,6 +19,7 @@ const Pulley: React.FC<PulleyProps> = ({
     onDragEnd,
     snapToGrid,
     onPointClick,
+    onPointHover,
 }) => {
     const radius = pulley.diameter / 2;
     const sheaveSpacing = radius * 2 + 15; // Space between sheaves
@@ -71,6 +73,8 @@ const Pulley: React.FC<PulleyProps> = ({
                             onPointClick(`${pulley.id}-anchor`, e);
                         }
                     }}
+                    onMouseEnter={() => onPointHover && onPointHover(`${pulley.id}-anchor`)}
+                    onMouseLeave={() => onPointHover && onPointHover(null)}
                 />
                 <Text
                     x={-20}
@@ -99,6 +103,8 @@ const Pulley: React.FC<PulleyProps> = ({
                             onPointClick(`${pulley.id}-sheave-${index}-in`, e);
                         }
                     }}
+                    onMouseEnter={() => onPointHover && onPointHover(`${pulley.id}-sheave-${index}-in`)}
+                    onMouseLeave={() => onPointHover && onPointHover(null)}
                 />
                 <Arrow
                     points={[-radius - 20, 0, -radius - 8, 0]}
@@ -135,6 +141,8 @@ const Pulley: React.FC<PulleyProps> = ({
                             onPointClick(`${pulley.id}-sheave-${index}-out`, e);
                         }
                     }}
+                    onMouseEnter={() => onPointHover && onPointHover(`${pulley.id}-sheave-${index}-out`)}
+                    onMouseLeave={() => onPointHover && onPointHover(null)}
                 />
                 <Arrow
                     points={[radius + 8, 0, radius + 20, 0]}
@@ -282,18 +290,6 @@ const Pulley: React.FC<PulleyProps> = ({
 
             {/* Render load attachment point */}
             {renderLoadAttachment()}
-
-            {/* Selection indicator */}
-            {isSelected && (
-                <Circle
-                    x={0}
-                    y={0}
-                    radius={radius * pulley.sheaves + 30}
-                    stroke="#00d9ff"
-                    strokeWidth={2}
-                    dash={[5, 5]}
-                />
-            )}
 
             {/* Overall label */}
             <Text

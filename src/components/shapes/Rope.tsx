@@ -253,7 +253,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
             })()}
 
             {/* Rope length indicator */}
-            {length > 0 && (
+            {false && length > 0 && (
                 <Group x={midPoint.x} y={midPoint.y + 30}>
                     <Circle
                         radius={22}

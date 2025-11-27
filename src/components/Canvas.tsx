@@ -15,6 +15,7 @@ interface CanvasProps {
     toolMode: 'select' | 'rope' | 'measure';
     onComponentClick: (id: string) => void;
     onPointClick?: (pointId: string, e: any) => void;
+    onPointHover?: (pointId: string | null) => void;
     measurementStart?: { x: number; y: number } | null;
     setMeasurementStart?: (pos: { x: number; y: number } | null) => void;
     measurementEnd?: { x: number; y: number } | null;
@@ -28,6 +29,7 @@ const Canvas: React.FC<CanvasProps> = ({
     toolMode,
     onComponentClick,
     onPointClick,
+    onPointHover,
     measurementStart,
     setMeasurementStart,
     measurementEnd,

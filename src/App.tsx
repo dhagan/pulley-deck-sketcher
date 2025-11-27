@@ -22,6 +22,7 @@ const App: React.FC = () => {
     const [measurementStart, setMeasurementStart] = useState<{ x: number; y: number } | null>(null);
     const [measurementEnd, setMeasurementEnd] = useState<{ x: number; y: number } | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+    const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -342,6 +343,7 @@ const App: React.FC = () => {
                     toolMode={toolMode}
                     onComponentClick={handleComponentClick}
                     onPointClick={handlePointClick}
+                    onPointHover={(pointId) => setHoveredPoint(pointId)}
                     measurementStart={measurementStart}
                     setMeasurementStart={setMeasurementStart}
                     measurementEnd={measurementEnd}
@@ -378,6 +380,11 @@ const App: React.FC = () => {
                     <div className="status-item">
                         <strong>Mode:</strong> {toolMode === 'rope' ? 'Rope Drawing' : toolMode === 'measure' ? 'Measuring' : 'Select'}
                     </div>
+                    {toolMode === 'rope' && hoveredPoint && (
+                        <div className="status-item" style={{ color: '#3b82f6', fontWeight: 'bold' }}>
+                            <strong>Hover:</strong> {hoveredPoint}
+                        </div>
+                    )}
                 </div>
                 <div className="status-info">
                     <div className="status-item">
