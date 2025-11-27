@@ -117,9 +117,9 @@ const App: React.FC = () => {
             id,
             type: ComponentType.SPRING,
             position: defaultPosition,
-            label: `Spring ${system.components.filter(c => c.type === ComponentType.SPRING).length + 1}`,
-            stiffness: 100,
-            restLength: 100,
+            label: `Load ${system.components.filter(c => c.type === ComponentType.SPRING).length + 1}`,
+            stiffness: 1.0, // N/mm
+            restLength: 60, // mm
         };
         setSystem(prev => ({ ...prev, components: [...prev.components, spring] }));
     };

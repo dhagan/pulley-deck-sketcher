@@ -61,9 +61,9 @@ export interface SpringComponent {
     type: ComponentType.SPRING;
     position: Point;
     label?: string;
-    stiffness: number; // Spring constant (N/m)
-    restLength: number; // Unloaded length in pixels
-    currentLength?: number; // Current length when loaded
+    stiffness?: number; // Spring constant k (N/mm)
+    restLength?: number; // Unloaded length in mm
+    currentLength?: number; // Current length when loaded in mm
 }
 
 export type Component = PulleyComponent | AnchorComponent | RopeComponent | CleatComponent | PersonComponent | SpringComponent;

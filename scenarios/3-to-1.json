@@ -40,8 +40,10 @@
         "x": 400,
         "y": 520
       },
-      "attachedTo": "pulley-2",
-      "label": "Load"
+      "label": "Load",
+      "stiffness": 1.0,
+      "restLength": 60,
+      "currentLength": 60
     },
     {
       "id": "person-1",
