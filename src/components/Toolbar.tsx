@@ -60,9 +60,30 @@ const Toolbar: React.FC<ToolbarProps> = ({
     return (
         <div className="toolbar">
             <div className="toolbar-group" style={{ display: 'flex', gap: '8px' }}>
-                <button className="toolbar-button" onClick={onAddPulley} title="Add Single Pulley">◉ Single</button>
-                <button className="toolbar-button" onClick={onAddDoubleBlock} title="Add Double Block">◎ Double</button>
-                <button className="toolbar-button" onClick={onAddTripleBlock} title="Add Triple Block">⊚ Triple</button>
+                <select 
+                    className="toolbar-select" 
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === 'single') onAddPulley();
+                        else if (value === 'double') onAddDoubleBlock();
+                        else if (value === 'triple') onAddTripleBlock();
+                        e.target.value = '';
+                    }}
+                    defaultValue=""
+                    style={{ 
+                        padding: '6px 12px', 
+                        background: '#2a2a2a', 
+                        color: '#e0e0e0', 
+                        border: '1px solid #3d3d3d',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    <option value="" disabled>+ Add Block...</option>
+                    <option value="single">◉ Single Block</option>
+                    <option value="double">◎ Double Block</option>
+                    <option value="triple">⊚ Triple Block</option>
+                </select>
                 <button className="toolbar-button" onClick={onAddAnchor} title="Add Anchor">▲ Anchor</button>
                 <button className="toolbar-button" onClick={onAddCleat} title="Add Cleat">⊥ Cleat</button>
                 <button className="toolbar-button" onClick={onAddPerson} title="Add Person">● Person</button>
@@ -81,6 +102,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 >
                     ↔ Measure
                 </button>
+                {selectedId && onDelete && (
+                    <button 
+                        className="toolbar-button" 
+                        onClick={onDelete} 
+                        title="Delete Selected"
+                        style={{ background: '#8b1a1a', color: '#fff' }}
+                    >
+                        🗑 Delete
+                    </button>
+                )}
             </div>
 
             <div className="toolbar-separator" style={{ width: '1px', height: '24px', background: '#3d3d3d', margin: '0 8px' }}></div>
