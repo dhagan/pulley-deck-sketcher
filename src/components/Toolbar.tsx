@@ -56,24 +56,24 @@ const Toolbar: React.FC<ToolbarProps> = ({
     return (
         <div className="toolbar">
             <div className="toolbar-group" style={{ display: 'flex', gap: '8px' }}>
-                <button className="toolbar-button" onClick={onAddPulley} title="Add Pulley">⚙️ Pulley</button>
-                <button className="toolbar-button" onClick={onAddAnchor} title="Add Anchor">⚓ Anchor</button>
-                <button className="toolbar-button" onClick={onAddCleat} title="Add Cleat">🪝 Cleat</button>
-                <button className="toolbar-button" onClick={onAddPerson} title="Add Person">👤 Person</button>
-                <button className="toolbar-button" onClick={onAddSpring} title="Add Spring">🌀 Spring</button>
+                <button className="toolbar-button" onClick={onAddPulley} title="Add Pulley">◉ Pulley</button>
+                <button className="toolbar-button" onClick={onAddAnchor} title="Add Anchor">▲ Anchor</button>
+                <button className="toolbar-button" onClick={onAddCleat} title="Add Cleat">⊥ Cleat</button>
+                <button className="toolbar-button" onClick={onAddPerson} title="Add Person">● Person</button>
+                <button className="toolbar-button" onClick={onAddSpring} title="Add Spring">⋈ Spring</button>
                 <button
                     className={`toolbar-button ${toolMode === 'rope' ? 'active' : ''}`}
                     onClick={onAddRope}
                     title="Add Rope (Click points to connect)"
                 >
-                    〰️ Rope {ropeStart ? '(Select End)' : ''}
+                    ─ Rope {ropeStart ? '(Select End)' : ''}
                 </button>
                 <button
                     className={`toolbar-button ${toolMode === 'measure' ? 'active' : ''}`}
                     onClick={onMeasure}
                     title="Measure Distance"
                 >
-                    📏 Measure
+                    ↔ Measure
                 </button>
             </div>
 

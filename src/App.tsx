@@ -351,11 +351,11 @@ const App: React.FC = () => {
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <button className="context-menu-item" onClick={() => { handleAddPulley(); handleContextMenuClose(); }}>⚙️ Add Pulley</button>
-                        <button className="context-menu-item" onClick={() => { handleAddAnchor(); handleContextMenuClose(); }}>⚓ Add Anchor</button>
-                        <button className="context-menu-item" onClick={() => { handleAddCleat(); handleContextMenuClose(); }}>🪝 Add Cleat</button>
-                        <button className="context-menu-item" onClick={() => { handleAddPerson(); handleContextMenuClose(); }}>👤 Add Person</button>
-                        <button className="context-menu-item" onClick={() => { handleAddSpring(); handleContextMenuClose(); }}>🌀 Add Spring</button>
+                        <button className="context-menu-item" onClick={() => { handleAddPulley(); handleContextMenuClose(); }}>◉ Add Pulley</button>
+                        <button className="context-menu-item" onClick={() => { handleAddAnchor(); handleContextMenuClose(); }}>▲ Add Anchor</button>
+                        <button className="context-menu-item" onClick={() => { handleAddCleat(); handleContextMenuClose(); }}>⊥ Add Cleat</button>
+                        <button className="context-menu-item" onClick={() => { handleAddPerson(); handleContextMenuClose(); }}>● Add Person</button>
+                        <button className="context-menu-item" onClick={() => { handleAddSpring(); handleContextMenuClose(); }}>⋈ Add Spring</button>
                     </div>
                 )}
                 <PropertiesPanel system={system} setSystem={setSystem} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Group, Text, Arrow } from 'react-konva';
+import { Circle, Group, Text, Arrow, Arc } from 'react-konva';
 import { PulleyComponent as PulleyType } from '../../types';
 
 interface PulleyProps {
@@ -47,6 +47,17 @@ const Pulley: React.FC<PulleyProps> = ({
                 <Circle
                     radius={3}
                     fill="#666"
+                />
+
+                {/* Rope wrapping arc (shows rope path around sheave) */}
+                <Arc
+                    angle={180}
+                    innerRadius={radius - 2}
+                    outerRadius={radius + 2}
+                    fill="rgba(234, 179, 8, 0.3)"
+                    stroke="#eab308"
+                    strokeWidth={1}
+                    rotation={-90}
                 />
 
                 {/* Connection Points */}
