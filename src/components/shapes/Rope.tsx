@@ -1,6 +1,6 @@
 import React from 'react';
 import { Line, Group, Text, Circle, Arrow } from 'react-konva';
-import { RopeComponent as RopeType, Component, PulleyComponent } from '../../types';
+import { RopeComponent as RopeType, Component, PulleyComponent, ComponentType } from '../../types';
 import { calculatePathLength } from '../../utils/geometry';
 
 interface RopeProps {
@@ -106,9 +106,9 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
             };
         }
 
-        // Handle Spring - return the top attachment point (position)
-        if (component.type === 'spring') {
-            return compWithPos.position;
+        // Handle spring separately
+        if (compWithPos.type === ComponentType.SPRING) {
+            return { x: compWithPos.position.x, y: compWithPos.position.y + 30 };
         }
 
         return compWithPos.position;
