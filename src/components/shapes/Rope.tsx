@@ -15,36 +15,30 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
     // Helper to get coordinates for a specific point on a component
     const getPointCoordinates = (component: Component, pointId?: string): { x: number; y: number } => {
         // Rope components don't have a single position
-        if (component.type === 'rope') return { x: 0, y: 0 };
+        if (component.type === ComponentType.ROPE) return { x: 0, y: 0 };
+        
+        // Springs don't have a single position either
+        if (component.type === ComponentType.SPRING) {
+            console.error('Springs cannot be rope connection points');
+            return { x: 0, y: 0 };
+        }
 
-        const compWithPos = component as Exclude<Component, RopeType>;
+        const compWithPos = component as Exclude<Component, RopeComponent | SpringComponent>;
         if (!pointId || pointId === 'center') return compWithPos.position;
 
         // Handle Anchor points
-        if (component.type === 'anchor') {
+        if (component.type === ComponentType.ANCHOR) {
             return compWithPos.position;
         }
 
         // Handle Cleat points
-        if (component.type === 'cleat') {
+        if (component.type === ComponentType.CLEAT) {
             return compWithPos.position;
         }
 
         // Handle Person points
-        if (component.type === 'person') {
+        if (component.type === ComponentType.PERSON) {
             return compWithPos.position;
-        }
-
-        // Handle Spring points
-        if (component.type === 'spring') {
-            const spring = component as any;
-            if (pointId?.includes('top')) {
-                return spring.position;
-            } else if (pointId?.includes('bottom')) {
-                const length = spring.currentLength || spring.restLength || 100;
-                return { x: spring.position.x, y: spring.position.y + length };
-            }
-            return spring.position;
         }
 
         // Handle Pulley points
@@ -104,11 +98,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 x: pulley.position.x + rotatedX,
                 y: pulley.position.y + rotatedY
             };
-        }
-
-        // Handle spring separately
-        if (compWithPos.type === ComponentType.SPRING) {
-            return { x: compWithPos.position.x, y: compWithPos.position.y + 30 };
         }
 
         return compWithPos.position;
