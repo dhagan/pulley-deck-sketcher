@@ -197,7 +197,6 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
             startPoint: 'center',
             endId: topPulleyId,
             endPoint: 'top', // Connect to top of pulley
-            routeThrough: [],
         });
     });
 
@@ -206,7 +205,6 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
         const isLastStage = index === stageBlocks.length - 1;
         const nextStage = !isLastStage ? stageBlocks[index + 1] : null;
 
-        const routeThrough: (string | { id: string, sheaveIndex: number })[] = [];
         const bottomSheaves = Math.floor(stage.ratio / 2);
 
         let topSheaveIdx = 0;
@@ -215,15 +213,10 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
         // Build rope path through sheaves
         if (stage.startAtTop) {
             for (let i = 0; i < bottomSheaves; i++) {
-                routeThrough.push({ id: stage.bottom, sheaveIndex: bottomSheaveIdx++ });
-                routeThrough.push({ id: stage.top, sheaveIndex: topSheaveIdx++ });
             }
         } else {
             for (let i = 0; i < bottomSheaves; i++) {
-                routeThrough.push({ id: stage.top, sheaveIndex: topSheaveIdx++ });
-                routeThrough.push({ id: stage.bottom, sheaveIndex: bottomSheaveIdx++ });
             }
-            routeThrough.push({ id: stage.top, sheaveIndex: topSheaveIdx++ });
         }
 
         const startId = stage.startAtTop ? stage.top : stage.bottom;
@@ -260,7 +253,6 @@ export function convertFromPulleyCalc(calcSystem: PulleyCalcSystem): SystemState
             startPoint: 'becket',
             endId: endId,
             endPoint: endPoint,
-            routeThrough: routeThrough,
         });
     });
 

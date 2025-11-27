@@ -203,7 +203,6 @@ const App: React.FC = () => {
                     startPoint: ropeStart,
                     endId: endCompId,
                     endPoint: pointId,
-                    routeThrough: [],
                     label: `Rope ${system.components.filter(c => c.type === ComponentType.ROPE).length + 1}`,
                 };
                 setSystem(prev => ({ ...prev, components: [...prev.components, rope] }));
@@ -227,7 +226,6 @@ const App: React.FC = () => {
                     startPoint: 'center', // Default
                     endId: id,
                     endPoint: 'center', // Default
-                    routeThrough: [],
                 };
                 setSystem(prev => ({ ...prev, components: [...prev.components, rope] }));
                 setRopeStart(null);

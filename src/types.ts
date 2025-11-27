@@ -42,7 +42,6 @@ export interface RopeComponent {
     startPoint?: string; // e.g., 'anchor', 'becket', 'sheave-0-in'
     endId: string;
     endPoint?: string;
-    routeThrough: (string | { id: string; sheaveIndex: number })[];
     tension?: number;
     label?: string;
 }

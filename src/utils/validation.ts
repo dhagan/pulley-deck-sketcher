@@ -85,17 +85,13 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
         errors.push(`${prefix}: Invalid start point "${startPoint}". Ropes can start from: Fixed Anchor, Becket, OUT point, Spring, or Person center. NOT from Pulley Anchor (red) or IN point (blue).`);
     }
 
-    // Validate that becket doesn't go back to its own pulley
+    // Validate that becket doesn't go back to its own pulley (simplified - just check endPoint)
     if (startPoint.includes('becket')) {
         const becketPulleyId = rope.startId;
-        // Check if any routeThrough points or endPoint connect to the same pulley
-        const connectsToSamePulley = rope.routeThrough.some(point => {
-            const pointStr = typeof point === 'string' ? point : `${point.id}`;
-            return pointStr.startsWith(becketPulleyId);
-        }) || rope.endPoint?.startsWith(becketPulleyId);
+        const connectsToSamePulley = rope.endPoint?.startsWith(becketPulleyId);
 
         if (connectsToSamePulley) {
-            errors.push(`${prefix}: Becket cannot route back to its own pulley. Becket should start a rope going to another pulley or person.`);
+            errors.push(`${prefix}: Becket cannot connect directly to its own pulley. Becket should start a rope going to another pulley or person.`);
         }
     }
 
@@ -130,67 +126,8 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
 };
 
 const validateRouting = (rope: RopeComponent, _components: Component[]): string[] => {
-    const errors: string[] = [];
-    
-    // Build the full path of connection points
-    const path: string[] = [rope.startPoint || rope.startId];
-    
-    // Add intermediate points from routeThrough
-    rope.routeThrough.forEach(point => {
-        if (typeof point === 'string') {
-            path.push(point);
-        } else {
-            path.push(`${point.id}-sheave-${point.sheaveIndex}`);
-        }
-    });
-    
-    path.push(rope.endPoint || rope.endId);
-
-    // Check each transition
-    for (let i = 0; i < path.length - 1; i++) {
-        const current = path[i];
-        const next = path[i + 1];
-
-        // If current is IN, next must be OUT (or terminal point)
-        if (current.includes('-in')) {
-            const isTerminal = next.includes('anchor') || next.includes('load') || 
-                              next.includes('person') || next.includes('spring') || 
-                              next.endsWith('center');
-            if (!next.includes('-out') && !isTerminal) {
-                errors.push(`After IN point, must connect to OUT point or terminal. Found: ${current} -> ${next}`);
-            }
-        }
-
-        // If current is OUT, next must be IN (or terminal point)
-        if (current.includes('-out')) {
-            const isTerminal = next.includes('anchor') || next.includes('load') || 
-                              next.includes('person') || next.includes('spring') || 
-                              next.endsWith('center');
-            if (!next.includes('-in') && !isTerminal) {
-                errors.push(`After OUT point, must connect to IN point or terminal. Found: ${current} -> ${next}`);
-            }
-        }
-
-        // Cannot connect IN to IN
-        if (current.includes('-in') && next.includes('-in')) {
-            errors.push(`Cannot connect IN to IN: ${current} -> ${next}`);
-        }
-
-        // Cannot connect OUT to OUT
-        if (current.includes('-out') && next.includes('-out')) {
-            errors.push(`Cannot connect OUT to OUT: ${current} -> ${next}`);
-        }
-
-        // Start points should not connect directly to OUT
-        const isStartPoint = current.includes('anchor') || current.includes('becket') || 
-                            current.includes('load') || current.includes('spring') || 
-                            current.endsWith('center');
-        if (isStartPoint && next.includes('-out')) {
-            errors.push(`Start point must connect to IN first, not OUT: ${current} -> ${next}`);
-        }
-    }
-
-    return errors;
+    // No routing validation needed since we use simple segments now
+    return [];
 };
 
 const checkDisconnectedComponents = (components: Component[]): string[] => {

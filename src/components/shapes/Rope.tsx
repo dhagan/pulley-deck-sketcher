@@ -119,69 +119,8 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
     const startPos = getPointCoordinates(startComp, rope.startPoint);
     const endPos = getPointCoordinates(endComp, rope.endPoint);
 
-    let path: Array<{ x: number; y: number }> = [];
-
-    if (rope.routeThrough && rope.routeThrough.length > 0) {
-        // Build path through all intermediate points
-        path = [startPos];
-        
-        for (let i = 0; i < rope.routeThrough.length; i++) {
-            const point = rope.routeThrough[i];
-            if (typeof point === 'string') {
-                // Parse the point ID to find the component and get coordinates
-                // Format: "pulley-1-sheave-0-in" or "pulley-1-anchor"
-                const parts = point.split('-');
-                const componentId = parts.slice(0, 2).join('-'); // e.g., "pulley-1"
-                const component = components.find(c => c.id === componentId);
-                
-                if (component && component.type === 'pulley') {
-                    const coords = getPointCoordinates(component, point);
-                    path.push(coords);
-                    
-                    // Check if next point is OUT on the same pulley (rope wraps around)
-                    const nextPoint = rope.routeThrough[i + 1];
-                    if (nextPoint && typeof nextPoint === 'string') {
-                        const nextParts = nextPoint.split('-');
-                        const nextComponentId = nextParts.slice(0, 2).join('-');
-                        
-                        // If current is IN and next is OUT on same pulley, add arc points
-                        if (point.includes('-in') && nextPoint.includes('-out') && componentId === nextComponentId) {
-                            const pulley = component as PulleyComponent;
-                            const radius = pulley.diameter / 2;
-                            const center = pulley.position;
-                            
-                            // IN is at -radius (left), OUT is at +radius (right)
-                            // Add points along the bottom arc (180 degrees from IN to OUT)
-                            const numArcPoints = 12; // More points = smoother arc
-                            for (let j = 1; j < numArcPoints; j++) {
-                                // Start at PI (left side) and go to 2*PI (right side) = bottom arc
-                                const angle = Math.PI + (j / numArcPoints) * Math.PI;
-                                const arcX = center.x + radius * Math.cos(angle);
-                                const arcY = center.y + radius * Math.sin(angle);
-                                path.push({ x: arcX, y: arcY });
-                            }
-                        }
-                    }
-                } else if (component) {
-                    const coords = getPointCoordinates(component, point);
-                    path.push(coords);
-                }
-            } else {
-                // Legacy format with id and sheaveIndex
-                const pulley = components.find(c => c.id === point.id);
-                if (pulley) {
-                    const pointId = `${point.id}-sheave-${point.sheaveIndex}-in`;
-                    const coords = getPointCoordinates(pulley, pointId);
-                    path.push(coords);
-                }
-            }
-        }
-        
-        path.push(endPos);
-    } else {
-        // Simple straight line
-        path = [startPos, endPos];
-    }
+    // Simple point-to-point path - no more routeThrough
+    let path: Array<{ x: number; y: number }> = [startPos, endPos];
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);
