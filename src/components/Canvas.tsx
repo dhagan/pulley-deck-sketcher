@@ -221,16 +221,22 @@ const Canvas: React.FC<CanvasProps> = ({
                 <Layer>
                     {system.components
                         .filter((c): c is RopeComponent => c.type === ComponentType.ROPE)
-                        .map(rope => (
-                            <Rope
-                                key={rope.id}
-                                rope={rope}
-                                components={system.components}
-                                isSelected={rope.id === system.selectedId}
-                                onSelect={() => handleSelect(rope.id)}
-                                showArrows={system.showRopeArrows}
-                            />
-                        ))}
+                        .map(rope => {
+                            // Check if this rope is part of a selected chain
+                            const selectedRope = system.components.find(c => c.id === system.selectedId && c.type === ComponentType.ROPE) as RopeComponent | undefined;
+                            const isPartOfSelectedChain = selectedRope?.chainId && rope.chainId === selectedRope.chainId;
+                            
+                            return (
+                                <Rope
+                                    key={rope.id}
+                                    rope={rope}
+                                    components={system.components}
+                                    isSelected={rope.id === system.selectedId || isPartOfSelectedChain}
+                                    onSelect={() => handleSelect(rope.id)}
+                                    showArrows={system.showRopeArrows}
+                                />
+                            );
+                        })}
 
                     {system.components
                         .filter((c): c is PulleyComponent => c.type === ComponentType.PULLEY)
