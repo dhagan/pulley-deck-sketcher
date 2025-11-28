@@ -100,6 +100,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                          rope.startPoint?.includes('spring') ||
                          rope.endPoint?.includes('spring');
     
+    // Check if this rope is part of a selected chain
+    const isPartOfSelectedChain = isSelected || (rope.chainId && components.some(c => 
+        c.type === 'rope' && c.id !== rope.id && (c as any).chainId === rope.chainId && 
+        components.find(comp => comp.id === (c as any).id && comp.type === 'rope') === components.find(comp => comp.id === components.find(x => x.id === rope.id)?.id)
+    ));
+    
     const ropeColor = isAnchorRope ? '#888888' : '#3b82f6'; // gray for anchor, blue for working ropes
 
     // Find start and end components
@@ -127,10 +133,10 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
         const radius = pulley.diameter / 2;
         const center = pulley.position;
         
-        // Add points along the arc from IN (left) to OUT (right) going around the bottom
+        // Add points along the arc from IN (left) to OUT (right) going around the TOP (anchor side)
         const numArcPoints = 8;
         for (let i = 1; i < numArcPoints; i++) {
-            const angle = Math.PI + (i / numArcPoints) * Math.PI; // From PI (left) to 2*PI (right)
+            const angle = Math.PI - (i / numArcPoints) * Math.PI; // From PI (left) to 0 (right) - top arc
             path.push({
                 x: center.x + radius * Math.cos(angle),
                 y: center.y + radius * Math.sin(angle)
@@ -261,6 +267,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                     y={path[0].y}
                     onClick={(e) => {
                         e.cancelBubble = true;
+                        // Highlight entire chain by selecting this rope
                         onSelect();
                     }}
                     onMouseEnter={(e) => {
