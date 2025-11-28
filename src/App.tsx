@@ -20,6 +20,23 @@ const App: React.FC = () => {
     // Undo/Redo history
     const [history, setHistory] = useState<SystemState[]>([]);
     const [historyIndex, setHistoryIndex] = useState<number>(-1);
+    
+    // Track system changes for undo/redo
+    useEffect(() => {
+        // Only add to history if there are actual components or selection changes
+        if (system.components.length > 0 || system.selectedId !== null) {
+            const currentState = JSON.stringify(system);
+            const lastState = historyIndex >= 0 ? JSON.stringify(history[historyIndex]) : null;
+            
+            // Only add if state has actually changed
+            if (currentState !== lastState) {
+                const newHistory = history.slice(0, historyIndex + 1);
+                newHistory.push(JSON.parse(JSON.stringify(system)));
+                setHistory(newHistory);
+                setHistoryIndex(newHistory.length - 1);
+            }
+        }
+    }, [system.components, system.selectedId]);
 
     // Load first scenario on mount
     useEffect(() => {
@@ -348,7 +365,6 @@ const App: React.FC = () => {
 
     const handleDelete = () => {
         if (system.selectedId) {
-            addToHistory();
             setSystem(prev => ({
                 ...prev,
                 components: prev.components.filter(c => c.id !== system.selectedId),
@@ -357,13 +373,7 @@ const App: React.FC = () => {
         }
     };
     
-    // Undo/Redo functionality
-    const addToHistory = () => {
-        const newHistory = history.slice(0, historyIndex + 1);
-        newHistory.push({ ...system });
-        setHistory(newHistory);
-        setHistoryIndex(newHistory.length - 1);
-    };
+    // Undo/Redo functionality (now automatic via useEffect)
 
     // Keyboard shortcuts
     useEffect(() => {
@@ -401,7 +411,7 @@ const App: React.FC = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [system.selectedId, toolMode]);
+    }, [system.selectedId, toolMode, history, historyIndex]);
 
     const handleCanvasRightClick = (e: any) => {
         e.evt.preventDefault();

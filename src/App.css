@@ -1,6 +1,7 @@
+
 .app {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     background: #0f172a;
     color: #f1f5f9;
@@ -8,12 +9,16 @@
 
 .toolbar {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    padding: 12px;
+    padding: 12px 0 12px 8px;
     background: #1e293b;
-    border-bottom: 1px solid #475569;
-    align-items: center;
-    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.5);
+    border-right: 1px solid #475569;
+    align-items: flex-start;
+    box-shadow: 1px 0 0 0 rgba(0, 0, 0, 0.5);
+    min-width: 56px;
+    width: 56px;
+    height: 100vh;
 }
 
 .toolbar-button {
@@ -22,7 +27,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 10px 18px;
+    padding: 8px;
     background: #1e293b;
     border: 1px solid #475569;
     border-radius: 0px;
@@ -32,6 +37,11 @@
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .toolbar-button::before {
@@ -187,13 +197,14 @@
     overflow: hidden;
 }
 
+
 .properties-panel {
-    width: 280px;
-    background: #1e293b;
-    border-left: 1px solid #475569;
-    padding: 16px;
+    width: 180px;
+    background: #2a2a2a;
+    border-left: 1px solid #3d3d3d;
+    padding: 12px;
     overflow-y: auto;
-    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.5);
+}
 }
 
 .property-group {
@@ -288,18 +299,24 @@
     box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.5);
 }
 
-.status-info {
+
+.status-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
     display: flex;
-    gap: 24px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e293b;
+    color: #f1f5f9;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-top: 1px solid #475569;
+    min-height: 32px;
+    z-index: 100;
 }
-
-.status-item {
-    color: #94a3b8;
-}
-
-.status-item strong {
-    color: #3b82f6;
-    margin-right: 4px;
 }
     font-size: 12px;
     color: #888;
