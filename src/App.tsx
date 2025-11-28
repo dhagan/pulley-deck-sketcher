@@ -380,11 +380,26 @@ const App: React.FC = () => {
     };
 
     // Keyboard shortcuts
-    React.useEffect(() => {
+    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Delete' && system.selectedId) {
                 handleDelete();
-            } else if (e.key === 'Escape') {
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    setHistoryIndex(historyIndex - 1);
+                    setSystem(history[historyIndex - 1]);
+                }
+            }
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
+                e.preventDefault();
+                if (historyIndex < history.length - 1) {
+                    setHistoryIndex(historyIndex + 1);
+                    setSystem(history[historyIndex + 1]);
+                }
+            }
+            if (e.key === 'Escape') {
                 if (toolMode === 'rope') {
                     setToolMode('select');
                     setRopeStart(null);
