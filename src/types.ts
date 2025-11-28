@@ -39,6 +39,9 @@ export interface RopeComponent {
     endPoint?: string;
     tension?: number;
     label?: string;
+    chainId?: string; // ID of the chain this rope belongs to
+    isChainStart?: boolean; // True if this is the first rope in a chain (at becket)
+    isChainEnd?: boolean; // True if this is the last rope in a chain (at person)
 }
 
 export interface CleatComponent {

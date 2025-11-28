@@ -59,12 +59,9 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 localX = 0;
                 localY = -radius;
             } else if (pointId.includes('becket')) {
-                // Becket: rope flows from OUT of sheave 0
-                const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
-                const startX = -totalWidth / 2;
-                const sheaveX = startX; // Sheave 0
-                localX = sheaveX + radius; // OUT position
-                localY = 0;
+                // Becket attachment point at bottom of pulley
+                localX = 0;
+                localY = radius + 8;
             } else if (pointId.includes('sheave')) {
                 const parts = pointId.split('-');
                 const sheaveIndex = parseInt(parts[parts.indexOf('sheave') + 1]);
@@ -257,48 +254,74 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 </Group>
             )}
 
-            {/* Start label - only at chain start (becket) */}
-            {rope.startPoint?.includes('becket') && path.length > 0 && (
-                <Group x={path[0].x} y={path[0].y}>
+            {/* Start label - only at actual chain start */}
+            {rope.isChainStart && path.length > 0 && (
+                <Group 
+                    x={path[0].x} 
+                    y={path[0].y}
+                    onClick={(e) => {
+                        e.cancelBubble = true;
+                        onSelect();
+                    }}
+                    onMouseEnter={(e) => {
+                        const container = e.target.getStage()?.container();
+                        if (container) container.style.cursor = 'pointer';
+                    }}
+                    onMouseLeave={(e) => {
+                        const container = e.target.getStage()?.container();
+                        if (container) container.style.cursor = 'default';
+                    }}
+                >
                     <Circle
-                        radius={10}
-                        fill="rgba(255, 140, 0, 0.6)"
+                        radius={6}
+                        fill="rgba(255, 140, 0, 0.8)"
                         stroke="#fff"
-                        strokeWidth={1}
+                        strokeWidth={1.5}
                     />
                     <Text
-                        x={-8}
-                        y={-4}
+                        x={-5}
+                        y={-3}
                         text="S"
-                        fontSize={10}
+                        fontSize={7}
                         fill="#fff"
                         fontFamily="monospace"
                         fontStyle="bold"
-                        width={16}
-                        align="center"
                     />
                 </Group>
             )}
 
-            {/* End label - only at chain end (person) */}
-            {rope.endPoint?.includes('person') && path.length > 0 && (
-                <Group x={path[path.length - 1].x} y={path[path.length - 1].y}>
+            {/* End label - only at actual chain end */}
+            {rope.isChainEnd && path.length > 0 && (
+                <Group 
+                    x={path[path.length - 1].x} 
+                    y={path[path.length - 1].y}
+                    onClick={(e) => {
+                        e.cancelBubble = true;
+                        onSelect();
+                    }}
+                    onMouseEnter={(e) => {
+                        const container = e.target.getStage()?.container();
+                        if (container) container.style.cursor = 'pointer';
+                    }}
+                    onMouseLeave={(e) => {
+                        const container = e.target.getStage()?.container();
+                        if (container) container.style.cursor = 'default';
+                    }}
+                >
                     <Circle
-                        radius={10}
-                        fill="rgba(255, 68, 68, 0.6)"
+                        radius={6}
+                        fill="rgba(255, 68, 68, 0.8)"
                         stroke="#fff"
-                        strokeWidth={1}
+                        strokeWidth={1.5}
                     />
                     <Text
-                        x={-7}
-                        y={-4}
+                        x={-4}
+                        y={-3}
                         text="E"
-                        fontSize={10}
+                        fontSize={7}
                         fill="#fff"
                         fontFamily="monospace"
                         fontStyle="bold"
-                        width={14}
-                        align="center"
                     />
                 </Group>
             )}
