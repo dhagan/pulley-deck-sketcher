@@ -354,13 +354,12 @@ const Canvas: React.FC<CanvasProps> = ({
                                     <Line points={[arrow1_1.x, arrow1_1.y, dimStart.x, dimStart.y, arrow1_2.x, arrow1_2.y]} stroke="#00d9ff" strokeWidth={1.5 / stageScale} />
                                     <Line points={[arrow2_1.x, arrow2_1.y, dimEnd.x, dimEnd.y, arrow2_2.x, arrow2_2.y]} stroke="#00d9ff" strokeWidth={1.5 / stageScale} />
                                     <Group x={(dimStart.x + dimEnd.x) / 2} y={(dimStart.y + dimEnd.y) / 2}>
-                                        <Circle radius={20 / stageScale} fill="rgba(0, 217, 255, 0.9)" />
                                         <Text
                                             x={-25 / stageScale}
                                             y={-8 / stageScale}
                                             text={`${Math.round(len)} mm`}
                                             fontSize={12 / stageScale}
-                                            fill="#000"
+                                            fill="#00d9ff"
                                             fontStyle="bold"
                                             align="center"
                                             width={50 / stageScale}

@@ -16,6 +16,10 @@ const App: React.FC = () => {
         snapToGrid: true,
         showRopeArrows: true,
     });
+    
+    // Undo/Redo history
+    const [history, setHistory] = useState<SystemState[]>([]);
+    const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
     // Load first scenario on mount
     useEffect(() => {
@@ -344,11 +348,34 @@ const App: React.FC = () => {
 
     const handleDelete = () => {
         if (system.selectedId) {
+            addToHistory();
             setSystem(prev => ({
                 ...prev,
                 components: prev.components.filter(c => c.id !== system.selectedId),
                 selectedId: null,
             }));
+        }
+    };
+    
+    // Undo/Redo functionality
+    const addToHistory = () => {
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push({ ...system });
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+    };
+    
+    const handleUndo = () => {
+        if (historyIndex > 0) {
+            setHistoryIndex(historyIndex - 1);
+            setSystem(history[historyIndex - 1]);
+        }
+    };
+    
+    const handleRedo = () => {
+        if (historyIndex < history.length - 1) {
+            setHistoryIndex(historyIndex + 1);
+            setSystem(history[historyIndex + 1]);
         }
     };
 
