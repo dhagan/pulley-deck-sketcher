@@ -224,7 +224,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         .map(rope => {
                             // Check if this rope is part of a selected chain
                             const selectedRope = system.components.find(c => c.id === system.selectedId && c.type === ComponentType.ROPE) as RopeComponent | undefined;
-                            const isPartOfSelectedChain = selectedRope?.chainId && rope.chainId === selectedRope.chainId;
+                            const isPartOfSelectedChain = !!(selectedRope?.chainId && rope.chainId === selectedRope.chainId);
                             
                             return (
                                 <Rope

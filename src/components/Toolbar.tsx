@@ -42,7 +42,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
     onClear,
     onDelete,
     toolMode,
-    ropeStart,
     selectedId,
     system,
 }) => {

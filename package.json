@@ -3,12 +3,15 @@
     "private": true,
     "version": "0.0.5",
     "type": "module",
+    "homepage": "https://dhagan.github.io/pulley-deck-sketcher",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
         "test": "vitest",
-        "test:ui": "vitest --ui"
+        "test:ui": "vitest --ui",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d dist"
     },
     "dependencies": {
         "@flatten-js/core": "^1.4.7",

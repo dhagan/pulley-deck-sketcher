@@ -100,12 +100,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                          rope.startPoint?.includes('spring') ||
                          rope.endPoint?.includes('spring');
     
-    // Check if this rope is part of a selected chain
-    const isPartOfSelectedChain = isSelected || (rope.chainId && components.some(c => 
-        c.type === 'rope' && c.id !== rope.id && (c as any).chainId === rope.chainId && 
-        components.find(comp => comp.id === (c as any).id && comp.type === 'rope') === components.find(comp => comp.id === components.find(x => x.id === rope.id)?.id)
-    ));
-    
     const ropeColor = isAnchorRope ? '#888888' : '#3b82f6'; // gray for anchor, blue for working ropes
 
     // Find start and end components
