@@ -1,4 +1,7 @@
 {
+  "version": "1.0",
+  "gridSize": 20,
+  "snapToGrid": true,
   "components": [
     {
       "id": "anchor-1",
@@ -26,7 +29,7 @@
       "type": "pulley",
       "position": {
         "x": 400,
-        "y": 350
+        "y": 360
       },
       "diameter": 30,
       "sheaves": 1,
@@ -41,7 +44,7 @@
       "endId": "anchor-2",
       "endPoint": "anchor-2",
       "label": "Load",
-      "stiffness": 1.0,
+      "stiffness": 1,
       "restLength": 100
     },
     {
@@ -84,33 +87,36 @@
     {
       "id": "rope-3",
       "type": "rope",
-      "startId": "pulley-1",
-      "startPoint": "pulley-1-sheave-0-out",
+      "startId": "pulley-1-becket",
+      "startPoint": "center",
       "endId": "pulley-2",
-      "endPoint": "pulley-2-sheave-0-in",
-      "label": "Fixed OUT to floating IN"
+      "endPoint": "center"
     },
     {
       "id": "rope-4",
       "type": "rope",
-      "startId": "spring-1",
-      "startPoint": "spring-1",
+      "startId": "pulley-1-becket",
+      "startPoint": "center",
       "endId": "pulley-2",
-      "endPoint": "pulley-2-anchor",
-      "label": "Load attachment"
+      "endPoint": "center"
+    },
+    {
+      "id": "rope-6",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-becket",
+      "endId": "pulley-2",
+      "endPoint": "pulley-2-sheave-0-in",
+      "label": "Rope 6"
     },
     {
       "id": "rope-5",
       "type": "rope",
-      "startId": "pulley-2",
-      "startPoint": "pulley-2-sheave-0-out",
+      "startId": "pulley-1",
+      "startPoint": "center",
       "endId": "person-1",
-      "endPoint": "person-1-center",
-      "label": "Floating OUT to person"
+      "endPoint": "center"
     }
   ],
-  "selectedId": null,
-  "gridSize": 20,
-  "snapToGrid": true,
-  "showRopeArrows": true
+  "timestamp": "2025-11-28T01:28:35.116Z"
 }
