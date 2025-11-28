@@ -6,35 +6,32 @@
     {
       "id": "anchor-1",
       "type": "anchor",
-      "position": {
-        "x": 400,
-        "y": 100
-      },
+      "position": {"x": 400, "y": 100},
       "label": "Fixed Anchor"
     },
     {
       "id": "pulley-1",
       "type": "pulley",
-      "position": {
-        "x": 400,
-        "y": 200
-      },
+      "position": {"x": 400, "y": 200},
       "diameter": 30,
       "sheaves": 1,
-      "hasBecket": true,
+      "hasBecket": false,
       "rotation": 0
     },
     {
       "id": "pulley-2",
       "type": "pulley",
-      "position": {
-        "x": 400,
-        "y": 360
-      },
+      "position": {"x": 400, "y": 360},
       "diameter": 30,
       "sheaves": 1,
-      "hasBecket": false,
+      "hasBecket": true,
       "rotation": 180
+    },
+    {
+      "id": "anchor-2",
+      "type": "anchor",
+      "position": {"x": 400, "y": 520},
+      "label": "Load Point"
     },
     {
       "id": "spring-1",
@@ -48,21 +45,9 @@
       "restLength": 100
     },
     {
-      "id": "anchor-2",
-      "type": "anchor",
-      "position": {
-        "x": 400,
-        "y": 520
-      },
-      "label": "Load Point"
-    },
-    {
       "id": "person-1",
       "type": "person",
-      "position": {
-        "x": 550,
-        "y": 275
-      },
+      "position": {"x": 550, "y": 275},
       "label": "Pull",
       "pulling": true
     },
@@ -79,52 +64,30 @@
       "id": "rope-2",
       "type": "rope",
       "startId": "pulley-2",
-      "startPoint": "pulley-2-becket-bottom",
+      "startPoint": "pulley-2-becket",
       "endId": "pulley-1",
       "endPoint": "pulley-1-sheave-0-in",
-      "label": "Becket to fixed IN"
+      "label": "Working Line"
     },
     {
       "id": "rope-3",
       "type": "rope",
-      "startId": "pulley-1-becket",
-      "startPoint": "center",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-0-out",
       "endId": "pulley-2",
-      "endPoint": "center"
+      "endPoint": "pulley-2-sheave-0-in",
+      "label": "Working Line"
     },
     {
       "id": "rope-4",
       "type": "rope",
-      "startId": "pulley-1-becket",
-      "startPoint": "center",
-      "endId": "pulley-2",
-      "endPoint": "center"
-    },
-    {
-      "id": "rope-5",
-      "type": "rope",
-      "startId": "pulley-1",
-      "startPoint": "center",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-sheave-0-out",
       "endId": "person-1",
-      "endPoint": "center"
-    },
-    {
-      "id": "rope-1764294555023",
-      "type": "rope",
-      "startId": "pulley-1-becket",
-      "startPoint": "center",
-      "endId": "pulley-2",
-      "endPoint": "center"
-    },
-    {
-      "id": "rope-1764294555023",
-      "type": "rope",
-      "startId": "pulley-1",
-      "startPoint": "pulley-1-becket",
-      "endId": "pulley-2",
-      "endPoint": "pulley-2-sheave-0-in",
-      "label": "Rope 6"
+      "endPoint": "person-1",
+      "label": "Working Line"
     }
   ],
-  "timestamp": "2025-11-28T01:50:11.142Z"
+  "selectedId": null,
+  "showRopeArrows": true
 }
