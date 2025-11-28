@@ -58,8 +58,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 localX = 0;
                 localY = -radius; // On top of circumference
             } else if (pointId.includes('becket')) {
+                // Becket is at the bottom, but rope should start from OUT of sheave 0
+                // When routing from becket, use the OUT point position instead
                 const totalWidth = (pulley.sheaves - 1) * sheaveSpacing;
-                localX = totalWidth / 2 + radius + 8;
+                const startX = -totalWidth / 2;
+                const sheaveX = startX; // Sheave 0
+                localX = sheaveX + radius; // OUT position
                 localY = 0;
             } else if (pointId.includes('load') || pointId.includes('becket-bottom')) {
                 // Bottom attachment point (load/becket connection)
