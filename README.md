@@ -1,6 +1,6 @@
-# Pulley Deck Sketcher
+# Pulley CAD
 
-Web-based mechanical sketching tool for pulley deck layouts with analysis capabilities.
+Web-based CAD tool for pulley systems with mechanical analysis capabilities.
 
 ## Tech Stack
 

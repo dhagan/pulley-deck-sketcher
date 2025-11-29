@@ -1,9 +1,9 @@
 {
-    "name": "pulley-deck-sketcher",
+    "name": "pulley-cad",
     "private": true,
     "version": "0.0.5",
     "type": "module",
-    "homepage": "https://dhagan.github.io/pulley-deck-sketcher",
+    "homepage": "https://dhagan.github.io/pulley-cad",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
