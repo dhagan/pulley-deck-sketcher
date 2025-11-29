@@ -124,8 +124,9 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     const startPulleyId = rope.startPoint?.split('-sheave')[0];
     const endPulleyId = rope.endPoint?.split('-sheave')[0];
     
-    // Check if wrapping around same pulley
+    // Check if wrapping around same pulley - both start and end on same pulley component
     const wrapsAroundPulley = startPulleyId === endPulleyId && 
+                              startPulleyId === rope.startId && // Make sure they're both on the same component
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
@@ -136,7 +137,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
         const rotationRad = (pulley.rotation || 0) * (Math.PI / 180);
         
         // Add points along the arc - always go around the TOP (anchor side)
-        const numArcPoints = 12; // More points for smoother arc
+        const numArcPoints = 16; // More points for smoother arc
         if (startIsIn && endIsOut) {
             // IN (left) to OUT (right) - top arc
             for (let i = 1; i < numArcPoints; i++) {
