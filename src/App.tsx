@@ -42,7 +42,8 @@ const App: React.FC = () => {
 
     // Load first scenario on mount
     useEffect(() => {
-        fetch('/pulley-cad/scenarios/3-to-1.json')
+        const basePath = import.meta.env.BASE_URL;
+        fetch(`${basePath}scenarios/3-to-1.json`)
             .then(res => res.json())
             .then(data => setSystem(data))
             .catch(err => console.error('Failed to load default scenario:', err));
