@@ -12,7 +12,7 @@ interface RopeProps {
     showArrows?: boolean;
 }
 
-const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, showArrows = true }) => {
+const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onSelectChain, showArrows = true }) => {
     // Helper to get coordinates for a specific point on a component
     const getPointCoordinates = (component: Component, pointId?: string): { x: number; y: number } => {
         // Rope components don't have a single position
@@ -199,7 +199,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 lineJoin="round"
                 onClick={(e) => {
                     e.cancelBubble = true;
-                    onSelect();
+                    // Shift+Click to select entire chain
+                    if (e.evt.shiftKey && rope.chainId && onSelectChain) {
+                        onSelectChain(rope.chainId);
+                    } else {
+                        onSelect();
+                    }
                 }}
                 onTap={onSelect}
                 onMouseEnter={(e) => {
