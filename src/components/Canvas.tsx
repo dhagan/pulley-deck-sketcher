@@ -123,9 +123,24 @@ const Canvas: React.FC<CanvasProps> = ({
     };
     
     const handleSelectChain = (ropeId: string) => {
-        // For now, just select the individual rope
-        // Chain selection will be handled by a button in the future
-        handleSelect(ropeId);
+        const rope = system.components.find(c => c.id === ropeId) as RopeComponent;
+        if (!rope || !rope.chainId) {
+            handleSelect(ropeId);
+            return;
+        }
+        
+        // Find all ropes in the same chain
+        const chainRopes = system.components.filter(
+            c => c.type === ComponentType.ROPE && (c as RopeComponent).chainId === rope.chainId
+        );
+        
+        // For visual feedback, we'll select the first rope in the chain
+        // and highlight all chain members (this could be enhanced later)
+        const firstChainRope = chainRopes.find(r => (r as RopeComponent).isChainStart) || chainRopes[0];
+        if (firstChainRope) {
+            setSystem(prev => ({ ...prev, selectedId: firstChainRope.id }));
+            console.log(`Selected chain ${rope.chainId} (${chainRopes.length} ropes)`);
+        }
     };
 
     const handleDragEnd = (id: string, pos: { x: number; y: number }) => {
