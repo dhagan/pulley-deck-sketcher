@@ -115,26 +115,43 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
     // Build path including pulley wraps
     let path: Array<{ x: number; y: number }> = [startPos];
     
-    // Check if rope goes through a pulley (IN to OUT on same pulley = wrap around)
+    // Check if rope wraps around a pulley (both IN→OUT and OUT→IN on same pulley)
     const startIsIn = rope.startPoint?.includes('-in');
+    const startIsOut = rope.startPoint?.includes('-out');
     const endIsOut = rope.endPoint?.includes('-out');
+    const endIsIn = rope.endPoint?.includes('-in');
     const startPulleyId = rope.startPoint?.split('-sheave')[0];
     const endPulleyId = rope.endPoint?.split('-sheave')[0];
     
-    // If start is IN and end is OUT on the same pulley, add arc points
-    if (startIsIn && endIsOut && startPulleyId === endPulleyId && endComp.type === 'pulley') {
-        const pulley = endComp as PulleyComponent;
+    // Check if wrapping around same pulley
+    const wrapsAroundPulley = startPulleyId === endPulleyId && 
+                              ((startIsIn && endIsOut) || (startIsOut && endIsIn));
+    
+    if (wrapsAroundPulley && startComp.type === 'pulley') {
+        const pulley = startComp as PulleyComponent;
         const radius = pulley.diameter / 2;
         const center = pulley.position;
         
-        // Add points along the arc from IN (left) to OUT (right) going around the TOP (anchor side)
+        // Add points along the arc - always go around the TOP (anchor side)
         const numArcPoints = 8;
-        for (let i = 1; i < numArcPoints; i++) {
-            const angle = Math.PI - (i / numArcPoints) * Math.PI; // From PI (left) to 0 (right) - top arc
-            path.push({
-                x: center.x + radius * Math.cos(angle),
-                y: center.y + radius * Math.sin(angle)
-            });
+        if (startIsIn && endIsOut) {
+            // IN (left) to OUT (right) - top arc
+            for (let i = 1; i < numArcPoints; i++) {
+                const angle = Math.PI - (i / numArcPoints) * Math.PI;
+                path.push({
+                    x: center.x + radius * Math.cos(angle),
+                    y: center.y + radius * Math.sin(angle)
+                });
+            }
+        } else if (startIsOut && endIsIn) {
+            // OUT (right) to IN (left) - top arc
+            for (let i = 1; i < numArcPoints; i++) {
+                const angle = (i / numArcPoints) * Math.PI;
+                path.push({
+                    x: center.x + radius * Math.cos(angle),
+                    y: center.y + radius * Math.sin(angle)
+                });
+            }
         }
     }
     

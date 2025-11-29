@@ -21,6 +21,8 @@ export interface PulleyComponent {
     sheaves: 1 | 2 | 3;
     hasBecket: boolean;
     rotation: number; // Rotation in degrees
+    friction?: number; // Friction coefficient (default 0.95 = 5% loss)
+    efficiency?: number; // Overall efficiency percentage (calculated from friction)
 }
 
 export interface AnchorComponent {

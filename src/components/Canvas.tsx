@@ -115,6 +115,7 @@ const Canvas: React.FC<CanvasProps> = ({
         if (toolMode === 'rope') {
             onComponentClick(id);
         } else {
+            // Just select this component directly - no chain logic
             setSystem(prev => ({ ...prev, selectedId: id }));
         }
     };

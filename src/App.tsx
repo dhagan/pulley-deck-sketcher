@@ -52,6 +52,7 @@ const App: React.FC = () => {
     const [measurementEnd, setMeasurementEnd] = useState<{ x: number; y: number } | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
     const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
+    const [showMeasurements, setShowMeasurements] = useState<boolean>(true);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -447,6 +448,8 @@ const App: React.FC = () => {
                 ropeStart={ropeStart}
                 selectedId={system.selectedId}
                 system={system}
+                showMeasurements={showMeasurements}
+                onToggleMeasurements={() => setShowMeasurements(!showMeasurements)}
             />
             <div className="main-content">
                 <Canvas
@@ -487,6 +490,29 @@ const App: React.FC = () => {
                         <strong>Components:</strong> {system.components.length}
                     </div>
                     <div className="status-item">
+                        <strong>Total Rope:</strong> {(() => {
+                            const ropes = system.components.filter(c => c.type === ComponentType.ROPE) as RopeComponent[];
+                            const totalLength = ropes.reduce((sum, rope) => {
+                                const startComp = system.components.find(c => c.id === rope.startId);
+                                const endComp = system.components.find(c => c.id === rope.endId);
+                                if (!startComp || !endComp) return sum;
+                                
+                                // Calculate rope length (simplified - would need full path calculation)
+                                const getPos = (comp: Component, point?: string) => {
+                                    if (comp.type === ComponentType.ROPE || comp.type === ComponentType.SPRING) return { x: 0, y: 0 };
+                                    return (comp as any).position;
+                                };
+                                
+                                const start = getPos(startComp, rope.startPoint);
+                                const end = getPos(endComp, rope.endPoint);
+                                const dx = end.x - start.x;
+                                const dy = end.y - start.y;
+                                return sum + Math.sqrt(dx * dx + dy * dy);
+                            }, 0);
+                            return `${Math.round(totalLength)}px`;
+                        })()}
+                    </div>
+                    <div className="status-item">
                         <strong>Selected:</strong> {system.selectedId ? 
                             (() => {
                                 const comp = system.components.find(c => c.id === system.selectedId);
@@ -524,7 +550,13 @@ const App: React.FC = () => {
                                 if (comp.type === ComponentType.PULLEY) {
                                     const pulley = comp as PulleyComponent;
                                     const idNum = comp.id.split('-')[1];
-                                    return `Pulley #${idNum} (${pulley.sheaves} sheave${pulley.sheaves > 1 ? 's' : ''})`;
+                                    const points = [];
+                                    points.push('anchor');
+                                    if (pulley.hasBecket) points.push('becket');
+                                    for (let i = 0; i < pulley.sheaves; i++) {
+                                        points.push(`s${i}-in`, `s${i}-out`);
+                                    }
+                                    return `Pulley #${idNum} [${points.join(', ')}]`;
                                 }
                                 return comp.type;
                             })() : 'None'}

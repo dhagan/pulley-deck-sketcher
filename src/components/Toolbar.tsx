@@ -23,6 +23,8 @@ interface ToolbarProps {
     ropeStart: string | null;
     selectedId?: string | null;
     system: SystemState;
+    showMeasurements?: boolean;
+    onToggleMeasurements?: () => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -44,6 +46,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
     toolMode,
     selectedId,
     system,
+    showMeasurements = true,
+    onToggleMeasurements,
 }) => {
     const handleValidate = () => {
         const result = validateSystem(system);
@@ -131,6 +135,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     />
                 </label>
                 <button className="toolbar-button" onClick={onExportSVG} title="Export as SVG">📤 Export SVG</button>
+                {onToggleMeasurements && (
+                    <button 
+                        className={`toolbar-button ${showMeasurements ? 'active' : ''}`}
+                        onClick={onToggleMeasurements} 
+                        title="Toggle Measurements"
+                    >
+                        📏 {showMeasurements ? 'Hide' : 'Show'} Measurements
+                    </button>
+                )}
                 <button 
                     className="toolbar-button" 
                     onClick={handleValidate} 
