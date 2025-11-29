@@ -515,8 +515,18 @@ const App: React.FC = () => {
                                     return `Rope: ${startLabel}[${startPt}] → ${endLabel}[${endPt}]${rope.chainId ? ` (chain: ${rope.chainId})` : ''}`;
                                 }
                                 
-                                const label = (comp as any).label || comp.id;
-                                return `${comp.type} (${label})`;
+                                // For other components, show friendly label
+                                const label = (comp as any).label;
+                                if (label) {
+                                    return `${comp.type}: ${label}`;
+                                }
+                                // For pulleys without custom labels, show type and number from ID
+                                if (comp.type === ComponentType.PULLEY) {
+                                    const pulley = comp as PulleyComponent;
+                                    const idNum = comp.id.split('-')[1];
+                                    return `Pulley #${idNum} (${pulley.sheaves} sheave${pulley.sheaves > 1 ? 's' : ''})`;
+                                }
+                                return comp.type;
                             })() : 'None'}
                     </div>
                     <div className="status-item">
