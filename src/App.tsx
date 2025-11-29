@@ -5,7 +5,7 @@ import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import { calculatePathLength } from './utils/geometry';
-import { calculateMechanicalAdvantage, formatMAResult } from './utils/mechanicalAdvantage';
+import { calculateMechanicalAdvantage } from './utils/mechanicalAdvantage';
 import './App.css';
 
 type ToolMode = 'select' | 'rope' | 'spring' | 'measure';
@@ -494,7 +494,7 @@ const App: React.FC = () => {
                         <button className="context-menu-item" onClick={() => { handleAddPerson(); handleContextMenuClose(); }}>● Add Person</button>
                         <button className="context-menu-item" onClick={() => { handleAddSpring(); handleContextMenuClose(); }}>⋈ Add Spring</button>
                     </div>
-                />}
+                )}
                 {showPropertiesPanel && <PropertiesPanel system={system} setSystem={setSystem} onCollapse={() => setShowPropertiesPanel(false)} />}
                 {showSolverPanel && (
                     <div className="solver-panel">
