@@ -8,7 +8,7 @@ interface RopeProps {
     components: Component[];
     isSelected: boolean;
     onSelect: () => void;
-    onSelectChain?: () => void;
+    onSelectChain?: (chainId: string) => void;
     showArrows?: boolean;
 }
 
