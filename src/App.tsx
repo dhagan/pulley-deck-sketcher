@@ -56,6 +56,8 @@ const App: React.FC = () => {
     const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
     const [showMeasurements, setShowMeasurements] = useState<boolean>(true);
     const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
+    const [showPropertiesPanel, setShowPropertiesPanel] = useState<boolean>(true);
+    const [showSolverPanel, setShowSolverPanel] = useState<boolean>(true);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -492,9 +494,69 @@ const App: React.FC = () => {
                         <button className="context-menu-item" onClick={() => { handleAddPerson(); handleContextMenuClose(); }}>● Add Person</button>
                         <button className="context-menu-item" onClick={() => { handleAddSpring(); handleContextMenuClose(); }}>⋈ Add Spring</button>
                     </div>
+                />}
+                {showPropertiesPanel && <PropertiesPanel system={system} setSystem={setSystem} onCollapse={() => setShowPropertiesPanel(false)} />}
+                {showSolverPanel && (
+                    <div className="solver-panel">
+                        <div className="panel-header">
+                            <h3>Solver</h3>
+                            <button 
+                                className="panel-toggle"
+                                onClick={() => setShowSolverPanel(false)}
+                                title="Hide Solver Panel"
+                            >
+                                →
+                            </button>
+                        </div>
+                        <div className="solver-content">
+                            <div className="solver-section">
+                                <h4>Mechanical Analysis</h4>
+                                <div className="solver-stat">
+                                    <span>Theoretical MA:</span>
+                                    <span>{(() => {
+                                        const ma = calculateMechanicalAdvantage(system);
+                                        return ma ? `${ma.theoreticalMA}:1` : 'N/A';
+                                    })()}</span>
+                                </div>
+                                <div className="solver-stat">
+                                    <span>Actual MA:</span>
+                                    <span>{(() => {
+                                        const ma = calculateMechanicalAdvantage(system);
+                                        return ma ? `${ma.actualMA.toFixed(2)}:1` : 'N/A';
+                                    })()}</span>
+                                </div>
+                                <div className="solver-stat">
+                                    <span>Efficiency:</span>
+                                    <span>{(() => {
+                                        const ma = calculateMechanicalAdvantage(system);
+                                        return ma ? `${(ma.efficiency * 100).toFixed(1)}%` : 'N/A';
+                                    })()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
-                <PropertiesPanel system={system} setSystem={setSystem} />
             </div>
+            {!showPropertiesPanel && (
+                <button 
+                    className="panel-toggle-show"
+                    style={{ right: showSolverPanel ? '260px' : '8px' }}
+                    onClick={() => setShowPropertiesPanel(true)}
+                    title="Show Properties Panel"
+                >
+                    ←
+                </button>
+            )}
+            {!showSolverPanel && (
+                <button 
+                    className="panel-toggle-show"
+                    style={{ right: '8px' }}
+                    onClick={() => setShowSolverPanel(true)}
+                    title="Show Solver Panel"
+                >
+                    ←
+                </button>
+            )}
             <div className="status-bar">
                 <div className="status-info">
                     <div className="status-item">

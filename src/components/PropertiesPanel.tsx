@@ -4,9 +4,10 @@ import { SystemState, PulleyComponent, SpringComponent, RopeComponent, Component
 interface PropertiesPanelProps {
     system: SystemState;
     setSystem: React.Dispatch<React.SetStateAction<SystemState>>;
+    onCollapse?: () => void;
 }
 
-const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) => {
+const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem, onCollapse }) => {
     const selectedComponent = system.components.find(c => c.id === system.selectedId);
 
     const updateComponent = (updates: any) => {
@@ -137,7 +138,26 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
 
     return (
         <div className="properties-panel">
-            <h2 style={{ marginBottom: '20px', fontSize: '16px' }}>Properties</h2>
+            <div className="panel-header\" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h2 style={{ margin: 0, fontSize: '16px' }}>Properties</h2>
+                {onCollapse && (
+                    <button 
+                        className="panel-toggle"
+                        onClick={onCollapse}
+                        title="Hide Properties Panel"
+                        style={{ 
+                            background: 'transparent', 
+                            border: 'none', 
+                            color: '#888', 
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            padding: '4px 8px'
+                        }}
+                    >
+                        →
+                    </button>
+                )}
+            </div>
 
             <div className="property-group">
                 <h3>Grid Settings</h3>
