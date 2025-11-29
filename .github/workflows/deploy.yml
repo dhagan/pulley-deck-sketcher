@@ -1,11 +1,7 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches:
-      - v-0.0.4
-      - master
-  workflow_dispatch:
+  workflow_dispatch:  # Only manual deployment via Actions tab
 
 permissions:
   contents: read
