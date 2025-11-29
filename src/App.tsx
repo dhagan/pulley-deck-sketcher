@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComponent, PersonComponent, RopeComponent, SpringComponent } from './types';
+import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComponent, PersonComponent, RopeComponent, SpringComponent, Component } from './types';
 import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
@@ -579,13 +579,13 @@ const App: React.FC = () => {
                                 if (!startComp || !endComp) return sum;
                                 
                                 // Calculate rope length (simplified - would need full path calculation)
-                                const getPos = (comp: Component, point?: string) => {
+                                const getPos = (comp: Component) => {
                                     if (comp.type === ComponentType.ROPE || comp.type === ComponentType.SPRING) return { x: 0, y: 0 };
                                     return (comp as any).position;
                                 };
                                 
-                                const start = getPos(startComp, rope.startPoint);
-                                const end = getPos(endComp, rope.endPoint);
+                                const start = getPos(startComp);
+                                const end = getPos(endComp);
                                 const dx = end.x - start.x;
                                 const dy = end.y - start.y;
                                 return sum + Math.sqrt(dx * dx + dy * dy);
@@ -613,7 +613,6 @@ const App: React.FC = () => {
                                     };
                                     
                                     if (comp.type === ComponentType.PULLEY) {
-                                        const pulley = comp as PulleyComponent;
                                         const idNum = comp.id.split('-')[1];
                                         const point = formatPointForDisplay(selectedPoint);
                                         return `Pulley #${idNum} [${point}]`;
@@ -645,13 +644,13 @@ const App: React.FC = () => {
                                     
                                     if (!startComp || !endComp) return 'Rope (invalid)';
                                     
-                                    const getPos = (comp: any, point?: string) => {
+                                    const getPos = (comp: any) => {
                                         if (comp.type === ComponentType.ROPE || comp.type === ComponentType.SPRING) return { x: 0, y: 0 };
                                         return comp.position;
                                     };
                                     
-                                    const startPos = getPos(startComp, rope.startPoint);
-                                    const endPos = getPos(endComp, rope.endPoint);
+                                    const startPos = getPos(startComp);
+                                    const endPos = getPos(endComp);
                                     let path = [startPos];
                                     
                                     // Check for wraps
@@ -688,19 +687,15 @@ const App: React.FC = () => {
                                     return `Rope: ${startLabel}[${startPt}] → ${endLabel}[${endPt}] (${ropeLength}px)${rope.chainId ? ` chain: ${rope.chainId}` : ''}`;
                                 }
                                 
-                                // For other components, show friendly label
-                                const label = (comp as any).label;
-                                if (label) {
-                                    return `${comp.type}: ${label}`;
-                                }
                                 // For pulleys without custom labels, show type and number from ID
                                 if (comp.type === ComponentType.PULLEY) {
                                     const pulley = comp as PulleyComponent;
                                     const idNum = comp.id.split('-')[1];
                                     return `Pulley #${idNum} (${pulley.sheaves} sheave${pulley.sheaves > 1 ? 's' : ''}${pulley.hasBecket ? ', becket' : ''})`;
                                 }
-                                return comp.type;
-                                // For other components with labels
+                                
+                                // For other components, show friendly label
+                                const label = (comp as any).label;
                                 if (label) {
                                     return `${comp.type}: ${label}`;
                                 }
