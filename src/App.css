@@ -197,7 +197,6 @@
     overflow: hidden;
 }
 
-
 .properties-panel {
     width: 250px;
     background: #1e293b;
@@ -205,6 +204,7 @@
     padding: 16px;
     overflow-y: auto;
     flex-shrink: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
 .solver-panel {
@@ -214,6 +214,7 @@
     padding: 16px;
     overflow-y: auto;
     flex-shrink: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
 .panel-header {

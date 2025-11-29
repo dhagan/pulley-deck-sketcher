@@ -12,7 +12,7 @@ interface RopeProps {
     showArrows?: boolean;
 }
 
-const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onSelectChain, showArrows = true }) => {
+const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, showArrows = true }) => {
     // Helper to get coordinates for a specific point on a component
     const getPointCoordinates = (component: Component, pointId?: string): { x: number; y: number } => {
         // Rope components don't have a single position
@@ -121,8 +121,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     const startIsOut = rope.startPoint?.includes('-out');
     const endIsOut = rope.endPoint?.includes('-out');
     const endIsIn = rope.endPoint?.includes('-in');
-    const startPulleyId = rope.startPoint?.split('-sheave')[0];
-    const endPulleyId = rope.endPoint?.split('-sheave')[0];
     
     // Check if wrapping around same pulley - BOTH start and end must be on the same pulley
     // This means rope.startId === rope.endId (same component) AND it's a pulley
