@@ -135,14 +135,14 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
         const rotationRad = (pulley.rotation || 0) * (Math.PI / 180);
         
         // Add points along the arc - always go around the TOP (anchor side)
-        const numArcPoints = 16; // More points for smoother arc
+        const numArcPoints = 20; // More points for smoother arc
         if (startIsIn && endIsOut) {
-            // IN (left) to OUT (right) - top arc
-            for (let i = 1; i < numArcPoints; i++) {
+            // IN (left) to OUT (right) - top arc (180° to 0°)
+            for (let i = 0; i <= numArcPoints; i++) {
                 const t = i / numArcPoints;
-                const angle = Math.PI - t * Math.PI; // 180° to 0°
+                const angle = Math.PI * (1 - t); // Start at 180°, end at 0°
                 const localX = radius * Math.cos(angle);
-                const localY = radius * Math.sin(angle);
+                const localY = -radius * Math.sin(angle); // Negative for top arc
                 
                 // Apply rotation
                 const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
@@ -154,12 +154,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 });
             }
         } else if (startIsOut && endIsIn) {
-            // OUT (right) to IN (left) - top arc
-            for (let i = 1; i < numArcPoints; i++) {
+            // OUT (right) to IN (left) - top arc (0° to 180°)
+            for (let i = 0; i <= numArcPoints; i++) {
                 const t = i / numArcPoints;
-                const angle = t * Math.PI; // 0° to 180°
+                const angle = Math.PI * t; // Start at 0°, end at 180°
                 const localX = radius * Math.cos(angle);
-                const localY = radius * Math.sin(angle);
+                const localY = -radius * Math.sin(angle); // Negative for top arc
                 
                 // Apply rotation
                 const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
@@ -171,9 +171,10 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                 });
             }
         }
+    } else {
+        // Just a straight line for non-wrapping ropes
+        path.push(endPos);
     }
-    
-    path.push(endPos);
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);
