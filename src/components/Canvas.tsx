@@ -366,11 +366,22 @@ const Canvas: React.FC<CanvasProps> = ({
                                     <Group x={(dimStart.x + dimEnd.x) / 2} y={(dimStart.y + dimEnd.y) / 2}>
                                         <Text
                                             x={-25 / stageScale}
-                                            y={-8 / stageScale}
-                                            text={`${Math.round(len)} mm`}
-                                            fontSize={12 / stageScale}
+                                            y={-20 / stageScale}
+                                            text={`${Math.round(len)}px`}
+                                            fontSize={11 / stageScale}
                                             fill="#00d9ff"
                                             fontStyle="bold"
+                                            fontFamily="monospace"
+                                            align="center"
+                                            width={50 / stageScale}
+                                        />
+                                        <Text
+                                            x={-25 / stageScale}
+                                            y={-5 / stageScale}
+                                            text={`(${(len * 0.264583).toFixed(1)}mm)`}
+                                            fontSize={9 / stageScale}
+                                            fill="#888"
+                                            fontFamily="monospace"
                                             align="center"
                                             width={50 / stageScale}
                                         />

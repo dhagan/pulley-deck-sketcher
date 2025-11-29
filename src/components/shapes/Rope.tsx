@@ -223,6 +223,23 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                 shadowBlur={isSelected ? 10 : 0}
                 listening={false}
             />
+            
+            {/* Wrap indicator - show when rope wraps around pulley */}
+            {wrapsAroundPulley && startComp.type === 'pulley' && (() => {
+                const pulley = startComp as PulleyComponent;
+                return (
+                    <Circle
+                        x={pulley.position.x}
+                        y={pulley.position.y}
+                        radius={pulley.diameter / 2 + 2}
+                        stroke={isSelected ? '#00d9ff' : '#4ade80'}
+                        strokeWidth={isSelected ? 2 : 1.5}
+                        dash={[5, 5]}
+                        opacity={0.6}
+                        listening={false}
+                    />
+                );
+            })()}
 
             {/* Directional arrows */}
             {showArrows && length > 20 && (() => {
