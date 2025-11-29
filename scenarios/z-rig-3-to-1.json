@@ -6,31 +6,46 @@
     {
       "id": "anchor-1",
       "type": "anchor",
-      "position": {"x": 400, "y": 100},
-      "label": "Fixed Anchor"
+      "position": {"x": 300, "y": 100},
+      "label": "Main Anchor"
+    },
+    {
+      "id": "anchor-2",
+      "type": "anchor",
+      "position": {"x": 500, "y": 100},
+      "label": "Redirect Anchor"
     },
     {
       "id": "pulley-1",
       "type": "pulley",
-      "position": {"x": 400, "y": 200},
+      "position": {"x": 300, "y": 200},
       "diameter": 30,
-      "sheaves": 2,
-      "hasBecket": true,
+      "sheaves": 1,
+      "hasBecket": false,
       "rotation": 0
     },
     {
       "id": "pulley-2",
       "type": "pulley",
-      "position": {"x": 400, "y": 360},
+      "position": {"x": 300, "y": 400},
       "diameter": 30,
-      "sheaves": 2,
+      "sheaves": 1,
       "hasBecket": false,
       "rotation": 180
     },
     {
-      "id": "anchor-2",
+      "id": "pulley-3",
+      "type": "pulley",
+      "position": {"x": 500, "y": 200},
+      "diameter": 30,
+      "sheaves": 1,
+      "hasBecket": false,
+      "rotation": 0
+    },
+    {
+      "id": "anchor-3",
       "type": "anchor",
-      "position": {"x": 400, "y": 520},
+      "position": {"x": 300, "y": 560},
       "label": "Load Point"
     },
     {
@@ -38,8 +53,8 @@
       "type": "spring",
       "startId": "pulley-2",
       "startPoint": "pulley-2-anchor",
-      "endId": "anchor-2",
-      "endPoint": "anchor-2",
+      "endId": "anchor-3",
+      "endPoint": "anchor-3",
       "label": "Load",
       "stiffness": 1,
       "restLength": 100
@@ -47,7 +62,7 @@
     {
       "id": "person-1",
       "type": "person",
-      "position": {"x": 550, "y": 275},
+      "position": {"x": 650, "y": 300},
       "label": "Pull",
       "pulling": true
     },
@@ -58,47 +73,56 @@
       "startPoint": "anchor-1",
       "endId": "pulley-1",
       "endPoint": "pulley-1-anchor",
-      "label": "Suspension"
+      "label": "Anchor Rope"
     },
     {
       "id": "rope-2",
       "type": "rope",
-      "startId": "pulley-1",
-      "startPoint": "pulley-1-becket",
+      "startId": "anchor-2",
+      "startPoint": "anchor-2",
+      "endId": "pulley-3",
+      "endPoint": "pulley-3-anchor",
+      "label": "Redirect Anchor"
+    },
+    {
+      "id": "rope-3",
+      "type": "rope",
+      "startId": "anchor-1",
+      "startPoint": "anchor-1",
       "endId": "pulley-2",
       "endPoint": "pulley-2-sheave-0-in",
-      "label": "Working Line",
+      "label": "Main Line",
       "chainId": "chain-1",
       "isChainStart": true
     },
     {
-      "id": "rope-3",
+      "id": "rope-4",
       "type": "rope",
       "startId": "pulley-2",
       "startPoint": "pulley-2-sheave-0-out",
       "endId": "pulley-1",
       "endPoint": "pulley-1-sheave-0-in",
-      "label": "Working Line",
-      "chainId": "chain-1"
-    },
-    {
-      "id": "rope-4",
-      "type": "rope",
-      "startId": "pulley-1",
-      "startPoint": "pulley-1-sheave-0-out",
-      "endId": "pulley-2",
-      "endPoint": "pulley-2-sheave-1-in",
-      "label": "Working Line",
+      "label": "Main Line",
       "chainId": "chain-1"
     },
     {
       "id": "rope-5",
       "type": "rope",
-      "startId": "pulley-2",
-      "startPoint": "pulley-2-sheave-1-out",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-0-out",
+      "endId": "pulley-3",
+      "endPoint": "pulley-3-sheave-0-in",
+      "label": "Redirect",
+      "chainId": "chain-1"
+    },
+    {
+      "id": "rope-6",
+      "type": "rope",
+      "startId": "pulley-3",
+      "startPoint": "pulley-3-sheave-0-out",
       "endId": "person-1",
       "endPoint": "person-1",
-      "label": "Working Line",
+      "label": "Haul Line",
       "chainId": "chain-1",
       "isChainEnd": true
     }
