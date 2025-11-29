@@ -128,6 +128,25 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
+    // DEBUG: Log wrap detection
+    if (rope.id.includes('rope-2')) {
+        console.log('🔍 ROPE-2 WRAP DEBUG:', {
+            ropeId: rope.id,
+            startId: rope.startId,
+            endId: rope.endId,
+            sameId: rope.startId === rope.endId,
+            startPoint: rope.startPoint,
+            endPoint: rope.endPoint,
+            isPulley: startComp.type === 'pulley',
+            startIsIn,
+            startIsOut,
+            endIsIn,
+            endIsOut,
+            wrapsAroundPulley,
+            pathLength: path.length
+        });
+    }
+    
     if (wrapsAroundPulley) {
         const pulley = startComp as PulleyComponent;
         const radius = pulley.diameter / 2;
