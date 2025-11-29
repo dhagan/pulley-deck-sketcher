@@ -101,7 +101,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                          rope.startPoint?.includes('spring') ||
                          rope.endPoint?.includes('spring');
     
-    const ropeColor = isAnchorRope ? '#ef4444' : '#3b82f6'; // red for anchor, blue for working ropes
+    const ropeColor = isAnchorRope ? '#ef4444' : '#4ade80'; // red for anchor, light green for working ropes
 
     // Find start and end components
     const startComp = components.find(c => c.id === rope.startId);
