@@ -5,6 +5,7 @@ import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import { calculatePathLength } from './utils/geometry';
+import { calculateMechanicalAdvantage, formatMAResult } from './utils/mechanicalAdvantage';
 import './App.css';
 
 type ToolMode = 'select' | 'rope' | 'spring' | 'measure';
@@ -498,6 +499,13 @@ const App: React.FC = () => {
                 <div className="status-info">
                     <div className="status-item">
                         <strong>Components:</strong> {system.components.length}
+                    </div>
+                    <div className="status-item">
+                        <strong>MA:</strong> {(() => {
+                            const maResult = calculateMechanicalAdvantage(system);
+                            if (!maResult) return 'N/A';
+                            return `${maResult.theoreticalMA}:1 (actual: ${maResult.actualMA.toFixed(2)}:1)`;
+                        })()}
                     </div>
                     <div className="status-item">
                         <strong>Total Rope:</strong> {(() => {
