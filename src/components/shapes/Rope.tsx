@@ -8,10 +8,11 @@ interface RopeProps {
     components: Component[];
     isSelected: boolean;
     onSelect: () => void;
+    onSelectChain?: () => void;
     showArrows?: boolean;
 }
 
-const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, showArrows = true }) => {
+const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onSelectChain, showArrows = true }) => {
     // Helper to get coordinates for a specific point on a component
     const getPointCoordinates = (component: Component, pointId?: string): { x: number; y: number } => {
         // Rope components don't have a single position
@@ -281,7 +282,11 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                     y={path[0].y}
                     onClick={(e) => {
                         e.cancelBubble = true;
-                        onSelect();
+                        if (onSelectChain) {
+                            onSelectChain();
+                        } else {
+                            onSelect();
+                        }
                     }}
                     onMouseEnter={(e) => {
                         const container = e.target.getStage()?.container();
@@ -317,7 +322,11 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                     y={path[path.length - 1].y}
                     onClick={(e) => {
                         e.cancelBubble = true;
-                        onSelect();
+                        if (onSelectChain) {
+                            onSelectChain();
+                        } else {
+                            onSelect();
+                        }
                     }}
                     onMouseEnter={(e) => {
                         const container = e.target.getStage()?.container();

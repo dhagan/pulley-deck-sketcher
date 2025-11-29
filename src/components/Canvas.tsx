@@ -234,6 +234,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                     components={system.components}
                                     isSelected={rope.id === system.selectedId || isPartOfSelectedChain}
                                     onSelect={() => handleSelect(rope.id)}
+                                    onSelectChain={() => handleSelectChain(rope.id)}
                                     showArrows={system.showRopeArrows}
                                 />
                             );
