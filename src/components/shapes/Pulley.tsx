@@ -38,7 +38,7 @@ const Pulley: React.FC<PulleyProps> = ({
                 {/* Main sheave circle - all pulleys identical */}
                 <Circle
                     radius={radius}
-                    fill="rgba(160, 160, 180, 0.2)"
+                    fill="rgba(160, 160, 180, 0.1)"
                     stroke="#888"
                     strokeWidth={2.5}
                 />
