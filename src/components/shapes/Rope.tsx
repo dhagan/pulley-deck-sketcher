@@ -124,9 +124,9 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     const startPulleyId = rope.startPoint?.split('-sheave')[0];
     const endPulleyId = rope.endPoint?.split('-sheave')[0];
     
-    // Check if wrapping around same pulley - both start and end on same pulley component
-    const wrapsAroundPulley = startPulleyId === endPulleyId && 
-                              startPulleyId === rope.startId && // Make sure they're both on the same component
+    // Check if wrapping around same pulley - BOTH start and end must be on the same pulley
+    // This means rope.startId === rope.endId (same component) AND it's a pulley
+    const wrapsAroundPulley = rope.startId === rope.endId && 
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
