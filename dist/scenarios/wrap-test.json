@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "gridSize": 20,
+  "snapToGrid": true,
+  "components": [
+    {
+      "id": "anchor-1",
+      "type": "anchor",
+      "position": {"x": 300, "y": 150},
+      "label": "Fixed"
+    },
+    {
+      "id": "pulley-1",
+      "type": "pulley",
+      "position": {"x": 400, "y": 300},
+      "diameter": 40,
+      "sheaves": 1,
+      "hasBecket": false,
+      "rotation": 0,
+      "friction": 0.95
+    },
+    {
+      "id": "person-1",
+      "type": "person",
+      "position": {"x": 550, "y": 300},
+      "label": "Pull",
+      "pulling": true
+    },
+    {
+      "id": "rope-1",
+      "type": "rope",
+      "startId": "anchor-1",
+      "startPoint": "anchor-1",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-anchor",
+      "label": "Suspension"
+    },
+    {
+      "id": "rope-2",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-0-in",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-sheave-0-out",
+      "label": "Wrap",
+      "chainId": "chain-1",
+      "isChainStart": true
+    },
+    {
+      "id": "rope-3",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-0-out",
+      "endId": "person-1",
+      "endPoint": "person-1",
+      "label": "To Person",
+      "chainId": "chain-1",
+      "isChainEnd": true
+    }
+  ],
+  "selectedId": null,
+  "showRopeArrows": true
+}

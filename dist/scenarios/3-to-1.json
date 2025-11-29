@@ -1,0 +1,98 @@
+{
+  "version": "1.0",
+  "gridSize": 20,
+  "snapToGrid": true,
+  "components": [
+    {
+      "id": "anchor-1",
+      "type": "anchor",
+      "position": {"x": 400, "y": 100},
+      "label": "Fixed Anchor"
+    },
+    {
+      "id": "pulley-1",
+      "type": "pulley",
+      "position": {"x": 400, "y": 200},
+      "diameter": 30,
+      "sheaves": 1,
+      "hasBecket": true,
+      "rotation": 0
+    },
+    {
+      "id": "pulley-2",
+      "type": "pulley",
+      "position": {"x": 400, "y": 360},
+      "diameter": 30,
+      "sheaves": 1,
+      "hasBecket": false,
+      "rotation": 180
+    },
+    {
+      "id": "anchor-2",
+      "type": "anchor",
+      "position": {"x": 400, "y": 520},
+      "label": "Load Point"
+    },
+    {
+      "id": "spring-1",
+      "type": "spring",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-anchor",
+      "endId": "anchor-2",
+      "endPoint": "anchor-2",
+      "label": "Load",
+      "stiffness": 1,
+      "restLength": 100
+    },
+    {
+      "id": "person-1",
+      "type": "person",
+      "position": {"x": 550, "y": 275},
+      "label": "Pull",
+      "pulling": true
+    },
+    {
+      "id": "rope-1",
+      "type": "rope",
+      "startId": "anchor-1",
+      "startPoint": "anchor-1",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-anchor",
+      "label": "Suspension"
+    },
+    {
+      "id": "rope-2",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-becket",
+      "endId": "pulley-2",
+      "endPoint": "pulley-2-sheave-0-in",
+      "label": "Working Line",
+      "chainId": "chain-1",
+      "isChainStart": true
+    },
+    {
+      "id": "rope-3",
+      "type": "rope",
+      "startId": "pulley-2",
+      "startPoint": "pulley-2-sheave-0-out",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-sheave-0-in",
+      "label": "Working Line",
+      "chainId": "chain-1"
+    },
+    {
+      "id": "rope-4",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-0-out",
+      "endId": "person-1",
+      "endPoint": "person-1",
+      "label": "Working Line",
+      "chainId": "chain-1",
+      "isChainEnd": true
+    }
+  ],
+  "selectedId": null,
+  "showRopeArrows": true
+}
