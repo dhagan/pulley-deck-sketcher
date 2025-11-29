@@ -128,6 +128,20 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
+    console.log('Rope wrap debug:', {
+        ropeId: rope.id,
+        startId: rope.startId,
+        endId: rope.endId,
+        sameComponent: rope.startId === rope.endId,
+        isPulley: startComp.type === 'pulley',
+        startIsIn,
+        startIsOut,
+        endIsIn,
+        endIsOut,
+        correctDirection: (startIsIn && endIsOut) || (startIsOut && endIsIn),
+        wrapsAroundPulley
+    });
+    
     if (wrapsAroundPulley) {
         const pulley = startComp as PulleyComponent;
         const radius = pulley.diameter / 2;
@@ -212,12 +226,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
             {/* Rope line - using lineCap and lineJoin for clean segments */}
             <Line
                 points={points}
-                stroke={isSelected ? '#00d9ff' : ropeColor}
+                stroke={isSelected ? '#6ee7b7' : ropeColor}
                 strokeWidth={isSelected ? 4 : 2}
                 lineCap="round"
                 lineJoin="round"
                 tension={0} // No bezier smoothing - show actual path with wraps
-                shadowColor={isSelected ? '#00d9ff' : undefined}
+                shadowColor={isSelected ? '#6ee7b7' : undefined}
                 shadowBlur={isSelected ? 10 : 0}
                 listening={false}
             />
@@ -230,10 +244,10 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                         x={pulley.position.x}
                         y={pulley.position.y}
                         radius={pulley.diameter / 2 + 2}
-                        stroke={isSelected ? '#00d9ff' : '#4ade80'}
-                        strokeWidth={isSelected ? 2 : 1.5}
+                        stroke={isSelected ? '#6ee7b7' : '#4ade80'}
+                        strokeWidth={isSelected ? 3 : 2}
                         dash={[5, 5]}
-                        opacity={0.6}
+                        opacity={0.8}
                         listening={false}
                     />
                 );

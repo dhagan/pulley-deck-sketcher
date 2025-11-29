@@ -38,17 +38,17 @@ const Pulley: React.FC<PulleyProps> = ({
                 {/* Main sheave circle - all pulleys identical */}
                 <Circle
                     radius={radius}
-                    fill="rgba(100, 150, 255, 0.15)"
-                    stroke="#4a90e2"
+                    fill="rgba(160, 160, 180, 0.2)"
+                    stroke="#888"
                     strokeWidth={2.5}
                 />
 
                 {/* Inner circle for depth */}
                 <Circle
                     radius={radius * 0.7}
-                    stroke="#4a90e2"
+                    stroke="#666"
                     strokeWidth={1.5}
-                    opacity={0.4}
+                    opacity={0.5}
                 />
 
                 {/* Center axle */}
