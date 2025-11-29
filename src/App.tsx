@@ -42,7 +42,7 @@ const App: React.FC = () => {
 
     // Load first scenario on mount
     useEffect(() => {
-        fetch('/scenarios/3-to-1.json')
+        fetch('/pulley-cad/scenarios/3-to-1.json')
             .then(res => res.json())
             .then(data => setSystem(data))
             .catch(err => console.error('Failed to load default scenario:', err));
