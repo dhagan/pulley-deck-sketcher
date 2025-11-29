@@ -4,6 +4,7 @@ import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
+import { calculatePathLength } from './utils/geometry';
 import './App.css';
 
 type ToolMode = 'select' | 'rope' | 'spring' | 'measure';
@@ -532,13 +533,54 @@ const App: React.FC = () => {
                                         }
                                         return pointId;
                                     };
+                                    
+                                    // Calculate rope length with wraps
                                     const startComp = system.components.find(c => c.id === rope.startId);
                                     const endComp = system.components.find(c => c.id === rope.endId);
+                                    
+                                    if (!startComp || !endComp) return 'Rope (invalid)';
+                                    
+                                    const getPos = (comp: any, point?: string) => {
+                                        if (comp.type === ComponentType.ROPE || comp.type === ComponentType.SPRING) return { x: 0, y: 0 };
+                                        return comp.position;
+                                    };
+                                    
+                                    const startPos = getPos(startComp, rope.startPoint);
+                                    const endPos = getPos(endComp, rope.endPoint);
+                                    let path = [startPos];
+                                    
+                                    // Check for wraps
+                                    const startPulleyId = rope.startPoint?.split('-sheave')[0];
+                                    const endPulleyId = rope.endPoint?.split('-sheave')[0];
+                                    const wrapsAroundPulley = startPulleyId === endPulleyId && startComp.type === 'pulley' &&
+                                        ((rope.startPoint?.includes('-in') && rope.endPoint?.includes('-out')) ||
+                                         (rope.startPoint?.includes('-out') && rope.endPoint?.includes('-in')));
+                                    
+                                    if (wrapsAroundPulley) {
+                                        const pulley = startComp as PulleyComponent;
+                                        const radius = pulley.diameter / 2;
+                                        const center = pulley.position;
+                                        const numArcPoints = 12;
+                                        
+                                        for (let i = 1; i < numArcPoints; i++) {
+                                            const t = i / numArcPoints;
+                                            const angle = rope.startPoint?.includes('-in') ? 
+                                                Math.PI - t * Math.PI : t * Math.PI;
+                                            path.push({
+                                                x: center.x + radius * Math.cos(angle),
+                                                y: center.y + radius * Math.sin(angle)
+                                            });
+                                        }
+                                    }
+                                    
+                                    path.push(endPos);
+                                    const ropeLength = Math.round(calculatePathLength(path));
+                                    
                                     const startLabel = (startComp as any)?.label || rope.startId;
                                     const endLabel = (endComp as any)?.label || rope.endId;
                                     const startPt = formatPoint(rope.startPoint);
                                     const endPt = formatPoint(rope.endPoint);
-                                    return `Rope: ${startLabel}[${startPt}] → ${endLabel}[${endPt}]${rope.chainId ? ` (chain: ${rope.chainId})` : ''}`;
+                                    return `Rope: ${startLabel}[${startPt}] → ${endLabel}[${endPt}] (${ropeLength}px)${rope.chainId ? ` chain: ${rope.chainId}` : ''}`;
                                 }
                                 
                                 // For other components, show friendly label

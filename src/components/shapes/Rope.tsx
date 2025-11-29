@@ -126,31 +126,49 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     
     // Check if wrapping around same pulley
     const wrapsAroundPulley = startPulleyId === endPulleyId && 
+                              startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
-    if (wrapsAroundPulley && startComp.type === 'pulley') {
+    if (wrapsAroundPulley) {
         const pulley = startComp as PulleyComponent;
         const radius = pulley.diameter / 2;
         const center = pulley.position;
+        const rotationRad = (pulley.rotation || 0) * (Math.PI / 180);
         
         // Add points along the arc - always go around the TOP (anchor side)
-        const numArcPoints = 8;
+        const numArcPoints = 12; // More points for smoother arc
         if (startIsIn && endIsOut) {
             // IN (left) to OUT (right) - top arc
             for (let i = 1; i < numArcPoints; i++) {
-                const angle = Math.PI - (i / numArcPoints) * Math.PI;
+                const t = i / numArcPoints;
+                const angle = Math.PI - t * Math.PI; // 180° to 0°
+                const localX = radius * Math.cos(angle);
+                const localY = radius * Math.sin(angle);
+                
+                // Apply rotation
+                const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
+                const rotatedY = localX * Math.sin(rotationRad) + localY * Math.cos(rotationRad);
+                
                 path.push({
-                    x: center.x + radius * Math.cos(angle),
-                    y: center.y + radius * Math.sin(angle)
+                    x: center.x + rotatedX,
+                    y: center.y + rotatedY
                 });
             }
         } else if (startIsOut && endIsIn) {
             // OUT (right) to IN (left) - top arc
             for (let i = 1; i < numArcPoints; i++) {
-                const angle = (i / numArcPoints) * Math.PI;
+                const t = i / numArcPoints;
+                const angle = t * Math.PI; // 0° to 180°
+                const localX = radius * Math.cos(angle);
+                const localY = radius * Math.sin(angle);
+                
+                // Apply rotation
+                const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
+                const rotatedY = localX * Math.sin(rotationRad) + localY * Math.cos(rotationRad);
+                
                 path.push({
-                    x: center.x + radius * Math.cos(angle),
-                    y: center.y + radius * Math.sin(angle)
+                    x: center.x + rotatedX,
+                    y: center.y + rotatedY
                 });
             }
         }
