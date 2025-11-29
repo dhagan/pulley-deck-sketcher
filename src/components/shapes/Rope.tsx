@@ -128,20 +128,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
-    console.log('Rope wrap debug:', {
-        ropeId: rope.id,
-        startId: rope.startId,
-        endId: rope.endId,
-        sameComponent: rope.startId === rope.endId,
-        isPulley: startComp.type === 'pulley',
-        startIsIn,
-        startIsOut,
-        endIsIn,
-        endIsOut,
-        correctDirection: (startIsIn && endIsOut) || (startIsOut && endIsIn),
-        wrapsAroundPulley
-    });
-    
     if (wrapsAroundPulley) {
         const pulley = startComp as PulleyComponent;
         const radius = pulley.diameter / 2;
@@ -247,7 +233,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                         stroke={isSelected ? '#6ee7b7' : '#4ade80'}
                         strokeWidth={isSelected ? 3 : 2}
                         dash={[5, 5]}
-                        opacity={0.8}
+                        opacity={0.9}
                         listening={false}
                     />
                 );
