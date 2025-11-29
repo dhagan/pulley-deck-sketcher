@@ -152,14 +152,17 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
 
     return (
         <Group>
-            {/* Invisible wider hitbox for easier selection */}
+            {/* Invisible wider line for easier clicking */}
             <Line
                 points={points}
                 stroke="transparent"
-                strokeWidth={10}
+                strokeWidth={12}
                 lineCap="round"
                 lineJoin="round"
-                onClick={onSelect}
+                onClick={(e) => {
+                    e.cancelBubble = true;
+                    onSelect();
+                }}
                 onTap={onSelect}
                 onMouseEnter={(e) => {
                     const container = e.target.getStage()?.container();
@@ -261,7 +264,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, sho
                     y={path[0].y}
                     onClick={(e) => {
                         e.cancelBubble = true;
-                        // Highlight entire chain by selecting this rope
                         onSelect();
                     }}
                     onMouseEnter={(e) => {

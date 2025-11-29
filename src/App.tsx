@@ -490,6 +490,30 @@ const App: React.FC = () => {
                             (() => {
                                 const comp = system.components.find(c => c.id === system.selectedId);
                                 if (!comp) return 'None';
+                                
+                                if (comp.type === ComponentType.ROPE) {
+                                    const rope = comp as RopeComponent;
+                                    const formatPoint = (pointId: string | undefined) => {
+                                        if (!pointId) return '';
+                                        const parts = pointId.split('-');
+                                        if (pointId.includes('becket')) return 'becket';
+                                        if (pointId.includes('anchor')) return 'anchor';
+                                        if (pointId.includes('sheave')) {
+                                            const idx = parts[parts.indexOf('sheave') + 1];
+                                            const type = parts[parts.length - 1];
+                                            return `sheave-${idx}-${type}`;
+                                        }
+                                        return pointId;
+                                    };
+                                    const startComp = system.components.find(c => c.id === rope.startId);
+                                    const endComp = system.components.find(c => c.id === rope.endId);
+                                    const startLabel = (startComp as any)?.label || rope.startId;
+                                    const endLabel = (endComp as any)?.label || rope.endId;
+                                    const startPt = formatPoint(rope.startPoint);
+                                    const endPt = formatPoint(rope.endPoint);
+                                    return `Rope: ${startLabel}[${startPt}] → ${endLabel}[${endPt}]${rope.chainId ? ` (chain: ${rope.chainId})` : ''}`;
+                                }
+                                
                                 const label = (comp as any).label || comp.id;
                                 return `${comp.type} (${label})`;
                             })() : 'None'}
