@@ -54,6 +54,7 @@ const App: React.FC = () => {
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
     const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
     const [showMeasurements, setShowMeasurements] = useState<boolean>(true);
+    const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -158,6 +159,13 @@ const App: React.FC = () => {
     };
 
     const handlePointClick = (pointId: string) => {
+        // Extract component ID from pointId (e.g., "pulley-1-anchor" -> "pulley-1")
+        const componentId = pointId.split('-sheave')[0].split('-becket')[0].split('-anchor')[0].split('-center')[0];
+        
+        // Set both the component and the specific point
+        setSystem((prev) => ({ ...prev, selectedId: componentId }));
+        setSelectedPoint(pointId);
+        
         if (toolMode === 'rope') {
             if (!ropeStart) {
                 // First click - validate it's a valid start point
@@ -520,6 +528,31 @@ const App: React.FC = () => {
                                 const comp = system.components.find(c => c.id === system.selectedId);
                                 if (!comp) return 'None';
                                 
+                                // If a specific point is selected, show it
+                                if (selectedPoint && selectedPoint.startsWith(system.selectedId)) {
+                                    const formatPointForDisplay = (pointId: string) => {
+                                        if (pointId.includes('anchor')) return 'anchor';
+                                        if (pointId.includes('becket')) return 'becket';
+                                        if (pointId.includes('sheave')) {
+                                            const match = pointId.match(/sheave-(\d+)-(in|out)/);
+                                            if (match) return `sheave-${match[1]}-${match[2]}`;
+                                        }
+                                        if (pointId.includes('center')) return 'center';
+                                        return pointId;
+                                    };
+                                    
+                                    if (comp.type === ComponentType.PULLEY) {
+                                        const pulley = comp as PulleyComponent;
+                                        const idNum = comp.id.split('-')[1];
+                                        const point = formatPointForDisplay(selectedPoint);
+                                        return `Pulley #${idNum} [${point}]`;
+                                    }
+                                    
+                                    const label = (comp as any).label || comp.type;
+                                    const point = formatPointForDisplay(selectedPoint);
+                                    return `${label} [${point}]`;
+                                }
+                                
                                 if (comp.type === ComponentType.ROPE) {
                                     const rope = comp as RopeComponent;
                                     const formatPoint = (pointId: string | undefined) => {
@@ -593,13 +626,12 @@ const App: React.FC = () => {
                                 if (comp.type === ComponentType.PULLEY) {
                                     const pulley = comp as PulleyComponent;
                                     const idNum = comp.id.split('-')[1];
-                                    const points = [];
-                                    points.push('anchor');
-                                    if (pulley.hasBecket) points.push('becket');
-                                    for (let i = 0; i < pulley.sheaves; i++) {
-                                        points.push(`s${i}-in`, `s${i}-out`);
-                                    }
-                                    return `Pulley #${idNum} [${points.join(', ')}]`;
+                                    return `Pulley #${idNum} (${pulley.sheaves} sheave${pulley.sheaves > 1 ? 's' : ''}${pulley.hasBecket ? ', becket' : ''})`;
+                                }
+                                return comp.type;
+                                // For other components with labels
+                                if (label) {
+                                    return `${comp.type}: ${label}`;
                                 }
                                 return comp.type;
                             })() : 'None'}
