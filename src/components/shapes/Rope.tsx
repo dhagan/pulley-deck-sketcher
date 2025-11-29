@@ -318,11 +318,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                     y={path[0].y}
                     onClick={(e) => {
                         e.cancelBubble = true;
-                        if (onSelectChain) {
-                            onSelectChain();
-                        } else {
-                            onSelect();
-                        }
+                        onSelect(); // Always select individual rope
                     }}
                     onMouseEnter={(e) => {
                         const container = e.target.getStage()?.container();
@@ -358,11 +354,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                     y={path[path.length - 1].y}
                     onClick={(e) => {
                         e.cancelBubble = true;
-                        if (onSelectChain) {
-                            onSelectChain();
-                        } else {
-                            onSelect();
-                        }
+                        onSelect(); // Always select individual rope
                     }}
                     onMouseEnter={(e) => {
                         const container = e.target.getStage()?.container();

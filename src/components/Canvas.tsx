@@ -121,6 +121,12 @@ const Canvas: React.FC<CanvasProps> = ({
             setSystem(prev => ({ ...prev, selectedId: id }));
         }
     };
+    
+    const handleSelectChain = (ropeId: string) => {
+        // For now, just select the individual rope
+        // Chain selection will be handled by a button in the future
+        handleSelect(ropeId);
+    };
 
     const handleDragEnd = (id: string, pos: { x: number; y: number }) => {
         setSystem(prev => ({
@@ -225,16 +231,12 @@ const Canvas: React.FC<CanvasProps> = ({
                     {system.components
                         .filter((c): c is RopeComponent => c.type === ComponentType.ROPE)
                         .map(rope => {
-                            // Check if this rope is part of a selected chain (only when clicking endpoints)
-                            const selectedRope = system.components.find(c => c.id === system.selectedId && c.type === ComponentType.ROPE) as RopeComponent | undefined;
-                            const isPartOfSelectedChain = !!(selectedRope?.chainId && rope.chainId === selectedRope.chainId && system.selectedId !== rope.id);
-                            
                             return (
                                 <Rope
                                     key={rope.id}
                                     rope={rope}
                                     components={system.components}
-                                    isSelected={rope.id === system.selectedId || isPartOfSelectedChain}
+                                    isSelected={rope.id === system.selectedId}
                                     onSelect={() => handleSelect(rope.id)}
                                     onSelectChain={() => handleSelectChain(rope.id)}
                                     showArrows={system.showRopeArrows}
