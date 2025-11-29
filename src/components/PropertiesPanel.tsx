@@ -67,6 +67,24 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ system, setSystem }) 
                     max="360"
                 />
             </div>
+            <div className="property-row">
+                <span className="property-label">Efficiency (%):</span>
+                <input
+                    type="number"
+                    value={Math.round((pulley.friction || 0.95) * 100)}
+                    onChange={(e) => {
+                        const efficiency = parseFloat(e.target.value) || 95;
+                        updateComponent({ friction: efficiency / 100 });
+                    }}
+                    min="50"
+                    max="100"
+                    step="1"
+                    title="Efficiency per wrap (default 95% = 5% friction loss)"
+                />
+                <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>
+                    ({((1 - (pulley.friction || 0.95)) * 100).toFixed(1)}% loss)
+                </span>
+            </div>
         </>
     );
 

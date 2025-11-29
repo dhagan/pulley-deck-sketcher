@@ -21,6 +21,7 @@ interface CanvasProps {
     measurementEnd?: { x: number; y: number } | null;
     setMeasurementEnd?: (pos: { x: number; y: number } | null) => void;
     onContextMenu?: (e: any) => void;
+    showMeasurements?: boolean;
 }
 
 const Canvas: React.FC<CanvasProps> = ({
@@ -33,7 +34,8 @@ const Canvas: React.FC<CanvasProps> = ({
     setMeasurementStart,
     measurementEnd,
     setMeasurementEnd,
-    onContextMenu
+    onContextMenu,
+    showMeasurements = true
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -306,7 +308,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         ))}
 
                     {/* Automatic measurements between components */}
-                    {(() => {
+                    {showMeasurements && (() => {
                         const pulleys = system.components.filter(c => c.type === ComponentType.PULLEY);
                         const people = system.components.filter(c => c.type === ComponentType.PERSON);
                         const measurements = [];

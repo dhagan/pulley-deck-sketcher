@@ -465,6 +465,7 @@ const App: React.FC = () => {
                     measurementEnd={measurementEnd}
                     setMeasurementEnd={setMeasurementEnd}
                     onContextMenu={handleCanvasRightClick}
+                    showMeasurements={showMeasurements}
                 />
                 {contextMenu && (
                     <div
