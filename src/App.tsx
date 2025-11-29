@@ -159,20 +159,21 @@ const App: React.FC = () => {
         if (toolMode === 'rope') {
             if (!ropeStart) {
                 // First click - validate it's a valid start point
-                // Valid starts: Fixed Anchor (standalone), Becket (rope start), Spring, Person center, OUT points
-                // NOT valid: Pulley Anchor (red - suspension point), IN points (blue)
-                const isPulleyAnchor = pointId.includes('pulley') && pointId.includes('anchor');
+                // Valid starts: Fixed Anchor, Pulley Anchor, Becket, Spring, Person center, OUT points
+                // NOT valid: Pulley center, IN points (blue)
+                const isPulleyCenter = pointId.includes('pulley') && pointId.endsWith('center');
                 const isInPoint = pointId.includes('-in');
                 const isFixedAnchor = pointId.includes('anchor-') && !pointId.includes('pulley');
+                const isPulleyAnchor = pointId.includes('pulley') && pointId.includes('anchor');
                 const isBecket = pointId.includes('becket');
                 const isSpring = pointId.includes('spring');
                 const isPersonCenter = pointId.includes('person') && pointId.endsWith('center');
                 const isOutPoint = pointId.includes('-out');
                 
-                const isValidStart = (isFixedAnchor || isBecket || isSpring || isPersonCenter || isOutPoint) && !isPulleyAnchor && !isInPoint;
+                const isValidStart = (isFixedAnchor || isPulleyAnchor || isBecket || isSpring || isPersonCenter || isOutPoint) && !isPulleyCenter && !isInPoint;
                 
                 if (!isValidStart) {
-                    alert('Ropes can START at:\n✓ Fixed Anchor\n✓ Becket (orange)\n✓ OUT point (yellow)\n✓ Spring\n✓ Person center\n\n✗ NOT at Pulley center, Pulley Anchor (red) or IN point (blue)!');
+                    alert('Ropes can START at:\n✓ Fixed Anchor\n✓ Pulley Anchor (red)\n✓ Becket (orange)\n✓ OUT point (yellow)\n✓ Spring\n✓ Person center\n\n✗ NOT at Pulley center or IN point (blue)!');
                     return;
                 }
                 
