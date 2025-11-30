@@ -13,23 +13,24 @@
     gap: 4px;
     padding: 8px 4px;
     background: #1e293b;
-    border-right: 1px solid #475569;
+    border-left: 1px solid #475569;
     align-items: center;
-    box-shadow: 1px 0 0 0 rgba(0, 0, 0, 0.5);
+    box-shadow: -1px 0 0 0 rgba(0, 0, 0, 0.5);
     min-width: 44px;
     width: 44px;
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    order: 3;
 }
 
 .toolbar-button {
     font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 6px;
+    padding: 8px;
     background: #1e293b;
     border: 1px solid #475569;
     border-radius: 2px;
@@ -39,8 +40,8 @@
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -280,6 +281,29 @@
     overflow-y: auto;
     flex: 1;
     padding: 16px;
+}
+
+.view-toggle-btn {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    z-index: 1000;
+    padding: 8px 16px;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 4px;
+    color: #f1f5f9;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.view-toggle-btn:hover {
+    background: #334155;
+    border-color: #00d9ff;
+    color: #00d9ff;
 }
 
 .panel-header {

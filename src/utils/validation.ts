@@ -16,21 +16,11 @@ export const validateSystem = (system: SystemState): ValidationResult => {
     const warnings: string[] = [];
     const allRopes = system.components.filter((c): c is RopeComponent => c.type === ComponentType.ROPE);
     
-    // Separate working ropes (chains) from anchor/suspension ropes
-    const anchorRopes = allRopes.filter(r => 
-        r.startPoint?.includes('anchor') || 
-        r.endPoint?.includes('anchor') ||
-        r.startPoint?.includes('spring') ||
-        r.endPoint?.includes('spring')
-    );
-    
-    const workingRopes = allRopes.filter(r => !anchorRopes.includes(r));
-    
+    // Validate ALL ropes (not just working ropes)
     let validRopes = 0;
     let invalidRopes = 0;
 
-    // Validate working ropes only (chains)
-    workingRopes.forEach((rope, index) => {
+    allRopes.forEach((rope, index) => {
         const ropeErrors = validateRope(rope, system.components, index + 1);
         if (ropeErrors.length > 0) {
             errors.push(...ropeErrors);
@@ -45,11 +35,11 @@ export const validateSystem = (system: SystemState): ValidationResult => {
     warnings.push(...disconnectedWarnings);
 
     // Check for multiple ropes from same start point
-    const duplicateWarnings = checkDuplicateStarts(workingRopes);
+    const duplicateWarnings = checkDuplicateStarts(allRopes);
     warnings.push(...duplicateWarnings);
 
     // Check rope continuity (segments connecting properly)
-    const continuityWarnings = checkRopeContinuity(workingRopes);
+    const continuityWarnings = checkRopeContinuity(allRopes);
     warnings.push(...continuityWarnings);
 
     return {
@@ -57,7 +47,7 @@ export const validateSystem = (system: SystemState): ValidationResult => {
         errors,
         warnings,
         stats: {
-            totalRopes: workingRopes.length,
+            totalRopes: allRopes.length,
             validRopes,
             invalidRopes,
         }
@@ -71,14 +61,14 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
     // Check start point exists and is valid
     const startComponent = components.find(c => c.id === rope.startId);
     if (!startComponent) {
-        errors.push(`${prefix}: Start component not found`);
+        errors.push(`${prefix}: Start component not found (ID: ${rope.startId})`);
         return errors;
     }
 
     // Check end point exists and is valid
     const endComponent = components.find(c => c.id === rope.endId);
     if (!endComponent) {
-        errors.push(`${prefix}: End component not found`);
+        errors.push(`${prefix}: End component not found (ID: ${rope.endId})`);
         return errors;
     }
 
@@ -86,16 +76,13 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
     const startPoint = rope.startPoint || '';
     const endPoint = rope.endPoint || '';
     
-    if (startPoint === 'center' || startPoint.endsWith('-center')) {
-        if (startComponent.type === ComponentType.PULLEY) {
-            errors.push(`${prefix}: INVALID - Rope cannot start from pulley center. Must use specific connection points (anchor, becket, IN, or OUT).`);
-        }
+    // Validate pulley center connections
+    if ((startPoint === 'center' || startPoint.endsWith('-center')) && startComponent.type === ComponentType.PULLEY) {
+        errors.push(`${prefix}: INVALID - Rope cannot start from pulley center. Must use specific connection points (anchor, becket, IN, or OUT).`);
     }
     
-    if (endPoint === 'center' || endPoint.endsWith('-center')) {
-        if (endComponent.type === ComponentType.PULLEY) {
-            errors.push(`${prefix}: INVALID - Rope cannot end at pulley center. Must use specific connection points (anchor, IN, or OUT).`);
-        }
+    if ((endPoint === 'center' || endPoint.endsWith('-center')) && endComponent.type === ComponentType.PULLEY) {
+        errors.push(`${prefix}: INVALID - Rope cannot end at pulley center. Must use specific connection points (anchor, IN, or OUT).`);
     }
 
     // Validate start point - can start from: Fixed Anchor, Becket, Spring, Person center, OUT points
@@ -107,35 +94,46 @@ const validateRope = (rope: RopeComponent, components: Component[], ropeNumber: 
     const isSpring = startPoint.includes('spring');
     const isPersonCenter = startPoint.includes('person') && startPoint.includes('center');
     const isOutPoint = startPoint.includes('-out');
+    const isCleat = startComponent.type === ComponentType.CLEAT;
     
-    const isValidStart = (isFixedAnchor || isBecket || isSpring || isPersonCenter || isOutPoint) && !isPulleyAnchor && !isInPoint;
+    const isValidStart = (isFixedAnchor || isBecket || isSpring || isPersonCenter || isOutPoint || isCleat) && !isPulleyAnchor && !isInPoint;
 
-    if (!isValidStart && startComponent.type !== ComponentType.SPRING) {
-        errors.push(`${prefix}: Invalid start point "${startPoint}". Ropes can start from: Fixed Anchor, Becket, OUT point, Spring, or Person center. NOT from Pulley center, Pulley Anchor (red) or IN point (blue).`);
+    if (!isValidStart) {
+        errors.push(`${prefix}: Invalid start point "${startPoint}". Ropes can start from: Fixed Anchor, Becket, OUT point, Spring, Cleat, or Person center. NOT from Pulley center, Pulley Anchor (red) or IN point (blue).`);
     }
 
-    // Validate that becket doesn't go back to its own pulley (simplified - just check endPoint)
+    // Validate that becket doesn't go back to its own pulley
     if (startPoint.includes('becket')) {
         const becketPulleyId = rope.startId;
         const connectsToSamePulley = rope.endPoint?.startsWith(becketPulleyId);
 
-        if (connectsToSamePulley) {
-            errors.push(`${prefix}: Becket cannot connect directly to its own pulley. Becket should start a rope going to another pulley or person.`);
+        if (connectsToSamePulley && !rope.endPoint?.includes('in')) {
+            errors.push(`${prefix}: Becket cannot connect directly back to its own pulley (except to IN point).`);
         }
     }
 
-    // Validate end point - should be at person or terminal point
+    // Validate end point
     const isValidEnd = 
         endPoint.includes('person') ||
-        endPoint.includes('anchor') && !endPoint.includes('sheave') ||
+        (endPoint.includes('anchor') && !endPoint.includes('sheave')) ||
         endPoint.includes('load') ||
         endPoint.includes('spring') ||
-        endPoint.includes('in') ||
-        endPoint.includes('out') ||
-        (endPoint.includes('center') && endComponent.type === ComponentType.PERSON);
+        endPoint.includes('cleat') ||
+        endPoint.includes('-in') ||
+        endPoint.includes('-out') ||
+        (endPoint.includes('center') && (endComponent.type === ComponentType.PERSON || endComponent.type === ComponentType.CLEAT));
 
     if (!isValidEnd) {
-        errors.push(`${prefix}: Invalid end point "${endPoint}"`);
+        errors.push(`${prefix}: Invalid end point "${endPoint}". Must end at: IN/OUT point, Anchor, Load, Spring, Cleat, or Person center.`);
+    }
+
+    // Validate IN->OUT flow
+    if (startPoint.includes('-out') && endPoint.includes('-out')) {
+        errors.push(`${prefix}: Cannot connect OUT to OUT. Flow should be: OUT → IN → OUT`);
+    }
+    
+    if (startPoint.includes('-in') && endPoint.includes('-in')) {
+        errors.push(`${prefix}: Cannot connect IN to IN. Flow should be: OUT → IN or Start → IN`);
     }
 
     return errors;

@@ -61,9 +61,9 @@ const App: React.FC = () => {
     const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
     const [showMeasurements, setShowMeasurements] = useState<boolean>(true);
     const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
-    const [showPropertiesPanel, setShowPropertiesPanel] = useState<boolean>(true);
     const [viewMode, setViewMode] = useState<'canvas' | 'diagram'>('canvas');
-    const [rightPanelTab, setRightPanelTab] = useState<'solver' | 'diagram' | 'none'>('solver');
+    const [rightPanelTab, setRightPanelTab] = useState<'properties' | 'solver' | 'none'>('properties');
+    const [showToolbar, setShowToolbar] = useState<boolean>(true);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -394,18 +394,23 @@ const App: React.FC = () => {
     };
     
     const handleSelectAllRopes = () => {
-        // Select all rope components
-        const ropeIds = system.components
-            .filter(c => c.type === ComponentType.ROPE)
-            .map(c => c.id);
+        // Find all ropes, excluding anchor/suspension ropes
+        const ropes = system.components.filter(c => c.type === ComponentType.ROPE) as RopeComponent[];
         
-        if (ropeIds.length > 0) {
-            // Select first rope (can enhance to multi-select later)
-            setSystem(prev => ({
-                ...prev,
-                selectedId: ropeIds[0],
-            }));
-        }
+        // Filter out anchor ropes (ropes connected to pulley anchors or fixed anchors for suspension)
+        const workingRopes = ropes.filter(rope => {
+            const isAnchorSuspension = rope.startPoint?.includes('pulley') && rope.startPoint?.includes('anchor');
+            const isFixedAnchorSuspension = rope.startPoint?.includes('anchor-') && rope.endPoint?.includes('pulley') && rope.endPoint?.includes('anchor');
+            return !isAnchorSuspension && !isFixedAnchorSuspension;
+        });
+        
+        if (workingRopes.length === 0) return;
+        
+        // Select first working rope
+        setSystem(prev => ({
+            ...prev,
+            selectedId: workingRopes[0].id,
+        }));
     };
     
     // Undo/Redo functionality (now automatic via useEffect)
@@ -461,56 +466,7 @@ const App: React.FC = () => {
 
     return (
         <div className="app" onClick={handleContextMenuClose}>
-            <Toolbar
-                onAddPulley={handleAddPulley}
-                onAddDoubleBlock={handleAddDoubleBlock}
-                onAddTripleBlock={handleAddTripleBlock}
-                onAddAnchor={handleAddAnchor}
-                onAddCleat={handleAddCleat}
-                onAddPerson={handleAddPerson}
-                onAddSpring={handleAddSpring}
-                onAddRope={handleAddRope}
-                onMeasure={handleMeasureToggle}
-                onSave={handleSave}
-                onLoad={handleLoad}
-                onLoadScenario={handleLoadScenario}
-                onExportSVG={handleExport}
-                onClear={handleClear}
-                onDelete={handleDelete}
-                onSelectAllRopes={handleSelectAllRopes}
-                toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
-                ropeStart={ropeStart}
-                selectedId={system.selectedId}
-                system={system}
-                showMeasurements={showMeasurements}
-                onToggleMeasurements={() => setShowMeasurements(!showMeasurements)}
-            />
             <div className="main-content">
-                {/* View toggle button */}
-                <button
-                    onClick={() => setViewMode(viewMode === 'canvas' ? 'diagram' : 'canvas')}
-                    style={{
-                        position: 'absolute',
-                        top: '10px',
-                        left: '10px',
-                        zIndex: 1000,
-                        padding: '8px 16px',
-                        background: '#1e293b',
-                        border: '1px solid #475569',
-                        borderRadius: '4px',
-                        color: '#f1f5f9',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: '500',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                    }}
-                    title={viewMode === 'canvas' ? 'Switch to Force Diagram View' : 'Switch to Canvas View'}
-                >
-                    {viewMode === 'canvas' ? '📊 Force Diagram' : '🎨 Canvas'}
-                </button>
-
                 {viewMode === 'canvas' ? (
                     <>
                         <Canvas
@@ -548,23 +504,22 @@ const App: React.FC = () => {
                         <button className="context-menu-item" onClick={() => { handleAddSpring(); handleContextMenuClose(); }}>⋈ Add Spring</button>
                     </div>
                 )}
-                {showPropertiesPanel && <PropertiesPanel system={system} setSystem={setSystem} onCollapse={() => setShowPropertiesPanel(false)} />}
                 
                 {/* Right panel with tabs */}
                 {rightPanelTab !== 'none' && (
                     <div className="right-panel">
                         <div className="right-panel-tabs">
                             <button 
+                                className={`panel-tab ${rightPanelTab === 'properties' ? 'active' : ''}`}
+                                onClick={() => setRightPanelTab('properties')}
+                            >
+                                Properties
+                            </button>
+                            <button 
                                 className={`panel-tab ${rightPanelTab === 'solver' ? 'active' : ''}`}
                                 onClick={() => setRightPanelTab('solver')}
                             >
                                 Analysis
-                            </button>
-                            <button 
-                                className={`panel-tab ${rightPanelTab === 'diagram' ? 'active' : ''}`}
-                                onClick={() => setRightPanelTab('diagram')}
-                            >
-                                Diagram
                             </button>
                             <button 
                                 className="panel-close-btn"
@@ -576,6 +531,14 @@ const App: React.FC = () => {
                         </div>
                         
                         <div className="right-panel-content">
+                            {rightPanelTab === 'properties' && (
+                                <PropertiesPanel 
+                                    system={system} 
+                                    setSystem={setSystem} 
+                                    onCollapse={() => setRightPanelTab('none')} 
+                                />
+                            )}
+                            
                             {rightPanelTab === 'solver' && (() => {
                                 try {
                                     // Skip if no components
@@ -707,11 +670,6 @@ const App: React.FC = () => {
                                                     ))}
                                                 </div>
                                             </div>
-                                            
-                                            <div className="solver-section">
-                                                <h4>Force Diagram</h4>
-                                                <ForceDiagram system={system} loadForce={loadForce} />
-                                            </div>
                                         </>
                                     );
                                 } catch (error) {
@@ -728,38 +686,64 @@ const App: React.FC = () => {
                                     );
                                 }
                             })()}
-                            
-                            {rightPanelTab === 'diagram' && (
-                                <div style={{ padding: '16px' }}>
-                                    {system.components.length > 0 ? (
-                                        <ForceDiagram system={system} loadForce={100} />
-                                    ) : (
-                                        <p style={{color: '#888', fontSize: '12px', textAlign: 'center'}}>
-                                            Add components to see diagram
-                                        </p>
-                                    )}
-                                </div>
-                            )}
                         </div>
                     </div>
                 )}
+                
+                {/* Force Diagram Toggle Button */}
+                <button
+                    onClick={() => setViewMode(viewMode === 'canvas' ? 'diagram' : 'canvas')}
+                    className="view-toggle-btn"
+                    title={viewMode === 'canvas' ? 'Show Force Diagram' : 'Show Canvas'}
+                >
+                    {viewMode === 'canvas' ? 'Force Diagram' : 'Canvas'}
+                </button>
             </div>
-            {!showPropertiesPanel && (
+            
+            {rightPanelTab === 'none' && (
                 <button 
                     className="panel-toggle-show"
-                    style={{ right: rightPanelTab !== 'none' ? '260px' : '8px' }}
-                    onClick={() => setShowPropertiesPanel(true)}
-                    title="Show Properties Panel"
+                    style={{ right: showToolbar ? '52px' : '8px' }}
+                    onClick={() => setRightPanelTab('properties')}
+                    title="Show Panel"
                 >
                     ←
                 </button>
             )}
-            {rightPanelTab === 'none' && (
+            
+            {showToolbar && (
+                <Toolbar
+                    onAddPulley={handleAddPulley}
+                    onAddDoubleBlock={handleAddDoubleBlock}
+                    onAddTripleBlock={handleAddTripleBlock}
+                    onAddAnchor={handleAddAnchor}
+                    onAddCleat={handleAddCleat}
+                    onAddPerson={handleAddPerson}
+                    onAddSpring={handleAddSpring}
+                    onAddRope={handleAddRope}
+                    onMeasure={handleMeasureToggle}
+                    onSave={handleSave}
+                    onLoad={handleLoad}
+                    onLoadScenario={handleLoadScenario}
+                    onExportSVG={handleExport}
+                    onClear={handleClear}
+                    onDelete={handleDelete}
+                    onSelectAllRopes={handleSelectAllRopes}
+                    toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
+                    ropeStart={ropeStart}
+                    selectedId={system.selectedId}
+                    system={system}
+                    showMeasurements={showMeasurements}
+                    onToggleMeasurements={() => setShowMeasurements(!showMeasurements)}
+                />
+            )}
+            
+            {!showToolbar && (
                 <button 
                     className="panel-toggle-show"
-                    style={{ right: '8px' }}
-                    onClick={() => setRightPanelTab('solver')}
-                    title="Show Analysis Panel"
+                    style={{ right: '8px', top: '50%', transform: 'translateY(-50%)' }}
+                    onClick={() => setShowToolbar(true)}
+                    title="Show Toolbar"
                 >
                     ←
                 </button>
