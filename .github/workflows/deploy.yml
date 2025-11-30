@@ -1,7 +1,10 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:  # Only manual deployment via Actions tab
+  push:
+    branches:
+      - v-0.0.6
+  workflow_dispatch:  # Also allow manual deployment via Actions tab
 
 permissions:
   contents: read
