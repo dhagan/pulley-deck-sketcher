@@ -3,6 +3,7 @@ import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComp
 import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
+import ForceDiagram from './components/ForceDiagram';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import { calculatePathLength } from './utils/geometry';
 import { calculateMechanicalAdvantage } from './utils/mechanicalAdvantage';
@@ -658,6 +659,11 @@ const App: React.FC = () => {
                                                         </div>
                                                     ))}
                                                 </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Force Diagram</h4>
+                                                <ForceDiagram system={system} loadForce={loadForce} />
                                             </div>
                                         </>
                                     );
