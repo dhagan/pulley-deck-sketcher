@@ -122,86 +122,18 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     const endIsOut = rope.endPoint?.includes('-out');
     const endIsIn = rope.endPoint?.includes('-in');
     
-    // Check if wrapping around same pulley - BOTH start and end must be on the same pulley
-    // This means rope.startId === rope.endId (same component) AND it's a pulley
+    // Check if wrapping around same pulley - hide these ropes, pulley draws the arc
     const wrapsAroundPulley = rope.startId === rope.endId && 
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
-    // TEMP DEBUG
-    console.log(`Rope ${rope.id}:`, {
-        startId: rope.startId,
-        endId: rope.endId,
-        same: rope.startId === rope.endId,
-        isPulley: startComp.type === 'pulley',
-        startIsIn,
-        endIsOut,
-        wraps: wrapsAroundPulley,
-        pathLen: path.length
-    });
-    
+    // Don't render wrap ropes - the pulley will draw the arc
     if (wrapsAroundPulley) {
-        const pulley = startComp as PulleyComponent;
-        const radius = pulley.diameter / 2;
-        const center = pulley.position;
-        const rotationRad = (pulley.rotation || 0) * (Math.PI / 180);
-        
-        // Add start point
-        path.push(startPos);
-        
-        // Determine if pulley is upside down (rotation ~180°)
-        const isUpsideDown = Math.abs(((pulley.rotation || 0) % 360) - 180) < 90;
-        const ySign = isUpsideDown ? 1 : -1; // Flip Y for upside-down pulleys
-        
-        // Add points along the arc - always go around the anchor side
-        const numArcPoints = 20; // More points for smoother arc
-        if (startIsIn && endIsOut) {
-            // IN (left) to OUT (right) - arc over anchor side
-            for (let i = 1; i < numArcPoints; i++) { // Start at 1, end before numArcPoints
-                const t = i / numArcPoints;
-                const angle = Math.PI * (1 - t); // Start at 180°, end at 0°
-                const localX = radius * Math.cos(angle);
-                const localY = ySign * radius * Math.sin(angle); // Flip for upside-down
-                
-                // Apply rotation
-                const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
-                const rotatedY = localX * Math.sin(rotationRad) + localY * Math.cos(rotationRad);
-                
-                path.push({
-                    x: center.x + rotatedX,
-                    y: center.y + rotatedY
-                });
-            }
-        } else if (startIsOut && endIsIn) {
-            // OUT (right) to IN (left) - arc over anchor side
-            for (let i = 1; i < numArcPoints; i++) { // Start at 1, end before numArcPoints
-                const t = i / numArcPoints;
-                const angle = Math.PI * t; // Start at 0°, end at 180°
-                const localX = radius * Math.cos(angle);
-                const localY = ySign * radius * Math.sin(angle); // Flip for upside-down
-                
-                // Apply rotation
-                const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
-                const rotatedY = localX * Math.sin(rotationRad) + localY * Math.cos(rotationRad);
-                
-                path.push({
-                    x: center.x + rotatedX,
-                    y: center.y + rotatedY
-                });
-            }
-        }
-        // Add end point
-        path.push(endPos);
-    } else {
-        // Straight line - just start and end
-        path.push(startPos);
-        path.push(endPos);
+        return null;
     }
     
-    // Always add endPos if not already added by arc
-    if (!wrapsAroundPulley || path[path.length - 1] !== endPos) {
-        path.push(endPos);
-    }
+    // Straight line for normal ropes
+    path = [startPos, endPos];
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Circle, Group, Text, Arrow } from 'react-konva';
-import { PulleyComponent as PulleyType } from '../../types';
+import { Circle, Group, Text, Arrow, Line } from 'react-konva';
+import { PulleyComponent as PulleyType, Component, RopeComponent } from '../../types';
 
 interface PulleyProps {
     pulley: PulleyType;
@@ -10,6 +10,7 @@ interface PulleyProps {
     snapToGrid: (pos: { x: number; y: number }) => { x: number; y: number };
     onPointClick?: (pointId: string, e: any) => void;
     onPointHover?: (pointId: string | null) => void;
+    components?: Component[]; // For detecting wrap ropes
 }
 
 const Pulley: React.FC<PulleyProps> = ({
@@ -19,6 +20,7 @@ const Pulley: React.FC<PulleyProps> = ({
     snapToGrid,
     onPointClick,
     onPointHover,
+    components = [],
 }) => {
     const radius = pulley.diameter / 2;
     const sheaveSpacing = radius * 2 + 15; // Space between sheaves
@@ -272,6 +274,39 @@ const Pulley: React.FC<PulleyProps> = ({
         >
             {/* Render all sheaves */}
             {renderSheaves()}
+
+            {/* Rope wrap arcs - detect ropes wrapping around this pulley */}
+            {components.filter((c): c is RopeComponent => c.type === 'rope').filter(rope =>
+                rope.startId === pulley.id && 
+                rope.endId === pulley.id &&
+                ((rope.startPoint?.includes('-in') && rope.endPoint?.includes('-out')) ||
+                (rope.startPoint?.includes('-out') && rope.endPoint?.includes('-in')))
+            ).map(wrapRope => {
+                // Draw arc as line points - over anchor side only
+                const isInToOut = wrapRope.startPoint?.includes('-in');
+                const numPoints = 20;
+                const points: number[] = [];
+                
+                // Generate arc points from 0° to 180° (over top/anchor side)
+                for (let i = 0; i <= numPoints; i++) {
+                    const t = i / numPoints;
+                    const angle = isInToOut ? Math.PI * (1 - t) : Math.PI * t; // 180→0 or 0→180
+                    const x = radius * Math.cos(angle);
+                    const y = -radius * Math.sin(angle); // Negative = top arc
+                    points.push(x, y);
+                }
+                
+                return (
+                    <Line
+                        key={`wrap-${wrapRope.id}`}
+                        points={points}
+                        stroke="#4ade80"
+                        strokeWidth={3}
+                        lineCap="round"
+                        listening={false}
+                    />
+                );
+            })}
 
             {/* Overall label */}
             <Text
