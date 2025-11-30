@@ -61,8 +61,7 @@ const App: React.FC = () => {
     const [showMeasurements, setShowMeasurements] = useState<boolean>(true);
     const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
     const [showPropertiesPanel, setShowPropertiesPanel] = useState<boolean>(true);
-    const [showSolverPanel, setShowSolverPanel] = useState<boolean>(true);
-    const [showForceDiagramPanel, setShowForceDiagramPanel] = useState<boolean>(true);
+    const [activeRightPanel, setActiveRightPanel] = useState<'solver' | 'diagram' | 'none'>('solver');
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -393,18 +392,25 @@ const App: React.FC = () => {
     };
     
     const handleSelectAllRopes = () => {
-        // Select all rope components
-        const ropeIds = system.components
-            .filter(c => c.type === ComponentType.ROPE)
-            .map(c => c.id);
+        // Find all ropes or select first chain
+        const ropes = system.components.filter(c => c.type === ComponentType.ROPE) as RopeComponent[];
         
-        if (ropeIds.length > 0) {
-            // Select first rope (can enhance to multi-select later)
-            setSystem(prev => ({
-                ...prev,
-                selectedId: ropeIds[0],
-            }));
+        if (ropes.length === 0) return;
+        
+        // Find first rope with a chainId, or just first rope
+        const chainRope = ropes.find(r => r.chainId) || ropes[0];
+        
+        if (chainRope && chainRope.chainId) {
+            // Select all ropes in the chain
+            const chainRopes = ropes.filter(r => r.chainId === chainRope.chainId);
+            console.log(`Selecting chain ${chainRope.chainId} with ${chainRopes.length} ropes`);
         }
+        
+        // For now, just select the first rope (multi-select would require UI changes)
+        setSystem(prev => ({
+            ...prev,
+            selectedId: chainRope.id,
+        }));
     };
     
     // Undo/Redo functionality (now automatic via useEffect)
@@ -517,21 +523,36 @@ const App: React.FC = () => {
                     </div>
                 )}
                 {showPropertiesPanel && <PropertiesPanel system={system} setSystem={setSystem} onCollapse={() => setShowPropertiesPanel(false)} />}
-                {showSolverPanel && (
-                    <div className="solver-panel">
-                        <div className="panel-header">
-                            <h3>Solver</h3>
+                {showPropertiesPanel && <PropertiesPanel system={system} setSystem={setSystem} onCollapse={() => setShowPropertiesPanel(false)} />}
+                
+                {/* Right-side panel tabs */}
+                {activeRightPanel !== 'none' && (
+                    <div className="right-panel-container">
+                        <div className="panel-tabs">
                             <button 
-                                className="panel-toggle"
-                                onClick={() => setShowSolverPanel(false)}
-                                title="Hide Solver Panel"
+                                className={`panel-tab ${activeRightPanel === 'solver' ? 'active' : ''}`}
+                                onClick={() => setActiveRightPanel('solver')}
                             >
-                                →
+                                Solver
+                            </button>
+                            <button 
+                                className={`panel-tab ${activeRightPanel === 'diagram' ? 'active' : ''}`}
+                                onClick={() => setActiveRightPanel('diagram')}
+                            >
+                                Force Diagram
+                            </button>
+                            <button 
+                                className="panel-close"
+                                onClick={() => setActiveRightPanel('none')}
+                                title="Close Panel"
+                            >
+                                ×
                             </button>
                         </div>
-                        <div className="solver-content">
-                            {(() => {
-                                try {
+                        
+                        {activeRightPanel === 'solver' && (
+                            <div className="solver-panel-content">
+                                {(() => {
                                     // Skip if no components
                                     if (system.components.length === 0) {
                                         return (
@@ -660,63 +681,45 @@ const App: React.FC = () => {
                                                         </div>
                                                     ))}
                                                 </div>
-                                            </div>
-                                        </>
-                                    );
-                                } catch (error) {
-                                    console.error('Solver error:', error);
-                                    return (
-                                        <div className="solver-section">
-                                            <p style={{color: '#888', fontSize: '12px'}}>
-                                                Unable to solve system
-                                            </p>
-                                            <p style={{color: '#666', fontSize: '11px'}}>
-                                                {error instanceof Error ? error.message : 'Unknown error'}
-                                            </p>
-                                        </div>
-                                    );
                                 }
                             })()}
-                        </div>
+                            </div>
+                        )}
+                        
+                        {activeRightPanel === 'diagram' && (
+                            <div className="solver-panel-content">
+                                {system.components.length > 0 ? (
+                                    <ForceDiagram system={system} loadForce={100} />
+                                ) : (
+                                    <div style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
+                                        <p>Add components to see force diagram</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
-                {showForceDiagramPanel && (
-                    <div className="force-diagram-panel">
-                        <div className="panel-header">
-                            <h3>Force Diagram</h3>
-                            <button 
-                                className="panel-toggle"
-                                onClick={() => setShowForceDiagramPanel(false)}
-                                title="Hide Force Diagram Panel"
-                            >
-                                →
-                            </button>
-                        </div>
-                        <div className="solver-content">
-                            {system.components.length > 0 ? (
-                                <ForceDiagram system={system} loadForce={100} />
-                            ) : (
-                                <div style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
-                                    <p>Add components to see force diagram</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
+                
+                {/* Expand button for right panel */}
+                {activeRightPanel === 'none' && (
+                    <button 
+                        className="panel-toggle-show"
+                        style={{ right: '8px' }}
+                        onClick={() => setActiveRightPanel('solver')}
+                        title="Show Analysis Panels"
+                    >
+                        ←
+                    </button>
             {!showPropertiesPanel && (
                 <button 
                     className="panel-toggle-show"
-                    style={{ right: (showSolverPanel ? 260 : 0) + (showForceDiagramPanel ? 660 : 0) + 8 + 'px' }}
+                    style={{ right: activeRightPanel !== 'none' ? '660px' : '8px' }}
                     onClick={() => setShowPropertiesPanel(true)}
                     title="Show Properties Panel"
                 >
                     ←
                 </button>
-            )}
-            {!showSolverPanel && (
-                <button 
-                    className="panel-toggle-show"
+            )}      className="panel-toggle-show"
                     style={{ right: (showForceDiagramPanel ? 660 : 0) + 8 + 'px' }}
                     onClick={() => setShowSolverPanel(true)}
                     title="Show Solver Panel"
