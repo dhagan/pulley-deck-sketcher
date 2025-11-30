@@ -530,6 +530,17 @@ const App: React.FC = () => {
                         <div className="solver-content">
                             {(() => {
                                 try {
+                                    // Skip if no components
+                                    if (system.components.length === 0) {
+                                        return (
+                                            <div className="solver-section">
+                                                <p style={{color: '#888', fontSize: '12px'}}>
+                                                    Add components to analyze the system
+                                                </p>
+                                            </div>
+                                        );
+                                    }
+                                    
                                     const solver = new PulleySolver(system as any);
                                     const loadForce = 100; // Default 100N load
                                     const result = solver.solve(loadForce);
@@ -610,10 +621,14 @@ const App: React.FC = () => {
                                         </>
                                     );
                                 } catch (error) {
+                                    console.error('Solver error:', error);
                                     return (
                                         <div className="solver-section">
                                             <p style={{color: '#888', fontSize: '12px'}}>
-                                                {error instanceof Error ? error.message : 'Add components to analyze'}
+                                                Unable to solve system
+                                            </p>
+                                            <p style={{color: '#666', fontSize: '11px'}}>
+                                                {error instanceof Error ? error.message : 'Unknown error'}
                                             </p>
                                         </div>
                                     );
