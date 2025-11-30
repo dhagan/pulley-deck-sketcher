@@ -710,6 +710,8 @@ const App: React.FC = () => {
                     >
                         ←
                     </button>
+                )}
+            </div>
             {!showPropertiesPanel && (
                 <button 
                     className="panel-toggle-show"
