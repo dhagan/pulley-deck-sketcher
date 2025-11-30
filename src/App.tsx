@@ -553,23 +553,24 @@ const App: React.FC = () => {
                         {activeRightPanel === 'solver' && (
                             <div className="solver-panel-content">
                                 {(() => {
-                                    // Skip if no components
-                                    if (system.components.length === 0) {
+                                    try {
+                                        // Skip if no components
+                                        if (system.components.length === 0) {
+                                            return (
+                                                <div className="solver-section">
+                                                    <p style={{color: '#888', fontSize: '12px'}}>
+                                                        Add components to analyze the system
+                                                    </p>
+                                                </div>
+                                            );
+                                        }
+                                        
+                                        const solver = new PulleySolver(system as any);
+                                        const loadForce = 100; // Default 100N load
+                                        const result = solver.solve(loadForce);
+                                        const display = formatResultsForDisplay(result, system as any, 'Current System', loadForce);
+                                        
                                         return (
-                                            <div className="solver-section">
-                                                <p style={{color: '#888', fontSize: '12px'}}>
-                                                    Add components to analyze the system
-                                                </p>
-                                            </div>
-                                        );
-                                    }
-                                    
-                                    const solver = new PulleySolver(system as any);
-                                    const loadForce = 100; // Default 100N load
-                                    const result = solver.solve(loadForce);
-                                    const display = formatResultsForDisplay(result, system as any, 'Current System', loadForce);
-                                    
-                                    return (
                                         <>
                                             <div className="solver-section">
                                                 <h4>Mechanical Analysis</h4>
@@ -684,20 +685,20 @@ const App: React.FC = () => {
                                             </div>
                                         </>
                                     );
-                                } catch (error) {
-                                    console.error('Solver error:', error);
-                                    return (
-                                        <div className="solver-section">
-                                            <p style={{color: '#888', fontSize: '12px'}}>
-                                                Unable to solve system
-                                            </p>
-                                            <p style={{color: '#666', fontSize: '11px'}}>
-                                                {error instanceof Error ? error.message : 'Unknown error'}
-                                            </p>
-                                        </div>
-                                    );
-                                }
-                            })()}
+                                    } catch (error) {
+                                        console.error('Solver error:', error);
+                                        return (
+                                            <div className="solver-section">
+                                                <p style={{color: '#888', fontSize: '12px'}}>
+                                                    Unable to solve system
+                                                </p>
+                                                <p style={{color: '#666', fontSize: '11px'}}>
+                                                    {error instanceof Error ? error.message : 'Unknown error'}
+                                                </p>
+                                            </div>
+                                        );
+                                    }
+                                })()}
                         )}
                         
                         {activeRightPanel === 'diagram' && (
