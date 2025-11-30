@@ -3,8 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - v-0.0.6
-  workflow_dispatch:  # Also allow manual deployment via Actions tab
+      - master
+  workflow_dispatch:
 
 permissions:
   contents: read
