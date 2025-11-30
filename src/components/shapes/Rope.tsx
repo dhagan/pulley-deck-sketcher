@@ -128,25 +128,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
-    // DEBUG: Log wrap detection
-    if (rope.id.includes('rope-2')) {
-        console.log('🔍 ROPE-2 WRAP DEBUG:', {
-            ropeId: rope.id,
-            startId: rope.startId,
-            endId: rope.endId,
-            sameId: rope.startId === rope.endId,
-            startPoint: rope.startPoint,
-            endPoint: rope.endPoint,
-            isPulley: startComp.type === 'pulley',
-            startIsIn,
-            startIsOut,
-            endIsIn,
-            endIsOut,
-            wrapsAroundPulley,
-            pathLength: path.length
-        });
-    }
-    
     if (wrapsAroundPulley) {
         const pulley = startComp as PulleyComponent;
         const radius = pulley.diameter / 2;
@@ -195,17 +176,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     // Always add endPos if not already added by arc
     if (!wrapsAroundPulley || path[path.length - 1] !== endPos) {
         path.push(endPos);
-    }
-    
-    // DEBUG: Log final path for rope-2
-    if (rope.id.includes('rope-2')) {
-        console.log('🔍 ROPE-2 FINAL PATH:', {
-            pathLength: path.length,
-            wrapsAroundPulley,
-            firstPoint: path[0],
-            lastPoint: path[path.length - 1],
-            allPoints: path
-        });
     }
 
     // Flatten path for Konva Line
