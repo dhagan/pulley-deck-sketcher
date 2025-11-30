@@ -698,7 +698,6 @@ const App: React.FC = () => {
                                     );
                                 }
                             })()}
-                            </div>
                         )}
                         
                         {activeRightPanel === 'diagram' && (
