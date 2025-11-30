@@ -149,15 +149,19 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
         // Add start point
         path.push(startPos);
         
-        // Add points along the arc - always go around the TOP (anchor side)
+        // Determine if pulley is upside down (rotation ~180°)
+        const isUpsideDown = Math.abs(((pulley.rotation || 0) % 360) - 180) < 90;
+        const ySign = isUpsideDown ? 1 : -1; // Flip Y for upside-down pulleys
+        
+        // Add points along the arc - always go around the anchor side
         const numArcPoints = 20; // More points for smoother arc
         if (startIsIn && endIsOut) {
-            // IN (left) to OUT (right) - top arc (180° to 0°)
+            // IN (left) to OUT (right) - arc over anchor side
             for (let i = 1; i < numArcPoints; i++) { // Start at 1, end before numArcPoints
                 const t = i / numArcPoints;
                 const angle = Math.PI * (1 - t); // Start at 180°, end at 0°
                 const localX = radius * Math.cos(angle);
-                const localY = -radius * Math.sin(angle); // Negative for top arc
+                const localY = ySign * radius * Math.sin(angle); // Flip for upside-down
                 
                 // Apply rotation
                 const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
@@ -169,12 +173,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                 });
             }
         } else if (startIsOut && endIsIn) {
-            // OUT (right) to IN (left) - top arc (0° to 180°)
+            // OUT (right) to IN (left) - arc over anchor side
             for (let i = 1; i < numArcPoints; i++) { // Start at 1, end before numArcPoints
                 const t = i / numArcPoints;
                 const angle = Math.PI * t; // Start at 0°, end at 180°
                 const localX = radius * Math.cos(angle);
-                const localY = -radius * Math.sin(angle); // Negative for top arc
+                const localY = ySign * radius * Math.sin(angle); // Flip for upside-down
                 
                 // Apply rotation
                 const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
