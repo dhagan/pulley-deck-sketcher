@@ -220,6 +220,16 @@
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
+.force-diagram-panel {
+    width: 650px;
+    background: #1e293b;
+    border-left: 1px solid #475569;
+    padding: 16px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
 .panel-header {
     display: flex;
     justify-content: space-between;

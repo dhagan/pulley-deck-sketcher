@@ -62,6 +62,7 @@ const App: React.FC = () => {
     const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
     const [showPropertiesPanel, setShowPropertiesPanel] = useState<boolean>(true);
     const [showSolverPanel, setShowSolverPanel] = useState<boolean>(true);
+    const [showForceDiagramPanel, setShowForceDiagramPanel] = useState<boolean>(true);
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -660,11 +661,6 @@ const App: React.FC = () => {
                                                     ))}
                                                 </div>
                                             </div>
-                                            
-                                            <div className="solver-section">
-                                                <h4>Force Diagram</h4>
-                                                <ForceDiagram system={system} loadForce={loadForce} />
-                                            </div>
                                         </>
                                     );
                                 } catch (error) {
@@ -684,11 +680,34 @@ const App: React.FC = () => {
                         </div>
                     </div>
                 )}
+                {showForceDiagramPanel && (
+                    <div className="force-diagram-panel">
+                        <div className="panel-header">
+                            <h3>Force Diagram</h3>
+                            <button 
+                                className="panel-toggle"
+                                onClick={() => setShowForceDiagramPanel(false)}
+                                title="Hide Force Diagram Panel"
+                            >
+                                →
+                            </button>
+                        </div>
+                        <div className="solver-content">
+                            {system.components.length > 0 ? (
+                                <ForceDiagram system={system} loadForce={100} />
+                            ) : (
+                                <div style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
+                                    <p>Add components to see force diagram</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
             {!showPropertiesPanel && (
                 <button 
                     className="panel-toggle-show"
-                    style={{ right: showSolverPanel ? '260px' : '8px' }}
+                    style={{ right: (showSolverPanel ? 260 : 0) + (showForceDiagramPanel ? 660 : 0) + 8 + 'px' }}
                     onClick={() => setShowPropertiesPanel(true)}
                     title="Show Properties Panel"
                 >
@@ -698,9 +717,19 @@ const App: React.FC = () => {
             {!showSolverPanel && (
                 <button 
                     className="panel-toggle-show"
-                    style={{ right: '8px' }}
+                    style={{ right: (showForceDiagramPanel ? 660 : 0) + 8 + 'px' }}
                     onClick={() => setShowSolverPanel(true)}
                     title="Show Solver Panel"
+                >
+                    ←
+                </button>
+            )}
+            {!showForceDiagramPanel && (
+                <button 
+                    className="panel-toggle-show"
+                    style={{ right: '8px' }}
+                    onClick={() => setShowForceDiagramPanel(true)}
+                    title="Show Force Diagram Panel"
                 >
                     ←
                 </button>
