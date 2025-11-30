@@ -3,9 +3,12 @@ import { SystemState, ComponentType, PulleyComponent, AnchorComponent, CleatComp
 import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
+import ForceDiagram from './components/ForceDiagram';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import { calculatePathLength } from './utils/geometry';
 import { calculateMechanicalAdvantage } from './utils/mechanicalAdvantage';
+import { PulleySolver } from './solver';
+import { formatResultsForDisplay } from './utils/display';
 import './App.css';
 
 type ToolMode = 'select' | 'rope' | 'spring' | 'measure';
@@ -388,6 +391,21 @@ const App: React.FC = () => {
         }
     };
     
+    const handleSelectAllRopes = () => {
+        // Select all rope components
+        const ropeIds = system.components
+            .filter(c => c.type === ComponentType.ROPE)
+            .map(c => c.id);
+        
+        if (ropeIds.length > 0) {
+            // Select first rope (can enhance to multi-select later)
+            setSystem(prev => ({
+                ...prev,
+                selectedId: ropeIds[0],
+            }));
+        }
+    };
+    
     // Undo/Redo functionality (now automatic via useEffect)
 
     // Keyboard shortcuts
@@ -457,6 +475,7 @@ const App: React.FC = () => {
                 onExportSVG={handleExport}
                 onClear={handleClear}
                 onDelete={handleDelete}
+                onSelectAllRopes={handleSelectAllRopes}
                 toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
                 ropeStart={ropeStart}
                 selectedId={system.selectedId}
@@ -510,30 +529,158 @@ const App: React.FC = () => {
                             </button>
                         </div>
                         <div className="solver-content">
-                            <div className="solver-section">
-                                <h4>Mechanical Analysis</h4>
-                                <div className="solver-stat">
-                                    <span>Theoretical MA:</span>
-                                    <span>{(() => {
-                                        const ma = calculateMechanicalAdvantage(system);
-                                        return ma ? `${ma.theoreticalMA}:1` : 'N/A';
-                                    })()}</span>
-                                </div>
-                                <div className="solver-stat">
-                                    <span>Actual MA:</span>
-                                    <span>{(() => {
-                                        const ma = calculateMechanicalAdvantage(system);
-                                        return ma ? `${ma.actualMA.toFixed(2)}:1` : 'N/A';
-                                    })()}</span>
-                                </div>
-                                <div className="solver-stat">
-                                    <span>Efficiency:</span>
-                                    <span>{(() => {
-                                        const ma = calculateMechanicalAdvantage(system);
-                                        return ma ? `${(ma.efficiency * 100).toFixed(1)}%` : 'N/A';
-                                    })()}</span>
-                                </div>
-                            </div>
+                            {(() => {
+                                try {
+                                    // Skip if no components
+                                    if (system.components.length === 0) {
+                                        return (
+                                            <div className="solver-section">
+                                                <p style={{color: '#888', fontSize: '12px'}}>
+                                                    Add components to analyze the system
+                                                </p>
+                                            </div>
+                                        );
+                                    }
+                                    
+                                    const solver = new PulleySolver(system as any);
+                                    const loadForce = 100; // Default 100N load
+                                    const result = solver.solve(loadForce);
+                                    const display = formatResultsForDisplay(result, system as any, 'Current System', loadForce);
+                                    
+                                    return (
+                                        <>
+                                            <div className="solver-section">
+                                                <h4>Mechanical Analysis</h4>
+                                                <div className="solver-stat">
+                                                    <span>Load Force:</span>
+                                                    <span>{loadForce} N</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Theoretical MA:</span>
+                                                    <span>{display.summary.theoreticalMA}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Actual MA:</span>
+                                                    <span>{display.summary.actualMA}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Efficiency:</span>
+                                                    <span>{display.summary.efficiency}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Input Force:</span>
+                                                    <span>{display.summary.inputForce}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Output Force:</span>
+                                                    <span>{display.summary.outputForce}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Force Advantage:</span>
+                                                    <span>{display.summary.forceAdvantage}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            {result.pullDistance && result.loadDistance && (
+                                                <div className="solver-section">
+                                                    <h4>Displacements</h4>
+                                                    <div className="solver-stat">
+                                                        <span>Pull Distance:</span>
+                                                        <span>{result.pullDistance.toFixed(2)} mm</span>
+                                                    </div>
+                                                    <div className="solver-stat">
+                                                        <span>Load Distance:</span>
+                                                        <span>{result.loadDistance.toFixed(2)} mm</span>
+                                                    </div>
+                                                    <div className="solver-stat">
+                                                        <span>Distance Ratio:</span>
+                                                        <span>{result.distanceRatio?.toFixed(2)}:1</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="solver-section">
+                                                <h4>System Info</h4>
+                                                <div className="solver-stat">
+                                                    <span>Total Pulleys:</span>
+                                                    <span>{display.system.totalPulleys}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Moving Pulleys:</span>
+                                                    <span>{display.system.movingPulleys}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Fixed Pulleys:</span>
+                                                    <span>{display.system.fixedPulleys}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Rope Length:</span>
+                                                    <span>{display.system.totalRopeLength}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Rope Tensions ({display.tensions.length})</h4>
+                                                <div className="solver-table">
+                                                    {display.tensions.map(t => (
+                                                        <div key={t.ropeId} className="solver-row">
+                                                            <span className="solver-label">{t.ropeLabel}:</span>
+                                                            <span className="solver-value">{t.tensionFormatted}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Anchor Forces ({display.forces.length})</h4>
+                                                <div className="solver-table">
+                                                    {display.forces.map(f => (
+                                                        <div key={f.componentId} className="solver-row">
+                                                            <span className="solver-label">{f.componentLabel}:</span>
+                                                            <span className="solver-value">{f.magnitudeFormatted}</span>
+                                                            <span style={{fontSize: '10px', color: '#888', marginLeft: '4px'}}>
+                                                                @ {f.angleFormatted}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Force Components</h4>
+                                                <div className="solver-table">
+                                                    {display.forces.map(f => (
+                                                        <div key={`${f.componentId}-components`} className="solver-row">
+                                                            <span className="solver-label">{f.componentLabel}:</span>
+                                                            <div style={{fontSize: '11px', color: '#aaa'}}>
+                                                                <div>X: {f.x.toFixed(2)} N</div>
+                                                                <div>Y: {f.y.toFixed(2)} N</div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Force Diagram</h4>
+                                                <ForceDiagram system={system} loadForce={loadForce} />
+                                            </div>
+                                        </>
+                                    );
+                                } catch (error) {
+                                    console.error('Solver error:', error);
+                                    return (
+                                        <div className="solver-section">
+                                            <p style={{color: '#888', fontSize: '12px'}}>
+                                                Unable to solve system
+                                            </p>
+                                            <p style={{color: '#666', fontSize: '11px'}}>
+                                                {error instanceof Error ? error.message : 'Unknown error'}
+                                            </p>
+                                        </div>
+                                    );
+                                }
+                            })()}
                         </div>
                     </div>
                 )}

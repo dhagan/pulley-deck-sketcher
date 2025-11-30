@@ -114,7 +114,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     const endPos = getPointCoordinates(endComp, rope.endPoint);
 
     // Build path including pulley wraps
-    let path: Array<{ x: number; y: number }> = [startPos];
+    let path: Array<{ x: number; y: number }> = [];
     
     // Check if rope wraps around a pulley (both IN→OUT and OUT→IN on same pulley)
     const startIsIn = rope.startPoint?.includes('-in');
@@ -122,61 +122,18 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     const endIsOut = rope.endPoint?.includes('-out');
     const endIsIn = rope.endPoint?.includes('-in');
     
-    // Check if wrapping around same pulley - BOTH start and end must be on the same pulley
-    // This means rope.startId === rope.endId (same component) AND it's a pulley
+    // Check if wrapping around same pulley - hide these ropes, pulley draws the arc
     const wrapsAroundPulley = rope.startId === rope.endId && 
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
+    // Don't render wrap ropes - the pulley will draw the arc
     if (wrapsAroundPulley) {
-        const pulley = startComp as PulleyComponent;
-        const radius = pulley.diameter / 2;
-        const center = pulley.position;
-        const rotationRad = (pulley.rotation || 0) * (Math.PI / 180);
-        
-        // Add points along the arc - always go around the TOP (anchor side)
-        const numArcPoints = 20; // More points for smoother arc
-        if (startIsIn && endIsOut) {
-            // IN (left) to OUT (right) - top arc (180° to 0°)
-            for (let i = 0; i <= numArcPoints; i++) {
-                const t = i / numArcPoints;
-                const angle = Math.PI * (1 - t); // Start at 180°, end at 0°
-                const localX = radius * Math.cos(angle);
-                const localY = -radius * Math.sin(angle); // Negative for top arc
-                
-                // Apply rotation
-                const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
-                const rotatedY = localX * Math.sin(rotationRad) + localY * Math.cos(rotationRad);
-                
-                path.push({
-                    x: center.x + rotatedX,
-                    y: center.y + rotatedY
-                });
-            }
-        } else if (startIsOut && endIsIn) {
-            // OUT (right) to IN (left) - top arc (0° to 180°)
-            for (let i = 0; i <= numArcPoints; i++) {
-                const t = i / numArcPoints;
-                const angle = Math.PI * t; // Start at 0°, end at 180°
-                const localX = radius * Math.cos(angle);
-                const localY = -radius * Math.sin(angle); // Negative for top arc
-                
-                // Apply rotation
-                const rotatedX = localX * Math.cos(rotationRad) - localY * Math.sin(rotationRad);
-                const rotatedY = localX * Math.sin(rotationRad) + localY * Math.cos(rotationRad);
-                
-                path.push({
-                    x: center.x + rotatedX,
-                    y: center.y + rotatedY
-                });
-            }
-        }
+        return null;
     }
     
-    // Always add endPos if not already added by arc
-    if (!wrapsAroundPulley || path[path.length - 1] !== endPos) {
-        path.push(endPos);
-    }
+    // Straight line for normal ropes
+    path = [startPos, endPos];
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);
@@ -229,35 +186,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                 shadowBlur={isSelected ? 10 : 0}
                 listening={false}
             />
-            
-            {/* Wrap indicator - show when rope wraps around pulley */}
-            {wrapsAroundPulley && startComp.type === 'pulley' && (() => {
-                const pulley = startComp as PulleyComponent;
-                return (
-                    <>
-                        <Circle
-                            x={pulley.position.x}
-                            y={pulley.position.y}
-                            radius={pulley.diameter / 2 + 3}
-                            stroke="#4ade80"
-                            strokeWidth={3}
-                            dash={[8, 4]}
-                            opacity={1.0}
-                            listening={false}
-                        />
-                        <Circle
-                            x={pulley.position.x}
-                            y={pulley.position.y}
-                            radius={pulley.diameter / 2 + 8}
-                            stroke={isSelected ? '#6ee7b7' : '#22c55e'}
-                            strokeWidth={isSelected ? 2 : 1}
-                            dash={[4, 4]}
-                            opacity={0.6}
-                            listening={false}
-                        />
-                    </>
-                );
-            })()}
 
             {/* Directional arrows */}
             {showArrows && length > 20 && (() => {

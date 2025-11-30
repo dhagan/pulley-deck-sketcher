@@ -270,6 +270,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                 onDragEnd={(pos) => handleDragEnd(pulley.id, pos)}
                                 snapToGrid={snapToGrid}
                                 onPointClick={onPointClick}
+                                components={system.components}
                             />
                         ))}
 
