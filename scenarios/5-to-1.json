@@ -6,22 +6,22 @@
     {
       "id": "anchor-1",
       "type": "anchor",
-      "position": {"x": 400, "y": 100},
+      "position": {"x": 400, "y": 80},
       "label": "Fixed Anchor"
     },
     {
       "id": "pulley-1",
       "type": "pulley",
-      "position": {"x": 400, "y": 200},
+      "position": {"x": 400, "y": 180},
       "diameter": 30,
-      "sheaves": 2,
+      "sheaves": 3,
       "hasBecket": true,
       "rotation": 0
     },
     {
       "id": "pulley-2",
       "type": "pulley",
-      "position": {"x": 400, "y": 360},
+      "position": {"x": 400, "y": 380},
       "diameter": 30,
       "sheaves": 2,
       "hasBecket": false,
@@ -30,7 +30,7 @@
     {
       "id": "anchor-2",
       "type": "anchor",
-      "position": {"x": 400, "y": 520},
+      "position": {"x": 400, "y": 560},
       "label": "Load Point"
     },
     {
@@ -47,7 +47,7 @@
     {
       "id": "person-1",
       "type": "person",
-      "position": {"x": 550, "y": 275},
+      "position": {"x": 580, "y": 280},
       "label": "Pull",
       "pulling": true
     },
@@ -96,6 +96,16 @@
       "type": "rope",
       "startId": "pulley-2",
       "startPoint": "pulley-2-sheave-1-out",
+      "endId": "pulley-1",
+      "endPoint": "pulley-1-sheave-1-in",
+      "label": "Working Line",
+      "chainId": "chain-1"
+    },
+    {
+      "id": "rope-6",
+      "type": "rope",
+      "startId": "pulley-1",
+      "startPoint": "pulley-1-sheave-1-out",
       "endId": "person-1",
       "endPoint": "person-1",
       "label": "Working Line",
