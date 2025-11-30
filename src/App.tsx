@@ -4,6 +4,7 @@ import Toolbar from './components/Toolbar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
 import ForceDiagram from './components/ForceDiagram';
+import ForceDiagramView from './components/ForceDiagramView';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import { calculatePathLength } from './utils/geometry';
 import { calculateMechanicalAdvantage } from './utils/mechanicalAdvantage';
@@ -62,6 +63,7 @@ const App: React.FC = () => {
     const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
     const [showPropertiesPanel, setShowPropertiesPanel] = useState<boolean>(true);
     const [showSolverPanel, setShowSolverPanel] = useState<boolean>(true);
+    const [viewMode, setViewMode] = useState<'canvas' | 'diagram'>('canvas');
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -484,20 +486,51 @@ const App: React.FC = () => {
                 onToggleMeasurements={() => setShowMeasurements(!showMeasurements)}
             />
             <div className="main-content">
-                <Canvas
-                    system={system}
-                    setSystem={setSystem}
-                    toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
-                    onComponentClick={handleComponentClick}
-                    onPointClick={handlePointClick}
-                    onPointHover={(pointId) => setHoveredPoint(pointId)}
-                    measurementStart={measurementStart}
-                    setMeasurementStart={setMeasurementStart}
-                    measurementEnd={measurementEnd}
-                    setMeasurementEnd={setMeasurementEnd}
-                    onContextMenu={handleCanvasRightClick}
-                    showMeasurements={showMeasurements}
-                />
+                {/* View toggle button */}
+                <button
+                    onClick={() => setViewMode(viewMode === 'canvas' ? 'diagram' : 'canvas')}
+                    style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        zIndex: 1000,
+                        padding: '8px 16px',
+                        background: '#1e293b',
+                        border: '1px solid #475569',
+                        borderRadius: '4px',
+                        color: '#f1f5f9',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}
+                    title={viewMode === 'canvas' ? 'Switch to Force Diagram View' : 'Switch to Canvas View'}
+                >
+                    {viewMode === 'canvas' ? '📊 Force Diagram' : '🎨 Canvas'}
+                </button>
+
+                {viewMode === 'canvas' ? (
+                    <>
+                        <Canvas
+                            system={system}
+                            setSystem={setSystem}
+                            toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
+                            onComponentClick={handleComponentClick}
+                            onPointClick={handlePointClick}
+                            onPointHover={(pointId) => setHoveredPoint(pointId)}
+                            measurementStart={measurementStart}
+                            setMeasurementStart={setMeasurementStart}
+                            measurementEnd={measurementEnd}
+                            setMeasurementEnd={setMeasurementEnd}
+                            onContextMenu={handleCanvasRightClick}
+                            showMeasurements={showMeasurements}
+                        />
+                    </>
+                ) : (
+                    <ForceDiagramView system={system} loadForce={100} />
+                )}
                 {contextMenu && (
                     <div
                         className="context-menu"
