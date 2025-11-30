@@ -3,7 +3,7 @@
     "private": true,
     "version": "0.0.6",
     "type": "module",
-    "homepage": "https://dhagan.github.io/pulley-cad",
+    "homepage": "https://dhagan.github.io/pulley-deck-sketcher",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
