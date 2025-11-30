@@ -186,35 +186,6 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                 shadowBlur={isSelected ? 10 : 0}
                 listening={false}
             />
-            
-            {/* Wrap indicator - show when rope wraps around pulley */}
-            {wrapsAroundPulley && startComp.type === 'pulley' && (() => {
-                const pulley = startComp as PulleyComponent;
-                return (
-                    <>
-                        <Circle
-                            x={pulley.position.x}
-                            y={pulley.position.y}
-                            radius={pulley.diameter / 2 + 3}
-                            stroke="#4ade80"
-                            strokeWidth={3}
-                            dash={[8, 4]}
-                            opacity={1.0}
-                            listening={false}
-                        />
-                        <Circle
-                            x={pulley.position.x}
-                            y={pulley.position.y}
-                            radius={pulley.diameter / 2 + 8}
-                            stroke={isSelected ? '#6ee7b7' : '#22c55e'}
-                            strokeWidth={isSelected ? 2 : 1}
-                            dash={[4, 4]}
-                            opacity={0.6}
-                            listening={false}
-                        />
-                    </>
-                );
-            })()}
 
             {/* Directional arrows */}
             {showArrows && length > 20 && (() => {
