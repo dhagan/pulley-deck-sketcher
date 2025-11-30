@@ -570,7 +570,33 @@ const App: React.FC = () => {
                                                     <span>Input Force:</span>
                                                     <span>{display.summary.inputForce}</span>
                                                 </div>
+                                                <div className="solver-stat">
+                                                    <span>Output Force:</span>
+                                                    <span>{display.summary.outputForce}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Force Advantage:</span>
+                                                    <span>{display.summary.forceAdvantage}</span>
+                                                </div>
                                             </div>
+                                            
+                                            {result.pullDistance && result.loadDistance && (
+                                                <div className="solver-section">
+                                                    <h4>Displacements</h4>
+                                                    <div className="solver-stat">
+                                                        <span>Pull Distance:</span>
+                                                        <span>{result.pullDistance.toFixed(2)} mm</span>
+                                                    </div>
+                                                    <div className="solver-stat">
+                                                        <span>Load Distance:</span>
+                                                        <span>{result.loadDistance.toFixed(2)} mm</span>
+                                                    </div>
+                                                    <div className="solver-stat">
+                                                        <span>Distance Ratio:</span>
+                                                        <span>{result.distanceRatio?.toFixed(2)}:1</span>
+                                                    </div>
+                                                </div>
+                                            )}
                                             
                                             <div className="solver-section">
                                                 <h4>System Info</h4>
@@ -583,37 +609,52 @@ const App: React.FC = () => {
                                                     <span>{display.system.movingPulleys}</span>
                                                 </div>
                                                 <div className="solver-stat">
+                                                    <span>Fixed Pulleys:</span>
+                                                    <span>{display.system.fixedPulleys}</span>
+                                                </div>
+                                                <div className="solver-stat">
                                                     <span>Rope Length:</span>
                                                     <span>{display.system.totalRopeLength}</span>
                                                 </div>
                                             </div>
                                             
                                             <div className="solver-section">
-                                                <h4>Rope Tensions</h4>
+                                                <h4>Rope Tensions ({display.tensions.length})</h4>
                                                 <div className="solver-table">
-                                                    {display.tensions.slice(0, 5).map(t => (
+                                                    {display.tensions.map(t => (
                                                         <div key={t.ropeId} className="solver-row">
                                                             <span className="solver-label">{t.ropeLabel}:</span>
                                                             <span className="solver-value">{t.tensionFormatted}</span>
                                                         </div>
                                                     ))}
-                                                    {display.tensions.length > 5 && (
-                                                        <div className="solver-row">
-                                                            <span style={{fontSize: '11px', color: '#888'}}>
-                                                                +{display.tensions.length - 5} more...
-                                                            </span>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                             
                                             <div className="solver-section">
-                                                <h4>Anchor Forces</h4>
+                                                <h4>Anchor Forces ({display.forces.length})</h4>
                                                 <div className="solver-table">
-                                                    {display.forces.slice(0, 4).map(f => (
+                                                    {display.forces.map(f => (
                                                         <div key={f.componentId} className="solver-row">
                                                             <span className="solver-label">{f.componentLabel}:</span>
                                                             <span className="solver-value">{f.magnitudeFormatted}</span>
+                                                            <span style={{fontSize: '10px', color: '#888', marginLeft: '4px'}}>
+                                                                @ {f.angleFormatted}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Force Components</h4>
+                                                <div className="solver-table">
+                                                    {display.forces.map(f => (
+                                                        <div key={`${f.componentId}-components`} className="solver-row">
+                                                            <span className="solver-label">{f.componentLabel}:</span>
+                                                            <div style={{fontSize: '11px', color: '#aaa'}}>
+                                                                <div>X: {f.x.toFixed(2)} N</div>
+                                                                <div>Y: {f.y.toFixed(2)} N</div>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
