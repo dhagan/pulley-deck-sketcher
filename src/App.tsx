@@ -6,6 +6,8 @@ import PropertiesPanel from './components/PropertiesPanel';
 import { saveSystem, loadSystem, exportMechanicalDrawing } from './utils/importExport';
 import { calculatePathLength } from './utils/geometry';
 import { calculateMechanicalAdvantage } from './utils/mechanicalAdvantage';
+import { PulleySolver } from './solver';
+import { formatResultsForDisplay } from './utils/display';
 import './App.css';
 
 type ToolMode = 'select' | 'rope' | 'spring' | 'measure';
@@ -388,6 +390,21 @@ const App: React.FC = () => {
         }
     };
     
+    const handleSelectAllRopes = () => {
+        // Select all rope components
+        const ropeIds = system.components
+            .filter(c => c.type === ComponentType.ROPE)
+            .map(c => c.id);
+        
+        if (ropeIds.length > 0) {
+            // Select first rope (can enhance to multi-select later)
+            setSystem(prev => ({
+                ...prev,
+                selectedId: ropeIds[0],
+            }));
+        }
+    };
+    
     // Undo/Redo functionality (now automatic via useEffect)
 
     // Keyboard shortcuts
@@ -457,6 +474,7 @@ const App: React.FC = () => {
                 onExportSVG={handleExport}
                 onClear={handleClear}
                 onDelete={handleDelete}
+                onSelectAllRopes={handleSelectAllRopes}
                 toolMode={toolMode as 'select' | 'rope' | 'spring' | 'measure'}
                 ropeStart={ropeStart}
                 selectedId={system.selectedId}
@@ -510,30 +528,97 @@ const App: React.FC = () => {
                             </button>
                         </div>
                         <div className="solver-content">
-                            <div className="solver-section">
-                                <h4>Mechanical Analysis</h4>
-                                <div className="solver-stat">
-                                    <span>Theoretical MA:</span>
-                                    <span>{(() => {
-                                        const ma = calculateMechanicalAdvantage(system);
-                                        return ma ? `${ma.theoreticalMA}:1` : 'N/A';
-                                    })()}</span>
-                                </div>
-                                <div className="solver-stat">
-                                    <span>Actual MA:</span>
-                                    <span>{(() => {
-                                        const ma = calculateMechanicalAdvantage(system);
-                                        return ma ? `${ma.actualMA.toFixed(2)}:1` : 'N/A';
-                                    })()}</span>
-                                </div>
-                                <div className="solver-stat">
-                                    <span>Efficiency:</span>
-                                    <span>{(() => {
-                                        const ma = calculateMechanicalAdvantage(system);
-                                        return ma ? `${(ma.efficiency * 100).toFixed(1)}%` : 'N/A';
-                                    })()}</span>
-                                </div>
-                            </div>
+                            {(() => {
+                                try {
+                                    const solver = new PulleySolver(system as any);
+                                    const loadForce = 100; // Default 100N load
+                                    const result = solver.solve(loadForce);
+                                    const display = formatResultsForDisplay(result, system as any, 'Current System', loadForce);
+                                    
+                                    return (
+                                        <>
+                                            <div className="solver-section">
+                                                <h4>Mechanical Analysis</h4>
+                                                <div className="solver-stat">
+                                                    <span>Load Force:</span>
+                                                    <span>{loadForce} N</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Theoretical MA:</span>
+                                                    <span>{display.summary.theoreticalMA}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Actual MA:</span>
+                                                    <span>{display.summary.actualMA}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Efficiency:</span>
+                                                    <span>{display.summary.efficiency}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Input Force:</span>
+                                                    <span>{display.summary.inputForce}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>System Info</h4>
+                                                <div className="solver-stat">
+                                                    <span>Total Pulleys:</span>
+                                                    <span>{display.system.totalPulleys}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Moving Pulleys:</span>
+                                                    <span>{display.system.movingPulleys}</span>
+                                                </div>
+                                                <div className="solver-stat">
+                                                    <span>Rope Length:</span>
+                                                    <span>{display.system.totalRopeLength}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Rope Tensions</h4>
+                                                <div className="solver-table">
+                                                    {display.tensions.slice(0, 5).map(t => (
+                                                        <div key={t.ropeId} className="solver-row">
+                                                            <span className="solver-label">{t.ropeLabel}:</span>
+                                                            <span className="solver-value">{t.tensionFormatted}</span>
+                                                        </div>
+                                                    ))}
+                                                    {display.tensions.length > 5 && (
+                                                        <div className="solver-row">
+                                                            <span style={{fontSize: '11px', color: '#888'}}>
+                                                                +{display.tensions.length - 5} more...
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="solver-section">
+                                                <h4>Anchor Forces</h4>
+                                                <div className="solver-table">
+                                                    {display.forces.slice(0, 4).map(f => (
+                                                        <div key={f.componentId} className="solver-row">
+                                                            <span className="solver-label">{f.componentLabel}:</span>
+                                                            <span className="solver-value">{f.magnitudeFormatted}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </>
+                                    );
+                                } catch (error) {
+                                    return (
+                                        <div className="solver-section">
+                                            <p style={{color: '#888', fontSize: '12px'}}>
+                                                {error instanceof Error ? error.message : 'Add components to analyze'}
+                                            </p>
+                                        </div>
+                                    );
+                                }
+                            })()}
                         </div>
                     </div>
                 )}

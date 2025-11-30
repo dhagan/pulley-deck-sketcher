@@ -19,6 +19,7 @@ interface ToolbarProps {
     onExportSVG: () => void;
     onClear: () => void;
     onDelete?: () => void;
+    onSelectAllRopes?: () => void;
     toolMode: 'select' | 'rope' | 'spring' | 'measure';
     ropeStart: string | null;
     selectedId?: string | null;
@@ -43,6 +44,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     onExportSVG,
     onClear,
     onDelete,
+    onSelectAllRopes,
     toolMode,
     selectedId,
     system,
@@ -89,6 +91,17 @@ const Toolbar: React.FC<ToolbarProps> = ({
             <div style={{ height: '8px' }}></div>
             
             {/* Action buttons */}
+            {onSelectAllRopes && (
+                <button 
+                    className="toolbar-button" 
+                    onClick={onSelectAllRopes} 
+                    title="Select All Ropes/Chains"
+                    style={{ background: '#10b981', color: '#fff' }}
+                >
+                    ⚡
+                </button>
+            )}
+            
             {selectedId && onDelete && (
                 <button 
                     className="toolbar-button" 
@@ -97,6 +110,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     style={{ background: '#dc2626', color: '#fff' }}
                 >
                     🗑
+                </button>
+            )}
+            {onSelectAllRopes && (
+                <button 
+                    className="toolbar-button" 
+                    onClick={onSelectAllRopes} 
+                    title="Select All Ropes/Chains"
+                    style={{ background: '#059669', color: '#fff' }}
+                >
+                    ⛓
                 </button>
             )}
             <button
