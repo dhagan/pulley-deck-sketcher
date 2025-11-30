@@ -196,6 +196,17 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     if (!wrapsAroundPulley || path[path.length - 1] !== endPos) {
         path.push(endPos);
     }
+    
+    // DEBUG: Log final path for rope-2
+    if (rope.id.includes('rope-2')) {
+        console.log('🔍 ROPE-2 FINAL PATH:', {
+            pathLength: path.length,
+            wrapsAroundPulley,
+            firstPoint: path[0],
+            lastPoint: path[path.length - 1],
+            allPoints: path
+        });
+    }
 
     // Flatten path for Konva Line
     const points = path.flatMap(p => [p.x, p.y]);
