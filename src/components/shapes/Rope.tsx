@@ -114,7 +114,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
     const endPos = getPointCoordinates(endComp, rope.endPoint);
 
     // Build path including pulley wraps
-    let path: Array<{ x: number; y: number }> = [startPos];
+    let path: Array<{ x: number; y: number }> = [];
     
     // Check if rope wraps around a pulley (both IN→OUT and OUT→IN on same pulley)
     const startIsIn = rope.startPoint?.includes('-in');
@@ -128,17 +128,32 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                               startComp.type === 'pulley' &&
                               ((startIsIn && endIsOut) || (startIsOut && endIsIn));
     
+    // TEMP DEBUG
+    console.log(`Rope ${rope.id}:`, {
+        startId: rope.startId,
+        endId: rope.endId,
+        same: rope.startId === rope.endId,
+        isPulley: startComp.type === 'pulley',
+        startIsIn,
+        endIsOut,
+        wraps: wrapsAroundPulley,
+        pathLen: path.length
+    });
+    
     if (wrapsAroundPulley) {
         const pulley = startComp as PulleyComponent;
         const radius = pulley.diameter / 2;
         const center = pulley.position;
         const rotationRad = (pulley.rotation || 0) * (Math.PI / 180);
         
+        // Add start point
+        path.push(startPos);
+        
         // Add points along the arc - always go around the TOP (anchor side)
         const numArcPoints = 20; // More points for smoother arc
         if (startIsIn && endIsOut) {
             // IN (left) to OUT (right) - top arc (180° to 0°)
-            for (let i = 0; i <= numArcPoints; i++) {
+            for (let i = 1; i < numArcPoints; i++) { // Start at 1, end before numArcPoints
                 const t = i / numArcPoints;
                 const angle = Math.PI * (1 - t); // Start at 180°, end at 0°
                 const localX = radius * Math.cos(angle);
@@ -155,7 +170,7 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
             }
         } else if (startIsOut && endIsIn) {
             // OUT (right) to IN (left) - top arc (0° to 180°)
-            for (let i = 0; i <= numArcPoints; i++) {
+            for (let i = 1; i < numArcPoints; i++) { // Start at 1, end before numArcPoints
                 const t = i / numArcPoints;
                 const angle = Math.PI * t; // Start at 0°, end at 180°
                 const localX = radius * Math.cos(angle);
@@ -171,6 +186,12 @@ const Rope: React.FC<RopeProps> = ({ rope, components, isSelected, onSelect, onS
                 });
             }
         }
+        // Add end point
+        path.push(endPos);
+    } else {
+        // Straight line - just start and end
+        path.push(startPos);
+        path.push(endPos);
     }
     
     // Always add endPos if not already added by arc
