@@ -681,6 +681,21 @@ const App: React.FC = () => {
                                                         </div>
                                                     ))}
                                                 </div>
+                                            </div>
+                                        </>
+                                    );
+                                } catch (error) {
+                                    console.error('Solver error:', error);
+                                    return (
+                                        <div className="solver-section">
+                                            <p style={{color: '#888', fontSize: '12px'}}>
+                                                Unable to solve system
+                                            </p>
+                                            <p style={{color: '#666', fontSize: '11px'}}>
+                                                {error instanceof Error ? error.message : 'Unknown error'}
+                                            </p>
+                                        </div>
+                                    );
                                 }
                             })()}
                             </div>
