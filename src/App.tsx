@@ -62,8 +62,8 @@ const App: React.FC = () => {
     const [showMeasurements, setShowMeasurements] = useState<boolean>(true);
     const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
     const [showPropertiesPanel, setShowPropertiesPanel] = useState<boolean>(true);
-    const [showSolverPanel, setShowSolverPanel] = useState<boolean>(true);
     const [viewMode, setViewMode] = useState<'canvas' | 'diagram'>('canvas');
+    const [rightPanelTab, setRightPanelTab] = useState<'solver' | 'diagram' | 'none'>('solver');
 
     const createComponentId = (type: string) => `${type}-${Date.now()}`;
     const defaultPosition = { x: 400, y: 300 };
@@ -549,20 +549,34 @@ const App: React.FC = () => {
                     </div>
                 )}
                 {showPropertiesPanel && <PropertiesPanel system={system} setSystem={setSystem} onCollapse={() => setShowPropertiesPanel(false)} />}
-                {showSolverPanel && (
-                    <div className="solver-panel">
-                        <div className="panel-header">
-                            <h3>Solver</h3>
+                
+                {/* Right panel with tabs */}
+                {rightPanelTab !== 'none' && (
+                    <div className="right-panel">
+                        <div className="right-panel-tabs">
                             <button 
-                                className="panel-toggle"
-                                onClick={() => setShowSolverPanel(false)}
-                                title="Hide Solver Panel"
+                                className={`panel-tab ${rightPanelTab === 'solver' ? 'active' : ''}`}
+                                onClick={() => setRightPanelTab('solver')}
                             >
-                                →
+                                Analysis
+                            </button>
+                            <button 
+                                className={`panel-tab ${rightPanelTab === 'diagram' ? 'active' : ''}`}
+                                onClick={() => setRightPanelTab('diagram')}
+                            >
+                                Diagram
+                            </button>
+                            <button 
+                                className="panel-close-btn"
+                                onClick={() => setRightPanelTab('none')}
+                                title="Close Panel"
+                            >
+                                ×
                             </button>
                         </div>
-                        <div className="solver-content">
-                            {(() => {
+                        
+                        <div className="right-panel-content">
+                            {rightPanelTab === 'solver' && (() => {
                                 try {
                                     // Skip if no components
                                     if (system.components.length === 0) {
@@ -714,6 +728,18 @@ const App: React.FC = () => {
                                     );
                                 }
                             })()}
+                            
+                            {rightPanelTab === 'diagram' && (
+                                <div style={{ padding: '16px' }}>
+                                    {system.components.length > 0 ? (
+                                        <ForceDiagram system={system} loadForce={100} />
+                                    ) : (
+                                        <p style={{color: '#888', fontSize: '12px', textAlign: 'center'}}>
+                                            Add components to see diagram
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -721,19 +747,19 @@ const App: React.FC = () => {
             {!showPropertiesPanel && (
                 <button 
                     className="panel-toggle-show"
-                    style={{ right: showSolverPanel ? '260px' : '8px' }}
+                    style={{ right: rightPanelTab !== 'none' ? '260px' : '8px' }}
                     onClick={() => setShowPropertiesPanel(true)}
                     title="Show Properties Panel"
                 >
                     ←
                 </button>
             )}
-            {!showSolverPanel && (
+            {rightPanelTab === 'none' && (
                 <button 
                     className="panel-toggle-show"
                     style={{ right: '8px' }}
-                    onClick={() => setShowSolverPanel(true)}
-                    title="Show Solver Panel"
+                    onClick={() => setRightPanelTab('solver')}
+                    title="Show Analysis Panel"
                 >
                     ←
                 </button>
